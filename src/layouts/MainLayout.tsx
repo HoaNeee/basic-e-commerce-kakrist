@@ -1,5 +1,7 @@
 "use client";
 
+import FooterComponent from "@/components/footer/FooterComponent";
+import Header from "@/components/header/Header";
 import { usePathname } from "next/navigation";
 import React, { ReactNode } from "react";
 
@@ -8,9 +10,9 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="w-full h-full">
-      {!pathName.startsWith("/auth") && <div>Header</div>}
+      {!pathName.startsWith("/auth") && <Header />}
       {children}
-      {!pathName.startsWith("/auth") && <div>Footer</div>}
+      {!pathName.startsWith("/auth") && <FooterComponent />}
     </div>
   );
 };
