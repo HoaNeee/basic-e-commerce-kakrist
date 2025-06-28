@@ -15,24 +15,24 @@ const Shipping = () => {
         </div>
       </div>
       <div className="flex flex-col gap-3 justify-center">
-        <BsBox size={25} fontWeight={800} strokeWidth={1} />
+        <AiOutlineDollar size={25} fontWeight={800} strokeWidth={1} />
         <div className="flex flex-col gap-1">
-          <p className="font-bold">Free Shipping</p>
-          <p className="text-sm">Free Shipping for order above</p>
+          <p className="font-bold">Money Guarantee</p>
+          <p className="text-sm">Within 30 days for an exchange</p>
         </div>
       </div>
       <div className="flex flex-col gap-3 justify-center">
-        <BsBox size={25} fontWeight={800} strokeWidth={1} />
+        <RiHeadphoneLine size={25} fontWeight={800} strokeWidth={1} />
         <div className="flex flex-col gap-1">
-          <p className="font-bold">Free Shipping</p>
-          <p className="text-sm">Free Shipping for order above</p>
+          <p className="font-bold">Online Support</p>
+          <p className="text-sm">24 hours a day, 7 days a week</p>
         </div>
       </div>
       <div className="flex flex-col gap-3 justify-center">
-        <BsBox size={25} fontWeight={800} strokeWidth={1} />
+        <MdOutlinePayment size={25} fontWeight={800} strokeWidth={0} />
         <div className="flex flex-col gap-1">
-          <p className="font-bold">Free Shipping</p>
-          <p className="text-sm">Free Shipping for order above</p>
+          <p className="font-bold">Flexible Payment</p>
+          <p className="text-sm">Pay with multiple credit,cards</p>
         </div>
       </div>
     </div>

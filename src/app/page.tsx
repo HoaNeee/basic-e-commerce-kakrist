@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { CarouselComponent } from "@/components/home/CarouselComponent";
+import { CarouselPromotion } from "@/components/home/CarouselPromotion";
 import CategoryComponent from "@/components/category/CategoryComponent";
 import OurBestSeller from "@/components/product/OurBestSeller";
 import IMAGETEST from "../assets/dayofthemonth2.png";
@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <main className="w-full bg-white">
       <section className="w-full">
-        <CarouselComponent />
+        <CarouselPromotion />
       </section>
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
         <CategoryComponent />
