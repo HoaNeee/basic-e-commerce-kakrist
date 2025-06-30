@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import {
@@ -13,8 +13,26 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import MegaMenu from "./MegaMenu";
+import { get } from "@/utils/requets";
+import { createTree } from "@/utils/createTree";
+import { CategoryModel } from "@/models/categoryModel";
 
 export function MenuNav() {
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    try {
+      const response = await get("/categories");
+
+      setCategories(createTree(response.data, "", "_id"));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <NavigationMenu viewport={false} className="">
       <NavigationMenuList className="xl:gap-4 gap-2">
@@ -35,7 +53,7 @@ export function MenuNav() {
               zIndex: 99,
             }}
           >
-            <MegaMenu />
+            <MegaMenu categories={categories} />
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>

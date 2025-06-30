@@ -6,6 +6,7 @@ const BASE_URL = `http://localhost:3001`;
 const axiosClient = axios.create({
   baseURL: BASE_URL,
   paramsSerializer: (params) => queryString.stringify(params),
+  withCredentials: true,
 });
 
 axiosClient.interceptors.request.use(

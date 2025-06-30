@@ -65,7 +65,7 @@ const FooterComponent = () => {
                   <input
                     type="email"
                     name="email"
-                    className="w-full h-full outline-0 pl-2 bg-transparent"
+                    className="w-full h-full outline-0 pl-2 bg-transparent dark"
                     placeholder="Your Email"
                   />
                   <Button>
