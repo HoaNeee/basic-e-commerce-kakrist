@@ -23,18 +23,10 @@ import { VND } from "@/utils/formatCurrency";
 // import * as Popover from "@radix-ui/react-popover";
 import { ScrollArea } from "../ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
+
 import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
+import DialogConfirm from "../dialog/DialogConfirm";
 
 const Header = () => {
   const [loading, setLoading] = useState(true);
@@ -42,7 +34,9 @@ const Header = () => {
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
+  const pathName = usePathname();
   const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     setLoading(false);
@@ -87,68 +81,87 @@ const Header = () => {
             <LuSearch className="lg:text-2xl text-xl" />
             <IoIosHeartEmpty className="lg:text-2xl text-xl" />
             <div className="relative">
-              <Popover
-                open={openPopoverCart}
-                onOpenChange={setOpenPopoverCart}
-                modal
-              >
-                <PopoverTrigger asChild>
-                  <PiShoppingBag
-                    className="lg:text-2xl text-xl cursor-pointer"
-                    title="open mini cart"
-                  />
-                </PopoverTrigger>
-
-                <PopoverContent
-                  sideOffset={10}
-                  className="bg-white sm:w-[340px] w-[280px] p-0 py-3 absolute sm:-left-64 -left-48 min-h-40 text-sm shadow-2xl z-41"
+              {!pathName.includes("/cart") ? (
+                <Popover
+                  open={openPopoverCart}
+                  onOpenChange={setOpenPopoverCart}
+                  modal
                 >
-                  {auth.isLogin ? (
-                    <>
-                      <p className="pt-2 px-4">
-                        You have{" "}
-                        {cart.carts.reduce(
-                          (value, item) => value + item.quantity,
-                          0
-                        )}{" "}
-                        items in your cart
-                      </p>
-                      <ScrollArea className="h-80 w-full">
-                        <div className="mt-6 flex flex-col gap-4 px-4">
-                          {cart && cart.carts.length > 0 ? (
-                            cart.carts.map((item, index) => (
-                              <div
-                                key={index}
-                                className="w-full h-full relative flex gap-4 items-center pb-4 border-b-2 border-muted"
-                              >
-                                <div className="w-17 h-17 object-cover bg-[#F1F1F3]">
-                                  <img
-                                    src={item.thumbnail}
-                                    alt="image"
-                                    className="w-full h-full"
-                                  />
-                                </div>
-                                <div className="flex flex-col gap-1 items-start justify-self-start">
-                                  <p className="text-ellipsis line-clamp-1">
-                                    {item.title}
-                                  </p>
-                                  <p className="font-bold text-base">
-                                    {item.quantity} x {VND.format(item.price)}
-                                  </p>
-                                  {item.productType === "variations" ? (
-                                    <p>
-                                      Options:{" "}
-                                      {item.options_info
-                                        ?.map((it) => it.title)
-                                        .join(", ")}
+                  <PopoverTrigger asChild>
+                    <PiShoppingBag
+                      className="lg:text-2xl text-xl cursor-pointer"
+                      title="open mini cart"
+                    />
+                  </PopoverTrigger>
+
+                  <PopoverContent
+                    sideOffset={10}
+                    className="bg-white sm:w-[340px] w-[280px] p-0 py-3 absolute sm:-left-64 -left-48 min-h-40 text-sm shadow-2xl z-41"
+                  >
+                    {auth.isLogin ? (
+                      <>
+                        <p className="pt-2 px-4">
+                          You have{" "}
+                          {cart.carts.reduce(
+                            (value, item) => value + item.quantity,
+                            0
+                          )}{" "}
+                          items in your cart
+                        </p>
+                        <ScrollArea className="h-80 w-full">
+                          <div className="mt-6 flex flex-col gap-4 px-4">
+                            {cart && cart.carts.length > 0 ? (
+                              cart.carts.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="w-full h-full relative flex gap-4 items-center pb-4 border-b-2 border-muted"
+                                >
+                                  <div className="w-17 h-17 object-cover bg-[#F1F1F3]">
+                                    <img
+                                      src={item.thumbnail}
+                                      alt="image"
+                                      className="w-full h-full"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-1 items-start justify-self-start">
+                                    <p className="text-ellipsis line-clamp-1">
+                                      {item.title}
                                     </p>
-                                  ) : (
-                                    <div className="h-2"></div>
-                                  )}
-                                </div>
-                                <div className="absolute bottom-4 right-0">
-                                  <AlertDialog>
-                                    <AlertDialogTrigger>
+                                    <p className="font-bold text-base">
+                                      {item.quantity} x {VND.format(item.price)}
+                                    </p>
+                                    {item.productType === "variations" ? (
+                                      <p>
+                                        Options:{" "}
+                                        {item.options_info
+                                          ?.map((it) => it.title)
+                                          .join(", ")}
+                                      </p>
+                                    ) : (
+                                      <div className="h-2"></div>
+                                    )}
+                                  </div>
+                                  <div className="absolute bottom-4 right-0">
+                                    <DialogConfirm
+                                      onConfirm={async () => {
+                                        await del(
+                                          "/cart/delete",
+                                          item.cartItem_id || ""
+                                        );
+                                        toast.success("Success", {
+                                          description:
+                                            "This item was be remove",
+                                          action: {
+                                            label: "Close",
+                                            onClick: () => {},
+                                          },
+                                          duration: 1000,
+                                        });
+                                        dispatch(
+                                          removeCartItem(item.cartItem_id)
+                                        );
+                                      }}
+                                    >
                                       <GoTrash
                                         size={18}
                                         color="red"
@@ -156,81 +169,55 @@ const Header = () => {
                                         title="remove this item"
                                         onClick={() => {}}
                                       />
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                          Are you absolutely sure?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          This action cannot be undone. This
-                                          will permanently delete your account
-                                          and remove your data from our servers.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                          onClick={async () => {
-                                            await del(
-                                              "/cart/delete",
-                                              item.cartItem_id || ""
-                                            );
-                                            toast.success("Success", {
-                                              description:
-                                                "This item was be remove",
-                                              action: {
-                                                label: "Close",
-                                                onClick: () => {},
-                                              },
-                                              duration: 1000,
-                                            });
-                                            dispatch(
-                                              removeCartItem(item.cartItem_id)
-                                            );
-                                          }}
-                                        >
-                                          Continue
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
+                                    </DialogConfirm>
+                                  </div>
                                 </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div>Cart is empty!</div>
-                          )}
-                        </div>
-                      </ScrollArea>
-                      <div className="mt-6 px-4">
-                        <div className="flex justify-between items-center text-base font-bold">
-                          <p>Subtotal</p>
-                          <p>
-                            {VND.format(
-                              cart.carts.reduce(
-                                (val, item) => val + item.quantity * item.price,
-                                0
-                              )
+                              ))
+                            ) : (
+                              <div>Cart is empty!</div>
                             )}
-                          </p>
-                        </div>
+                          </div>
+                        </ScrollArea>
+                        <div className="mt-6 px-4">
+                          <div className="flex justify-between items-center text-base font-bold">
+                            <p>Subtotal</p>
+                            <p>
+                              {VND.format(
+                                cart.carts.reduce(
+                                  (val, item) =>
+                                    val + item.quantity * item.price,
+                                  0
+                                )
+                              )}
+                            </p>
+                          </div>
 
-                        <div className="flex flex-col gap-2 mt-4">
-                          <Button variant={"outline"} className="py-6">
-                            View Cart
-                          </Button>
-                          <Button className="py-6">Checkout</Button>
+                          <div className="flex flex-col gap-2 mt-4">
+                            <Button
+                              variant={"outline"}
+                              className="py-6"
+                              onClick={() => {
+                                router.push("/cart");
+                                setOpenPopoverCart(false);
+                              }}
+                            >
+                              View Cart
+                            </Button>
+                            <Button className="py-6">Checkout</Button>
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="px-4">not login</div>
-                  )}
-                </PopoverContent>
-              </Popover>
+                      </>
+                    ) : (
+                      <div className="px-4">not login</div>
+                    )}
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <PiShoppingBag
+                  className="lg:text-2xl text-xl cursor-pointer"
+                  title="open mini cart"
+                />
+              )}
               {cart && cart.carts.length > 0 && (
                 <Badge
                   className="absolute lg:-top-1.5 text-[10px] p-0 px-1 lg:-right-1 -right-1.5 -top-2"

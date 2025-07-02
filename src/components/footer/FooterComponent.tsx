@@ -15,11 +15,13 @@ import { BsTwitterX } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { FaLongArrowAltRight } from "react-icons/fa";
 
+const payment = [AMEX, GOOGLE, PAYPAL, MASTER, VISA];
+
 const FooterComponent = () => {
   return (
     <footer className="w-full bg-[#131118]">
       <div className="container w-full xl:px-4 px-2 md:px-0 mx-auto">
-        <div className="grid grid-cols-4 py-16 text-white">
+        <div className="grid grid-cols-2 md:gap-0 gap-6 md:grid-cols-4 py-16 text-white">
           <div>
             <Image alt="this is LOGO" src={LOGO} width={142} height={58} />
             <div className="text-white flex flex-col gap-5 mt-5">
@@ -79,28 +81,21 @@ const FooterComponent = () => {
       </div>
       <div className="container w-full xl:px-4 px-2 md:px-0 text-white mx-auto">
         <div className="flex gap-2 w-full border-t-2 py-6 border-gray-500 items-center justify-between relative">
-          <div className="flex gap-2">
-            <div className="w-[46px] h-[28px] rounded-[3px] bg-white flex items-center justify-center">
-              <Image src={VISA} alt="payment" className="" />
-            </div>
-            <div className="w-[46px] h-[28px] rounded-[3px] bg-white flex items-center justify-center">
-              <Image src={MASTER} alt="payment" className="" />
-            </div>
-            <div className="w-[46px] h-[28px] rounded-[3px] bg-white flex items-center justify-center">
-              <Image src={GOOGLE} alt="payment" className="" />
-            </div>
-            <div className="w-[46px] h-[28px] rounded-[3px] bg-white flex items-center justify-center">
-              <Image src={AMEX} alt="payment" className="" />
-            </div>
-            <div className="w-[46px] h-[28px] rounded-[3px] bg-white flex items-center justify-center">
-              <Image src={PAYPAL} alt="payment" className="" />
-            </div>
+          <div className="hidden gap-2 md:flex">
+            {payment.map((item, index) => (
+              <div
+                key={index}
+                className="lg:w-[46px] lg:h-[28px] w-[40px] h-[22px] rounded-[3px] bg-white flex items-center justify-center"
+              >
+                <Image src={item} alt="payment" className="" />
+              </div>
+            ))}
           </div>
           <div className="absolute flex items-center justify-center left-0 w-full h-full">
             <p className="">@2025 Krist All Rights are reserved </p>
           </div>
 
-          <div className="flex gap-2 items-center">
+          <div className="items-center hidden gap-2 md:flex">
             <FaFacebookF size={18} />
             <FaInstagram size={18} />
             <BsTwitterX size={18} />

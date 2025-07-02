@@ -1,7 +1,12 @@
+import { StepperDemo } from "@/components/StepDemo";
 import React from "react";
 
 const Shop = () => {
-  return <div>Shop</div>;
+  return (
+    <div>
+      <StepperDemo />
+    </div>
+  );
 };
 
 export default Shop;

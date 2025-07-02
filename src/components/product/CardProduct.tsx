@@ -24,8 +24,12 @@ const CardProduct = ({ item }: Props) => {
           backgroundColor: "#F1F1F3",
         }}
       >
+        <Link
+          href={`/shop/${item.slug}`}
+          className="h-full w-full absolute bg-transparent sm:hidden inline-block"
+        />
         {/* opacity-0 group-hover:opacity-100 */}
-        <div className="absolute group-hover:right-2 -right-full top-4 flex flex-col gap-1.5 invisible group-hover:visible transition-all duration-300 z-20">
+        <div className="absolute sm:group-hover:right-2 -right-full top-4 flex flex-col gap-1.5 invisible sm:group-hover:visible transition-all duration-300 z-20">
           <Button variant={"outline"} className="rounded-full h-8 w-8">
             <FaRegStar />
           </Button>
@@ -45,7 +49,11 @@ const CardProduct = ({ item }: Props) => {
         </div>
       </CardContent>
 
-      <CardFooter className="px-2 pb-1">
+      <CardFooter className="px-2 pb-1 relative">
+        <Link
+          href={`/shop/${item.slug}`}
+          className="h-full w-full absolute bg-transparent sm:hidden inline-block"
+        />
         <div className="flex flex-col gap-1.5">
           <p className="font-bold">{item.supplierName}</p>
           <p className="font-medium text-ellipsis line-clamp-1">{item.title}</p>

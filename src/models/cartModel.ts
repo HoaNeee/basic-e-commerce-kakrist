@@ -18,4 +18,5 @@ export interface CartModel {
   discountedPrice?: number;
   productType: "simple" | "variations";
   title?: string;
+  stock?: number;
 }

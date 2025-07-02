@@ -47,9 +47,20 @@ const cartReducer = createSlice({
         (item) => item.cartItem_id !== cartItem_id
       );
     },
+    changeQuantity: (state, action) => {
+      const { cartItem_id, quantity } = action.payload;
+      const carts = [...state.cart.carts];
+      const index = carts.findIndex((item) => item.cartItem_id === cartItem_id);
+      if (index + 1) {
+        // !== -1
+        carts[index].quantity += quantity;
+      }
+      state.cart.carts = [...carts];
+    },
   },
 });
 
-export const { addProduct, syncCart, removeCartItem } = cartReducer.actions;
+export const { addProduct, syncCart, removeCartItem, changeQuantity } =
+  cartReducer.actions;
 
 export default cartReducer.reducer;

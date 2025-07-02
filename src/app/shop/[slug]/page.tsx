@@ -30,6 +30,15 @@ import CardProduct from "@/components/product/CardProduct";
 import { addProduct } from "@/redux/reducer/cartReducer";
 import { CartModel } from "@/models/cartModel";
 import { toast } from "sonner";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 interface OptionsInfo {
   title: string;
@@ -151,6 +160,17 @@ const ProductDetail = () => {
       if (productDetail?.productType === "variations") {
         if (!subProductDetail) {
           console.log("need choose at least one");
+          return;
+        }
+
+        if (!Number(subProductDetail.stock)) {
+          toast.error("This product is out of stock", {
+            description: "Plese choose other product",
+            action: {
+              label: "close",
+              onClick: () => {},
+            },
+          });
           return;
         }
 
@@ -282,6 +302,27 @@ const ProductDetail = () => {
 
   return (
     <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
+      <div className="w-full my-6">
+        <Breadcrumb>
+          <BreadcrumbList className="">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={"/"}>Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={"/shop"}>Shop</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{productDetail?.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
         <div className="w-full p-1">
           <div className="w-full bg-[#F1F1F3] lg:h-[500px] h-[400px]">
@@ -296,6 +337,7 @@ const ProductDetail = () => {
                 alt="product detail"
                 src={IMAGENOTFOUND}
                 className="w-full h-full object-contain"
+                priority
               />
             )}
           </div>
@@ -420,9 +462,14 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex items-center gap-3 mt-7">
-              <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg py-2 px-3">
-                <AiOutlineMinus
-                  size={20}
+              <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg px-2">
+                <Button
+                  variant={"link"}
+                  className=""
+                  style={{
+                    padding: 0,
+                  }}
+                  disabled={count === 1}
                   onClick={() => {
                     if (productDetail?.productType === "variations") {
                       if (subProductDetail) {
@@ -436,11 +483,15 @@ const ProductDetail = () => {
                       }
                     }
                   }}
-                  className="cursor-pointer"
-                />
+                >
+                  <AiOutlineMinus size={20} />
+                </Button>
                 <div className="w-5 text-center">{count}</div>
-                <GoPlus
-                  size={20}
+                <Button
+                  variant={"link"}
+                  style={{
+                    padding: 0,
+                  }}
                   onClick={() => {
                     if (productDetail?.productType === "variations") {
                       if (subProductDetail) {
@@ -450,8 +501,15 @@ const ProductDetail = () => {
                       setCount(count + 1);
                     }
                   }}
-                  className="cursor-pointer"
-                />
+                  disabled={
+                    productDetail?.productType === "simple"
+                      ? count === productDetail.stock
+                      : subProductDetail &&
+                        count >= Number(subProductDetail?.stock)
+                  }
+                >
+                  <GoPlus size={20} />
+                </Button>
               </div>
               <div className="w-3/6 px-2 h-full">
                 <Button
