@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { addAuth } from "@/redux/reducer/authReducer";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
   email: z
@@ -56,8 +57,6 @@ const Login = () => {
 
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
-
-  console.log(next);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -181,6 +180,7 @@ const Login = () => {
                 </p>
               }
             </Button>
+
             <div className="text-center mt-5">
               <p>
                 {"Don't have an account? "}{" "}

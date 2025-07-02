@@ -38,7 +38,7 @@ export function MenuNav() {
       <NavigationMenuList className="xl:gap-4 gap-2">
         <NavigationMenuItem className="">
           <NavigationMenuLink asChild>
-            <Link href={"/"} className="xl:text-[16px] text-sm">
+            <Link href={"/"} className="lg:text-[16px] text-sm">
               Home
             </Link>
           </NavigationMenuLink>

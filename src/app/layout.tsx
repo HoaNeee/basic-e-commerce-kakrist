@@ -26,7 +26,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const token = (await cookies()).get("token");
+  const token = (await cookies()).get("jwt_token");
 
   return (
     <html lang="en">

@@ -5,6 +5,7 @@ export interface AuthState {
   firstName: string;
   lastName: string;
   accessToken: string;
+  isLogin: boolean;
 }
 
 const initialState: AuthState = {
@@ -12,6 +13,7 @@ const initialState: AuthState = {
   firstName: "",
   lastName: "",
   accessToken: "",
+  isLogin: false,
 };
 
 const authReducer = createSlice({

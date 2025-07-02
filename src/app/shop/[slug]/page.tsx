@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import { AiOutlineMinus } from "react-icons/ai";
@@ -13,14 +14,32 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { ProductModel, SubProductModel } from "@/models/productModel";
-import { get } from "@/utils/requets";
+import { get, post } from "@/utils/requets";
 import { Badge } from "@/components/ui/badge";
 import IMAGENOTFOUND from "../../../assets/imagenotfound.png";
 import Image from "next/image";
 import { VariationModel } from "@/models/variationModel";
 import { VND } from "@/utils/formatCurrency";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import Shipping from "@/components/home/Shipping";
+import HeadContent from "@/components/HeadContent";
+import CardProduct from "@/components/product/CardProduct";
+import { addProduct } from "@/redux/reducer/cartReducer";
+import { CartModel } from "@/models/cartModel";
+import { toast } from "sonner";
+
+interface OptionsInfo {
+  title: string;
+  value: string;
+  variation_id: string;
+}
+
+interface SubProductDetail extends SubProductModel {
+  options_info?: OptionsInfo[];
+}
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -28,30 +47,34 @@ const ProductDetail = () => {
   const [productDetail, setProductDetail] = useState<ProductModel>();
   const [variations, setVariations] = useState<VariationModel[]>();
   const [subProducts, setSubProducts] = useState<SubProductModel[]>();
-  const [subProductDetail, setSubProductsDetail] = useState<SubProductModel>();
+  const [subProductDetail, setSubProductsDetail] = useState<SubProductDetail>();
   const [thumbnail, setThumbnail] = useState<string>();
-  const [optionsChoosed, setOptionsChoosed] = useState<
-    {
-      title: string;
-      value: string;
-      variation_id: string;
-    }[]
-  >([]);
+  const [relatedProducts, setRelatedProducts] = useState<ProductModel[]>([]);
+  const [optionsChoosed, setOptionsChoosed] = useState<OptionsInfo[]>([]);
   const [count, setCount] = useState(1);
+  const [tabSelected, setTabSelected] = useState<any>();
 
   const auth = useSelector((state: RootState) => state.auth.auth);
+  const cart = useSelector((state: RootState) => state.cart.cart);
   const path = usePathname();
   const search = useSearchParams().toString();
   const router = useRouter();
+  const tabInitRef = useRef<any>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (slug) {
       getProductDetail();
+      getRelatedProducts();
     }
   }, [slug]);
 
   useEffect(() => {
     if (optionsChoosed.length === variations?.length) {
+      if (subProductDetail && count !== 1) {
+        setCount(1);
+      }
+
       const key_combi = optionsChoosed
         .map((item) => item.value)
         .sort((a, b) => (a < b ? 1 : -1))
@@ -60,11 +83,20 @@ const ProductDetail = () => {
       const subProduct = subProducts?.find(
         (item) => item.key_combi === key_combi
       );
-      setThumbnail(subProduct?.thumbnail);
-      setSubProductsDetail(subProduct);
+
+      if (subProduct) {
+        setThumbnail(subProduct?.thumbnail);
+        setSubProductsDetail({
+          ...subProduct,
+          options_info: optionsChoosed,
+        });
+      }
     } else if (subProductDetail) {
       setSubProductsDetail(undefined);
       setThumbnail(productDetail?.thumbnail);
+      if (count !== 1) {
+        setCount(1);
+      }
     }
   }, [optionsChoosed]);
 
@@ -96,78 +128,152 @@ const ProductDetail = () => {
     }
   };
 
-  const handleCart = () => {
-    if (!auth.accessToken) {
+  const getRelatedProducts = async () => {
+    try {
+      const response = await get(`/products/related`);
+      setRelatedProducts(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCart = async () => {
+    if (!auth.isLogin) {
       console.log("need login");
-      //encodeURIComponent
+
       const next = encodeURIComponent(path + (search ? `?${search}` : ``));
 
       router.push(`/auth/login?next=${next}`);
       return;
     }
 
-    if (!subProductDetail) {
-      console.log("need choose at least one");
-      return;
-    }
+    try {
+      if (productDetail?.productType === "variations") {
+        if (!subProductDetail) {
+          console.log("need choose at least one");
+          return;
+        }
 
-    console.log(subProductDetail);
+        const item: CartModel = {
+          cart_id: cart.cart_id,
+          options: subProductDetail.options,
+          options_info: subProductDetail.options_info,
+          product_id: subProductDetail.product_id,
+          sub_product_id: subProductDetail._id,
+          price: Number(subProductDetail.price),
+          discountedPrice: subProductDetail.discountedPrice,
+          thumbnail: productDetail.thumbnail,
+          thumbnail_sub_product: subProductDetail.thumbnail,
+          quantity: count,
+          productType: "variations",
+          title: productDetail.title,
+        };
+
+        const response = await post(`/cart/add-product/${cart.cart_id}`, item);
+
+        dispatch(
+          addProduct({
+            ...item,
+            cartItem_id: response.data.cartItem.cartItem_id,
+          })
+        );
+      } else {
+        const item: CartModel = {
+          cart_id: cart.cart_id,
+          options: [],
+          product_id: productDetail?._id,
+          price: Number(productDetail?.price),
+          discountedPrice: productDetail?.discountedPrice,
+          thumbnail: productDetail?.thumbnail,
+          quantity: count,
+          productType: "simple",
+          title: productDetail?.title,
+        };
+        const response = await post(`/cart/add-product/${cart.cart_id}`, item);
+
+        dispatch(
+          addProduct({
+            ...item,
+            cartItem_id: response.data.cartItem.cartItem_id,
+          })
+        );
+      }
+      toast.success("Add product to cart success", {
+        description: "Click to cart to see details!",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message);
+    }
   };
 
-  const renderSubproducts = (variations: VariationModel[]) => {
+  const renderSubproducts = (
+    variations: VariationModel[],
+    readOnly: boolean = false
+  ) => {
     return (
       variations &&
       variations.length > 0 &&
       variations.map((item) => {
         return (
-          <div key={item._id} className="flex items-center gap-4">
+          <div key={item._id} className="flex items-center gap-4" style={{}}>
             <p className="font-bold">{item.title + ": "}</p>
-            <div className="flex gap-2">
-              {item?.options &&
-                item.options.length > 0 &&
-                item.options.map((option) => {
-                  return (
-                    <Badge
-                      variant={
-                        optionsChoosed.find(
-                          (item) => item.value === option.value
-                        ) !== undefined
-                          ? "default"
-                          : "outline"
-                      }
-                      className="text-sm cursor-pointer"
-                      key={option.value}
-                      onClick={() => {
-                        const options = [...optionsChoosed];
-
-                        const idx = options.findIndex(
-                          (item) =>
-                            item.variation_id === option.variation_id &&
-                            item.value !== option.value
-                        );
-
-                        if (idx !== -1) {
-                          options.splice(idx, 1);
-                          options.push(option);
-                        } else {
-                          const idx = options.findIndex(
+            {!readOnly ? (
+              <div className="flex gap-2">
+                {item?.options &&
+                  item.options.length > 0 &&
+                  item.options.map((option) => {
+                    return (
+                      <Badge
+                        variant={
+                          optionsChoosed.find(
                             (item) => item.value === option.value
+                          ) !== undefined
+                            ? "default"
+                            : "outline"
+                        }
+                        className="text-sm cursor-pointer"
+                        key={option.value}
+                        onClick={() => {
+                          const options = [...optionsChoosed];
+
+                          const idx = options.findIndex(
+                            (item) =>
+                              item.variation_id === option.variation_id &&
+                              item.value !== option.value
                           );
+
                           if (idx !== -1) {
                             options.splice(idx, 1);
-                          } else {
                             options.push(option);
+                          } else {
+                            const idx = options.findIndex(
+                              (item) => item.value === option.value
+                            );
+                            if (idx !== -1) {
+                              options.splice(idx, 1);
+                            } else {
+                              options.push(option);
+                            }
                           }
-                        }
 
-                        setOptionsChoosed(options);
-                      }}
-                    >
-                      {option.title}
-                    </Badge>
-                  );
-                })}
-            </div>
+                          setOptionsChoosed(options);
+                        }}
+                      >
+                        {option.title}
+                      </Badge>
+                    );
+                  })}
+              </div>
+            ) : (
+              <div className="text-sm tracking-wider">
+                {item.options.map((opt) => opt.title).join(", ")}
+              </div>
+            )}
           </div>
         );
       })
@@ -178,7 +284,7 @@ const ProductDetail = () => {
     <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
         <div className="w-full p-1">
-          <div className="w-full bg-[#F1F1F3] lg:h-[555px] h-[400px]">
+          <div className="w-full bg-[#F1F1F3] lg:h-[500px] h-[400px]">
             {productDetail?.thumbnail ? (
               <img
                 src={thumbnail}
@@ -314,7 +420,7 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex items-center gap-3 mt-7">
-              <div className="flex items-center gap-2 border-2 border-black justify-between rounded-lg py-2 px-3">
+              <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg py-2 px-3">
                 <AiOutlineMinus
                   size={20}
                   onClick={() => {
@@ -368,6 +474,93 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+      <div className="py-10">
+        <Tabs defaultValue="description">
+          <TabsList
+            className="flex gap-5 items-center border-b-2 w-full relative pb-2 transition-all duration-300"
+            color="cyan"
+            style={{}}
+          >
+            <div
+              className="absolute h-[3px] bg-gray-300 -bottom-[2.5px] transition-all duration-300"
+              style={{
+                width: tabSelected
+                  ? tabSelected.offsetWidth
+                  : tabInitRef.current
+                  ? tabInitRef.current.offsetWidth
+                  : "",
+                left: tabSelected
+                  ? tabSelected.offsetLeft
+                  : tabInitRef.current
+                  ? tabInitRef.current.offsetLeft
+                  : "",
+                backgroundColor: "#131118",
+              }}
+            ></div>
+            <TabsTrigger
+              //data-[state=active]:border-blue-700 border-b-3 border-white
+              ref={tabInitRef}
+              value="description"
+              className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
+              onClick={(e) => {
+                setTabSelected(e.target);
+              }}
+            >
+              Description
+            </TabsTrigger>
+            <TabsTrigger
+              value="additional-information"
+              className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
+              onClick={(e) => {
+                setTabSelected(e.target);
+              }}
+            >
+              Additional Information
+            </TabsTrigger>
+            <TabsTrigger
+              value="reviews"
+              className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
+              onClick={(e) => {
+                setTabSelected(e.target);
+              }}
+            >
+              Reviews
+            </TabsTrigger>
+          </TabsList>
+          <div className="min-h-25">
+            <TabsContent value="description">
+              <div className="w-full h-full py-5 text-sm tracking-wider">
+                {productDetail ? productDetail.content : "No description"}
+              </div>
+            </TabsContent>
+            <TabsContent value="additional-information">
+              {productDetail?.productType === "variations" ? (
+                <div className="w-full h-full py-5 flex flex-col gap-2 border-b-2">
+                  {renderSubproducts(variations || [], true)}
+                </div>
+              ) : (
+                <div className="w-full h-full py-5 flex flex-col gap-2 text-sm tracking-wider">
+                  {productDetail?.shortDescription || "No more information"}
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="reviews">this is the reviews</TabsContent>
+          </div>
+        </Tabs>
+      </div>
+      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+        <div className="w-full h-full">
+          <HeadContent title="Related Products" left={<></>} />
+          <div className="flex flex-wrap gap-6 w-full">
+            {relatedProducts.map((item) => (
+              <CardProduct key={item._id} item={item} />
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="container xl:px-4 py-10 mx-auto px-2 md:px-0 w-full">
+        <Shipping />
+      </section>
     </div>
   );
 };

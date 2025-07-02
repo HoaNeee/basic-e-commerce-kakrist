@@ -24,7 +24,7 @@ export interface ProductModel {
     max: number;
   };
   supplierName: string;
-  discountedPrice?: number | string;
+  discountedPrice?: number;
 }
 
 export interface SubProductModel {
@@ -35,7 +35,7 @@ export interface SubProductModel {
   thumbnail?: string | any | File;
   stock?: number | string;
   SKU?: string;
-  discountedPrice?: string | number;
+  discountedPrice?: number;
   key_combi?: string;
   sub_product_id?: string;
 }
