@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { OptionsInfo } from "./productModel";
+
 export interface VariationModel {
   _id: string;
   title: string;
@@ -7,11 +9,7 @@ export interface VariationModel {
   description: string;
   createdAt: string;
   updatedAt: string;
-  options: {
-    value: string;
-    title: string;
-    variation_id: string;
-  }[];
+  options: OptionsInfo[];
   __v: number;
 }
 

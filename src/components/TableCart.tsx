@@ -32,20 +32,37 @@ import { GoPlus, GoTrash } from "react-icons/go";
 import { AiOutlineMinus } from "react-icons/ai";
 import DialogConfirm from "./dialog/DialogConfirm";
 import { VND } from "@/utils/formatCurrency";
-import { changeQuantity, removeCartItem } from "@/redux/reducer/cartReducer";
+import {
+  changeQuantity,
+  changeSubProduct,
+  removeCartItem,
+} from "@/redux/reducer/cartReducer";
 import { toast } from "sonner";
 import { del, patch } from "@/utils/requets";
 import lodash from "lodash";
+import { BiTransferAlt } from "react-icons/bi";
+import DialogChangeOption from "./dialog/DialogChangeOption";
 
 interface Props {
   selection: any;
   setSelection: any;
 }
 
-export function TableDemo(props: Props) {
+export function TableCart(props: Props) {
   const { selection, setSelection } = props;
 
+  const [itemSelected, setItemSelected] = React.useState<CartModel>();
+  const [openDialogChangeOption, setOpenDialogChangeOption] =
+    React.useState(false);
+
+  React.useEffect(() => {
+    if (!openDialogChangeOption && itemSelected) {
+      setItemSelected(undefined);
+    }
+  }, [openDialogChangeOption]);
+
   const cart = useSelector((state: RootState) => state.cart.cart);
+
   const quantityRef = React.useRef(0);
 
   const dispatch = useDispatch();
@@ -60,9 +77,6 @@ export function TableDemo(props: Props) {
       console.log(error);
     }
     quantityRef.current = 0;
-
-    // console.log(quantity);
-    // console.log(cart.carts);
   };
 
   const debounceChangeQuantity = React.useRef(
@@ -142,9 +156,7 @@ export function TableDemo(props: Props) {
           item.discountedPrice !== undefined
         ) {
           return (
-            <div className="lowercase">
-              {VND.format(row.getValue("discountedPrice"))}
-            </div>
+            <div className="lowercase">{VND.format(item.discountedPrice)}</div>
           );
         }
         return (
@@ -226,7 +238,21 @@ export function TableDemo(props: Props) {
         const items = row.original;
 
         return (
-          <div className="">
+          <div className="flex items-center gap-4 justify-evenly">
+            {items.productType === "variations" ? (
+              <BiTransferAlt
+                size={20}
+                className="cursor-pointer"
+                title="Change other options"
+                onClick={() => {
+                  setItemSelected(items);
+                  setOpenDialogChangeOption(true);
+                }}
+              />
+            ) : (
+              <div></div>
+            )}
+
             <DialogConfirm
               onConfirm={async () => {
                 await del("/cart/delete", items.cartItem_id || "");
@@ -241,7 +267,7 @@ export function TableDemo(props: Props) {
                 });
               }}
             >
-              <GoTrash size={18} color="red" />
+              <GoTrash size={18} color="red" className="cursor-pointer" />
             </DialogConfirm>
           </div>
         );
@@ -264,67 +290,93 @@ export function TableDemo(props: Props) {
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+    <>
+      <div className="w-full">
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <div className="text-muted-foreground flex-1 text-sm">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+        </div>
+        <div className="">
+          <TableContainer className="max-h-109 overflow-y-auto">
+            <Table className="relative">
+              <TableHeader className="sticky top-0 left-0 bg-white z-20">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className="py-5">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-muted"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
-      <div className="">
-        <TableContainer className="max-h-109 overflow-y-auto">
-          <Table className="relative">
-            <TableHeader className="sticky top-0 left-0 bg-white z-20">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className="py-5">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-muted"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-    </div>
+      {
+        <DialogChangeOption
+          open={openDialogChangeOption}
+          setOpen={setOpenDialogChangeOption}
+          items={itemSelected}
+          onOK={(value) => {
+            if (value) {
+              dispatch(
+                changeSubProduct({
+                  cartItem_id: itemSelected?.cartItem_id,
+                  subProduct: value,
+                })
+              );
+              setOpenDialogChangeOption(false);
+              setItemSelected(undefined);
+            }
+          }}
+          onCancel={() => {
+            setOpenDialogChangeOption(false);
+            setItemSelected(undefined);
+          }}
+          carts={cart.carts}
+        />
+      }
+    </>
   );
 }

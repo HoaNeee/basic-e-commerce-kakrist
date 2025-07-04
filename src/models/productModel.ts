@@ -40,6 +40,16 @@ export interface SubProductModel {
   sub_product_id?: string;
 }
 
+export interface OptionsInfo {
+  title: string;
+  value: string;
+  variation_id?: string;
+}
+
+export interface SubProductDetail extends SubProductModel {
+  options_info?: OptionsInfo[];
+}
+
 export interface SubProductOptionModel {
   sub_product_id: string;
   variation_option_id: string;

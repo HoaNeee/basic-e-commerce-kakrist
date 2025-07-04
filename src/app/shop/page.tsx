@@ -1,4 +1,4 @@
-import { StepperDemo } from "@/components/StepDemo";
+import { StepperDemo } from "@/components/TransactionSteps";
 import React from "react";
 
 const Shop = () => {

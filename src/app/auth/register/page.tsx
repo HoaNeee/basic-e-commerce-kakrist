@@ -202,7 +202,7 @@ const Register = () => {
                   visibility: isLoading ? "visible" : undefined,
                 }}
               >
-                <LoadingComponent />
+                <LoadingComponent size={30} />
               </div>
               {
                 <p

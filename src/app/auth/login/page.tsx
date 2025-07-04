@@ -167,7 +167,7 @@ const Login = () => {
                   visibility: isLoading ? "visible" : undefined,
                 }}
               >
-                <LoadingComponent />
+                <LoadingComponent size={50} />
               </div>
               {
                 <p
@@ -194,7 +194,6 @@ const Login = () => {
                 </Link>
               </p>
             </div>
-            <Link href={"/"}>home</Link>
           </form>
         </Form>
       </div>

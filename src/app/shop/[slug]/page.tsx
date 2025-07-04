@@ -13,7 +13,12 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { ProductModel, SubProductModel } from "@/models/productModel";
+import {
+  OptionsInfo,
+  ProductModel,
+  SubProductDetail,
+  SubProductModel,
+} from "@/models/productModel";
 import { get, post } from "@/utils/requets";
 import { Badge } from "@/components/ui/badge";
 import IMAGENOTFOUND from "../../../assets/imagenotfound.png";
@@ -39,16 +44,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-
-interface OptionsInfo {
-  title: string;
-  value: string;
-  variation_id: string;
-}
-
-interface SubProductDetail extends SubProductModel {
-  options_info?: OptionsInfo[];
-}
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -187,6 +182,7 @@ const ProductDetail = () => {
           quantity: count,
           productType: "variations",
           title: productDetail.title,
+          slug: productDetail.slug,
         };
 
         const response = await post(`/cart/add-product/${cart.cart_id}`, item);
@@ -208,6 +204,7 @@ const ProductDetail = () => {
           quantity: count,
           productType: "simple",
           title: productDetail?.title,
+          slug: productDetail?.slug,
         };
         const response = await post(`/cart/add-product/${cart.cart_id}`, item);
 

@@ -2,19 +2,25 @@
 "use client";
 
 import HeadContent from "@/components/HeadContent";
-import { TableDemo } from "@/components/TableDemo";
+import { TableCart } from "@/components/TableCart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CartModel } from "@/models/cartModel";
+import { addCartCheckout } from "@/redux/reducer/cartReducer";
 import { RootState } from "@/redux/store";
+import { VND } from "@/utils/formatCurrency";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Cart = () => {
   const [rowSelection, setRowSelection] = useState<any>({});
   const [dataSelected, setDataSelected] = useState<CartModel[]>([]);
 
   const cart = useSelector((state: RootState) => state.cart.cart);
+
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (rowSelection) {
@@ -26,7 +32,7 @@ const Cart = () => {
       }
       setDataSelected(items);
     }
-  }, [rowSelection]);
+  }, [rowSelection, cart.carts]);
 
   return (
     <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
@@ -40,7 +46,7 @@ const Cart = () => {
         />
         <div className="flex pb-6 gap-4">
           <div className="w-3/4">
-            <TableDemo
+            <TableCart
               selection={rowSelection}
               setSelection={setRowSelection}
             />
@@ -49,13 +55,27 @@ const Cart = () => {
             <Card>
               <CardHeader className="flex justify-between items-center font-bold">
                 <p>Subtotal</p>
-                <p>$200.00</p>
+                <p>
+                  {VND.format(
+                    dataSelected.reduce(
+                      (val, item) =>
+                        val +
+                        item.quantity *
+                          (item.discountedPrice !== undefined &&
+                          item.discountedPrice !== null
+                            ? item.discountedPrice
+                            : item.price),
+                      0
+                    )
+                  )}
+                </p>
               </CardHeader>
               <CardContent>
                 <Button
                   className="w-full py-6"
                   onClick={() => {
-                    console.log(dataSelected);
+                    dispatch(addCartCheckout(dataSelected));
+                    router.push("/cart/checkout");
                   }}
                 >
                   Checkout
