@@ -45,6 +45,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 
+import RatingTab from "@/components/ReviewTab";
+import { ReviewModel } from "@/models/reviewModel";
+
 const ProductDetail = () => {
   const { slug } = useParams();
 
@@ -57,6 +60,7 @@ const ProductDetail = () => {
   const [optionsChoosed, setOptionsChoosed] = useState<OptionsInfo[]>([]);
   const [count, setCount] = useState(1);
   const [tabSelected, setTabSelected] = useState<any>();
+  const [reviews, setReviews] = useState<ReviewModel[]>([]);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -107,9 +111,13 @@ const ProductDetail = () => {
   const getProductDetail = async () => {
     try {
       const response = await get(`/products/detail/${slug}`);
-      setThumbnail(response.data.product.thumbnail);
-      setProductDetail(response.data.product);
-      if (response.data.product.productType === "variations") {
+
+      const product: ProductModel = response.data.product;
+
+      setThumbnail(product.thumbnail);
+      setProductDetail(product);
+      await getReviews(product._id);
+      if (product.productType === "variations") {
         setVariations(response.data.variations);
 
         const subProducts = response.data.subProducts.map(
@@ -127,6 +135,15 @@ const ProductDetail = () => {
 
         setSubProducts(subProducts);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getReviews = async (product_id: string) => {
+    try {
+      const response = await get(`/reviews?product_id=${product_id}`);
+      setReviews(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -530,7 +547,7 @@ const ProductDetail = () => {
         </div>
       </div>
       <div className="py-10">
-        <Tabs defaultValue="description">
+        <Tabs defaultValue="reviews">
           <TabsList
             className="flex gap-5 items-center border-b-2 w-full relative pb-2 transition-all duration-300"
             color="cyan"
@@ -554,7 +571,7 @@ const ProductDetail = () => {
             ></div>
             <TabsTrigger
               //data-[state=active]:border-blue-700 border-b-3 border-white
-              ref={tabInitRef}
+
               value="description"
               className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
               onClick={(e) => {
@@ -573,6 +590,7 @@ const ProductDetail = () => {
               Additional Information
             </TabsTrigger>
             <TabsTrigger
+              ref={tabInitRef}
               value="reviews"
               className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
               onClick={(e) => {
@@ -599,7 +617,15 @@ const ProductDetail = () => {
                 </div>
               )}
             </TabsContent>
-            <TabsContent value="reviews">this is the reviews</TabsContent>
+            <TabsContent value="reviews">
+              <RatingTab
+                product={productDetail}
+                reviews={reviews}
+                onAddNewReview={(val) => {
+                  setReviews([...reviews, val]);
+                }}
+              />
+            </TabsContent>
           </div>
         </Tabs>
       </div>

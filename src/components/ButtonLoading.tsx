@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ReactNode } from "react";
 import { Button } from "./ui/button";
-import LoadingComponent from "./LoadingComponent";
+import { Spinner } from "./ui/spinner";
+import { cn } from "@/lib/utils";
 
 interface Props {
   loading?: boolean;
@@ -9,15 +10,19 @@ interface Props {
   children: ReactNode | string;
   onClick: any;
   styles?: React.CSSProperties | undefined;
+  className?: string;
 }
 
 const ButtonLoading = (props: Props) => {
-  const { loading, disabled, children, onClick, styles } = props;
+  const { loading, disabled, children, onClick, styles, className } = props;
   return (
     <Button
       disabled={loading || disabled}
       type="submit"
-      className="transition-all duration-400 flex items-center justify-center relative"
+      className={cn(
+        "transition-all duration-400 flex items-center justify-center relative",
+        className
+      )}
       onClick={onClick}
       style={styles}
     >
@@ -28,7 +33,7 @@ const ButtonLoading = (props: Props) => {
           visibility: loading ? "visible" : undefined,
         }}
       >
-        <LoadingComponent />
+        <Spinner />
       </div>
       {
         <p

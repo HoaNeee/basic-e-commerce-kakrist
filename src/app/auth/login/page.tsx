@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import LoadingComponent from "@/components/LoadingComponent";
 import LOGO from "../../../assets/logo.png";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,6 +26,7 @@ import { useDispatch } from "react-redux";
 import { addAuth } from "@/redux/reducer/authReducer";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   email: z
@@ -167,7 +167,7 @@ const Login = () => {
                   visibility: isLoading ? "visible" : undefined,
                 }}
               >
-                <LoadingComponent size={50} />
+                <Spinner size={40} />
               </div>
               {
                 <p

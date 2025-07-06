@@ -17,13 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import LoadingComponent from "@/components/LoadingComponent";
 import LOGO from "../../../assets/logo.png";
 import Image from "next/image";
 import { post } from "@/utils/requets";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   firstName: z.any(),
@@ -202,7 +202,7 @@ const Register = () => {
                   visibility: isLoading ? "visible" : undefined,
                 }}
               >
-                <LoadingComponent size={30} />
+                <Spinner size={40} />
               </div>
               {
                 <p

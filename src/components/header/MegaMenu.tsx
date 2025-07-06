@@ -13,7 +13,7 @@ const MegaMenu = (props: Props) => {
     return (
       <ul
         key={item.title}
-        className="flex flex-col gap-1 text-sm leading-none font-medium"
+        className="inline-flex flex-col gap-1 text-sm leading-none font-medium h-max"
         style={{}}
       >
         <li
@@ -33,6 +33,7 @@ const MegaMenu = (props: Props) => {
     );
   };
 
+  //sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
   return categories && categories.length > 0 ? (
     <ul className="grid w-[400px] gap-2 md:w-[500px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:w-[800px] px-4 py-2">
       {categories?.map((component) =>

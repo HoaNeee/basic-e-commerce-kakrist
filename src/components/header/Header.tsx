@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
@@ -128,7 +129,11 @@ const Header = () => {
                                       {item.title}
                                     </p>
                                     <p className="font-bold text-base">
-                                      {item.quantity} x {VND.format(item.price)}
+                                      {item.quantity} x{" "}
+                                      {item.discountedPrice !== null &&
+                                      item.discountedPrice !== undefined
+                                        ? VND.format(item.discountedPrice)
+                                        : VND.format(item.price)}
                                     </p>
                                     {item.productType === "variations" ? (
                                       <p>
@@ -144,22 +149,26 @@ const Header = () => {
                                   <div className="absolute bottom-4 right-0">
                                     <DialogConfirm
                                       onConfirm={async () => {
-                                        await del(
-                                          "/cart/delete",
-                                          item.cartItem_id || ""
-                                        );
-                                        toast.success("Success", {
-                                          description:
-                                            "This item was be remove",
-                                          action: {
-                                            label: "Close",
-                                            onClick: () => {},
-                                          },
-                                          duration: 1000,
-                                        });
-                                        dispatch(
-                                          removeCartItem(item.cartItem_id)
-                                        );
+                                        try {
+                                          await del(
+                                            "/cart/delete",
+                                            item.cartItem_id || ""
+                                          );
+                                          toast.success("Success", {
+                                            description:
+                                              "This item was be remove",
+                                            action: {
+                                              label: "Close",
+                                              onClick: () => {},
+                                            },
+                                            duration: 1000,
+                                          });
+                                          dispatch(
+                                            removeCartItem(item.cartItem_id)
+                                          );
+                                        } catch (error: any) {
+                                          toast.error(error.message);
+                                        }
                                       }}
                                     >
                                       <GoTrash
@@ -185,7 +194,12 @@ const Header = () => {
                               {VND.format(
                                 cart.carts.reduce(
                                   (val, item) =>
-                                    val + item.quantity * item.price,
+                                    val +
+                                    item.quantity *
+                                      (item.discountedPrice !== undefined &&
+                                      item.discountedPrice !== null
+                                        ? item.discountedPrice
+                                        : item.price),
                                   0
                                 )
                               )}
