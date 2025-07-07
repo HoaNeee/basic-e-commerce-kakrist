@@ -9,6 +9,7 @@ export interface ReviewModel {
   createdAt: string;
   updatedAt: string;
   countComment?: number;
+  images: string[];
   user?: {
     lastName: string;
     firstName: string;

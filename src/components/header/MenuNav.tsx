@@ -27,7 +27,6 @@ export function MenuNav() {
   const getCategories = async () => {
     try {
       const response = await get("/categories");
-
       setCategories(createTree(response.data, "", "_id"));
     } catch (error) {
       console.log(error);
@@ -45,7 +44,9 @@ export function MenuNav() {
         </NavigationMenuItem>
         <NavigationMenuItem className="">
           <NavigationMenuTrigger className="lg:text-[16px] text-sm">
-            Shop
+            <NavigationMenuLink asChild>
+              <Link href={"/shop"}>Shop</Link>
+            </NavigationMenuLink>
           </NavigationMenuTrigger>
           <NavigationMenuContent
             className="-left-40 lg:-left-60 z-999"

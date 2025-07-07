@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import FileResizer from "react-image-file-resizer";
+
 export const BASE_URL = `http://localhost:3001`;
 const API_URL = `${BASE_URL}`;
 
@@ -126,3 +128,51 @@ export const postImage = async (
     throw new Error(error.message || error);
   }
 };
+
+export const postImageMulti = async (
+  key: string,
+  options: any,
+  token?: string
+) => {
+  const myHeaders = new Headers();
+  // myHeaders.append("Content-Type", "multipart/form-data");
+  if (token) {
+    myHeaders.append("Authorization", `Bearer ${token}`);
+  }
+  const formdata = new FormData();
+  for (const file of options) {
+    const newFile: any = await resizeFile(file);
+    formdata.append(`${key}`, newFile);
+  }
+  try {
+    const response = await fetch(`${API_URL}/upload/multi`, {
+      credentials: "include",
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+    });
+    const result = await response.json();
+    if (result.code > 300) {
+      throw Error(result.message);
+    }
+    return result;
+  } catch (error: any) {
+    throw new Error(error.message || error);
+  }
+};
+
+const resizeFile = (file: any) =>
+  new Promise((resolve) => {
+    FileResizer.imageFileResizer(
+      file,
+      1024,
+      720,
+      "JPEG",
+      80,
+      0,
+      (uri) => {
+        resolve(uri);
+      },
+      "file"
+    );
+  });

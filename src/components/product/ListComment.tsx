@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import { get, post } from "@/utils/requets";
+import { del, get, post } from "@/utils/requets";
 import { CommentModel } from "@/models/reviewModel";
-import { Input } from "../ui/input";
 import { toast } from "sonner";
 import ItemListComment from "./ItemListComment";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface Props {
   parent_id?: string;
@@ -21,8 +20,10 @@ const ListComment = (props: Props) => {
   const [comments, setComments] = useState<CommentModel[]>([]);
   const [idsShowComment, setIdsShowComment] = useState<string[]>(); //comment_id
   const [idShowReply, setIdShowReply] = useState(""); //comment_id
-  const [contentReply, setContentReply] = useState("");
   const [commentAddedChild, setcommentAddedChild] = useState<CommentModel>();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const auth = useSelector((state: RootState) => state.auth.auth);
 
   useEffect(() => {
     getComments(review_id || "", parent_id);
@@ -48,19 +49,18 @@ const ListComment = (props: Props) => {
   const handleSubmitComment = async (
     parent_id: string,
     product_id: string,
-    review_id: string
+    review_id: string,
+    content: string
   ) => {
     try {
       const response = await post("/reviews/create-comment", {
-        content: contentReply,
+        content: content,
         review_id: review_id,
         parent_id: parent_id,
         product_id: product_id,
       });
 
       const comment: CommentModel = response?.data;
-
-      setContentReply("");
 
       toast.success("Posted", {
         action: {
@@ -77,9 +77,35 @@ const ListComment = (props: Props) => {
         return;
       }
 
-      setcommentAddedChild(comment);
+      setcommentAddedChild({
+        ...comment,
+        user: {
+          firstName: auth.firstName,
+          lastName: auth.lastName,
+          avatar: auth.avatar,
+        },
+      });
     } catch (error: any) {
       toast.error(error.message);
+    }
+  };
+
+  const handleDeleteComment = async (item: CommentModel) => {
+    setIsDeleting(true);
+    try {
+      const response = await del("/reviews/delete-comment", item._id);
+      toast.success(response.message, {
+        description: "That comment was be remove",
+        action: {
+          label: "Close",
+          onClick() {},
+        },
+      });
+      setComments(comments.filter((comment) => comment._id !== item._id));
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -91,7 +117,14 @@ const ListComment = (props: Props) => {
             <ItemListComment
               isComment
               item={item}
-              onSubmit={async () => {}}
+              onSubmit={async (val: string) => {
+                await handleSubmitComment(
+                  item._id,
+                  item.product_id,
+                  item.review_id,
+                  val
+                );
+              }}
               commentAdded={commentAddedChild}
               idShowReply={idShowReply}
               idsShowComment={idsShowComment}
@@ -113,146 +146,13 @@ const ListComment = (props: Props) => {
               onShowReply={() => setIdShowReply(item._id)}
               parent_id={item._id}
               review_id={review_id}
+              isUser={auth.user_id === item.user_id}
+              onDelete={(val) => {
+                handleDeleteComment(val);
+              }}
+              loading={isDeleting}
             />
           </div>
-          //   <div className="flex gap-2">
-          //     <Avatar className="border border-neutral-200">
-          //       <AvatarImage
-          //         src={
-          //           item.user?.avatar ??
-          //           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRadJ-YmNxJTg6v9iO22fzR_65KenYJHFB5zg&s"
-          //         }
-          //         alt="avatar"
-          //         className=""
-          //       />
-          //       <AvatarFallback>CN</AvatarFallback>
-          //     </Avatar>
-          //     <p className="text-sm">
-          //       {item.user?.firstName} {item.user?.lastName}
-          //     </p>
-          //   </div>
-          //   <div className="mt-3 ml-2">
-          //     <p className="text-sm tracking-wider">{item.content}</p>
-          //     <div className="text-xs tracking-wider text-muted-foreground flex items-center">
-          //       <p>
-          //         Posted on{" "}
-          //         <span className="text-black font-medium">
-          //           {new Date(item.createdAt).toLocaleDateString()}
-          //         </span>
-          //       </p>
-
-          //       <div className="h-full text-muted-foreground mx-1">|</div>
-          //       <Button
-          //         size={"sm"}
-          //         className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black"
-          //         variant={"link"}
-          //         onClick={() => {
-          //           setIdShowReply(item._id);
-          //         }}
-          //       >
-          //         Reply
-          //       </Button>
-          //       {item?.countComment && item.countComment > 0 ? (
-          //         <>
-          //           <div className="h-full text-muted-foreground mx-1">|</div>
-          //           {!idsShowComment?.includes(item._id) ? (
-          //             <Button
-          //               size={"sm"}
-          //               className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black"
-          //               variant={"link"}
-          //               onClick={() => {
-          //                 const ids = [...(idsShowComment || [])];
-          //                 if (!ids?.includes(item._id)) {
-          //                   ids?.push(item._id);
-          //                 }
-          //                 setIdsShowComment(ids);
-          //               }}
-          //             >
-          //               <p>Show {item.countComment} comment</p>
-          //             </Button>
-          //           ) : (
-          //             <Button
-          //               size={"sm"}
-          //               className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black"
-          //               variant={"link"}
-          //               onClick={() => {
-          //                 if (idsShowComment?.includes(item._id)) {
-          //                   setIdsShowComment(
-          //                     idsShowComment.filter((it) => it !== item._id)
-          //                   );
-          //                 }
-          //               }}
-          //             >
-          //               <p>Hide {item.countComment} comment</p>
-          //             </Button>
-          //           )}
-          //         </>
-          //       ) : (
-          //         <></>
-          //       )}
-          //     </div>
-          //   </div>
-
-          //   {idShowReply === item._id && (
-          //     <div className="flex gap-2 flex-col">
-          //       <Input
-          //         id={"reply-" + item._id}
-          //         className="w-1/2"
-          //         placeholder="replying @name"
-          //         value={contentReply}
-          //         onChange={(e) => setContentReply(e.target.value)}
-          //         onKeyUp={async (e) => {
-          //           if (e.code === "Enter") {
-          //             if (contentReply) {
-          //               await handleSubmitComment(
-          //                 item._id,
-          //                 item.product_id,
-          //                 item.review_id
-          //               );
-          //             }
-          //           }
-          //         }}
-          //       />
-          //       <div className="text-sm flex items-center gap-2">
-          //         <Button
-          //           variant={"outline"}
-          //           size={"sm"}
-          //           onClick={() => {
-          //             if (contentReply) {
-          //               setContentReply("");
-          //             }
-          //             setIdShowReply("");
-          //           }}
-          //         >
-          //           Cancel
-          //         </Button>
-          //         <Button
-          //           variant={"default"}
-          //           size={"sm"}
-          //           onClick={async () => {
-          //             if (contentReply) {
-          //               await handleSubmitComment(
-          //                 item._id,
-          //                 item.product_id,
-          //                 item.review_id
-          //               );
-          //             }
-          //           }}
-          //         >
-          //           Submit
-          //         </Button>
-          //       </div>
-          //     </div>
-          //   )}
-
-          //   {idsShowComment?.includes(item._id) && (
-          //     <ListComment
-          //       parent_id={item._id}
-          //       review_id={review_id}
-          //       commentAdded={commentAddedChild}
-          //     />
-          //   )}
-          // </div>
         ))}
     </div>
   );

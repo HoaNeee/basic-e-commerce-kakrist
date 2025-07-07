@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CategoryModel } from "@/models/categoryModel";
+import Link from "next/link";
 import React from "react";
+import { NavigationMenuLink } from "../ui/navigation-menu";
 
 interface Props {
   categories?: CategoryModel[];
@@ -14,9 +16,8 @@ const MegaMenu = (props: Props) => {
       <ul
         key={item.title}
         className="inline-flex flex-col gap-1 text-sm leading-none font-medium h-max"
-        style={{}}
       >
-        <li
+        <NavigationMenuLink
           className={`hover:bg-gray-100 p-1.5 cursor-pointer rounded-lg block`}
           style={{
             fontWeight:
@@ -24,9 +25,15 @@ const MegaMenu = (props: Props) => {
             padding:
               item.children && item.children.length > 0 ? "9px 6px" : undefined,
           }}
+          asChild
         >
-          {item.title}
-        </li>
+          <Link
+            href={`/shop?filter_cats=${item._id}`}
+            className="w-full h-full"
+          >
+            {item.title}
+          </Link>
+        </NavigationMenuLink>
         {(item.children || []).length > 0 &&
           item.children?.map((it) => renderItem(it, level + 1))}
       </ul>

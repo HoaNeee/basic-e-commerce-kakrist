@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -7,13 +8,15 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import ListComment from "./ListComment";
 import { CommentModel, ReviewModel } from "@/models/reviewModel";
+import DialogConfirm from "../dialog/DialogConfirm";
+import { Spinner } from "../ui/spinner";
 
 interface Props {
   item: ReviewModel | CommentModel | any;
   onShowReply?: () => void;
   idsShowComment?: string[];
   idShowReply?: string;
-  onSubmit: () => Promise<void>;
+  onSubmit: (content: string) => Promise<void>;
   commentAdded?: CommentModel;
   isComment?: boolean;
   onShowComment?: () => void;
@@ -21,6 +24,9 @@ interface Props {
   onCancelReply?: () => void;
   review_id?: string;
   parent_id?: string;
+  isUser: boolean; //me
+  onDelete?: (val: any) => void;
+  loading?: boolean;
 }
 
 const ItemListComment = (props: Props) => {
@@ -37,13 +43,16 @@ const ItemListComment = (props: Props) => {
     onCancelReply,
     review_id,
     parent_id,
+    isUser,
+    onDelete,
+    loading,
   } = props;
 
   const [contentReply, setContentReply] = useState("");
 
   return (
-    <div className="w-full space-y-2 border-b-2 border-muted pb-2 transition-all duration-300">
-      <div className="flex items-center gap-3">
+    <div className="w-full">
+      <div className={`flex gap-3 ${isComment ? "" : "items-center"}`}>
         <Avatar>
           <AvatarImage
             src={
@@ -71,7 +80,7 @@ const ItemListComment = (props: Props) => {
                     size={18}
                     className={
                       index <= item.star - 1
-                        ? "text-yellow-500"
+                        ? "text-yellow-500 "
                         : "text-muted-foreground"
                     }
                     //var(--muted-foreground)
@@ -84,12 +93,39 @@ const ItemListComment = (props: Props) => {
           )}
         </div>
       </div>
-      <div className="space-y-1">
+      <div
+        className="space-y-1 my-1"
+        style={{
+          marginTop: isComment ? "8px" : "",
+          marginLeft: isComment ? "8px" : "",
+        }}
+      >
         <p className="font-bold">{item.title}</p>
-        <p className="tracking-wider text-sm">{item.content}</p>
+        <p className="tracking-wider text-sm">
+          {item.content ||
+            (isComment && (
+              <span className="text-neutral-300">This comment no content!</span>
+            ))}
+        </p>
       </div>
+      {!isComment && item?.images && item.images.length > 0 && (
+        <div className="my-2 flex gap-1 flex-wrap">
+          {item.images.map((url: string) => {
+            return (
+              <div key={url} className="w-30 h-40">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+              </div>
+            );
+          })}
+        </div>
+      )}
       <div>
-        <div className="text-xs tracking-wider text-muted-foreground flex items-center">
+        <div
+          className="text-xs tracking-wider text-muted-foreground flex items-center"
+          style={{
+            marginLeft: isComment ? "8px" : "",
+          }}
+        >
           <p>
             Posted on{" "}
             <span className="text-black font-medium">
@@ -106,6 +142,45 @@ const ItemListComment = (props: Props) => {
           >
             Reply
           </Button>
+
+          {isUser && (
+            <>
+              <div className="h-full text-muted-foreground mx-1">|</div>
+              <DialogConfirm
+                onConfirm={() => {
+                  if (onDelete) {
+                    onDelete(item);
+                  }
+                }}
+              >
+                <Button
+                  size={"sm"}
+                  className="text-xs tracking-wider p-0 text-muted-foreground hover:text-red-500 flex relative"
+                  variant={"link"}
+                  title="Delete this comment"
+                  disabled={loading}
+                >
+                  <p
+                    className=""
+                    style={{
+                      opacity: loading ? "0.2" : "1",
+                    }}
+                  >
+                    Delete
+                  </p>
+                  <div
+                    className="absolute w-full transition-all duration-300 h-full left-0 items-center flex justify-center"
+                    style={{
+                      opacity: loading ? "1" : "0",
+                      visibility: loading ? "visible" : "hidden",
+                    }}
+                  >
+                    <Spinner />
+                  </div>
+                </Button>
+              </DialogConfirm>
+            </>
+          )}
 
           {item?.countComment && item.countComment > 0 ? (
             <>
@@ -139,13 +214,14 @@ const ItemListComment = (props: Props) => {
             <Input
               id={"reply-" + item._id}
               className="w-1/2"
-              placeholder="replying @name"
+              placeholder={`replying @${item?.user?.firstName} ${item?.user?.lastName}`}
               value={contentReply}
               onChange={(e) => setContentReply(e.target.value)}
               onKeyUp={async (e) => {
                 if (e.code === "Enter") {
                   if (contentReply) {
-                    await onSubmit();
+                    await onSubmit(contentReply);
+                    setContentReply("");
                   }
                 }
               }}
@@ -159,7 +235,8 @@ const ItemListComment = (props: Props) => {
                 size={"sm"}
                 onClick={async () => {
                   if (contentReply) {
-                    await onSubmit();
+                    await onSubmit(contentReply);
+                    setContentReply("");
                   }
                 }}
               >

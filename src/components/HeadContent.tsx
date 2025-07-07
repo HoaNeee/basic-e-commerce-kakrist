@@ -17,7 +17,7 @@ const HeadContent = (props: Props) => {
         ...styles,
       }}
     >
-      <h3 className="md:text-3xl lg:text-4xl text-xl font-medium">
+      <h3 className="md:text-2xl lg:text-3xl text-xl font-medium">
         {title || "Head Title"}
       </h3>
       {left || undefined}

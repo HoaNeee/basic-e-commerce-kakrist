@@ -25,6 +25,10 @@ export interface ProductModel {
   };
   supplierName: string;
   discountedPrice?: number;
+  review?: {
+    numberPeople: number;
+    average: number;
+  };
 }
 
 export interface SubProductModel {

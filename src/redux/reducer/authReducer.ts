@@ -4,6 +4,7 @@ export interface AuthState {
   user_id: string;
   firstName: string;
   lastName: string;
+  avatar: string;
   accessToken: string;
   isLogin: boolean;
 }
@@ -13,6 +14,7 @@ const initialState: AuthState = {
   firstName: "",
   lastName: "",
   accessToken: "",
+  avatar: "",
   isLogin: false,
 };
 

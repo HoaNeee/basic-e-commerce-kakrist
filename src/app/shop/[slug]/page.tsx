@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { FaStar } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import { AiOutlineMinus } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
@@ -44,9 +43,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-
 import RatingTab from "@/components/ReviewTab";
 import { ReviewModel } from "@/models/reviewModel";
+import { Rating, RatingButton } from "@/components/ui/rating";
+import { StarIcon } from "lucide-react";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -61,6 +61,9 @@ const ProductDetail = () => {
   const [count, setCount] = useState(1);
   const [tabSelected, setTabSelected] = useState<any>();
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalReviews, setTotalReviews] = useState(0);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -73,7 +76,6 @@ const ProductDetail = () => {
   useEffect(() => {
     if (slug) {
       getProductDetail();
-      getRelatedProducts();
     }
   }, [slug]);
 
@@ -108,6 +110,19 @@ const ProductDetail = () => {
     }
   }, [optionsChoosed]);
 
+  useEffect(() => {
+    if (productDetail) {
+      getReviews(productDetail._id);
+      getRelatedProducts();
+    }
+  }, [productDetail]);
+
+  useEffect(() => {
+    if (page !== 1 && productDetail) {
+      showMoreReviews(productDetail._id, page);
+    }
+  }, [page]);
+
   const getProductDetail = async () => {
     try {
       const response = await get(`/products/detail/${slug}`);
@@ -116,7 +131,7 @@ const ProductDetail = () => {
 
       setThumbnail(product.thumbnail);
       setProductDetail(product);
-      await getReviews(product._id);
+
       if (product.productType === "variations") {
         setVariations(response.data.variations);
 
@@ -142,10 +157,27 @@ const ProductDetail = () => {
 
   const getReviews = async (product_id: string) => {
     try {
-      const response = await get(`/reviews?product_id=${product_id}`);
-      setReviews(response.data);
+      const response = await get(
+        `/reviews?product_id=${product_id}&limit=3&page=1`
+      );
+      setReviews(response.data.reviews);
+      setTotalReviews(response.data.totalRecord);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const showMoreReviews = async (product_id: string, page = 1) => {
+    try {
+      setIsLoading(true);
+      const response = await get(
+        `/reviews?product_id=${product_id}&limit=3&page=${page}`
+      );
+      setReviews([...reviews, ...response.data.reviews]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -431,13 +463,42 @@ const ProductDetail = () => {
             <p className="text-2xl font-black">{productDetail?.supplierName}</p>
             <p className="font-medium">{productDetail?.title}</p>
             <div className="flex items-center gap-2">
-              <div className="flex gap-2 text-yellow-500 items-center">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <FaStar key={index} size={20} />
+              <Rating
+                className="mt-1"
+                readOnly
+                defaultValue={productDetail?.review?.average}
+              >
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <RatingButton
+                    key={idx}
+                    size={20}
+                    className={
+                      idx < (productDetail?.review?.average || 0)
+                        ? "text-yellow-500 fill-current"
+                        : "text-muted-foreground"
+                    }
+                    icon={
+                      <StarIcon
+                        strokeWidth={1}
+                        fill={
+                          idx < (productDetail?.review?.average || 0)
+                            ? ""
+                            : "white"
+                        }
+                      />
+                    }
+                    index={idx}
+                  />
                 ))}
+              </Rating>
+              <div className="mt-1 flex gap-2 items-center">
+                <p className="text-sm text-neutral-400">
+                  {productDetail?.review?.average || 0}.0
+                </p>
+                <p className="text-sm text-neutral-400">
+                  ({productDetail?.review?.numberPeople || 0} Reviews)
+                </p>
               </div>
-              <p className="text-sm text-neutral-400">5.0</p>
-              <p className="text-sm text-neutral-400">(121 Reviews)</p>
             </div>
             <div className="flex items-center gap-3 my-1">
               {productDetail?.productType === "simple" ? (
@@ -624,6 +685,16 @@ const ProductDetail = () => {
                 onAddNewReview={(val) => {
                   setReviews([...reviews, val]);
                 }}
+                onDeleteReview={(item) => {
+                  setReviews(reviews.filter((rv) => rv._id !== item._id));
+                }}
+                onShowMore={async () => {
+                  if (productDetail) {
+                    setPage(page + 1);
+                  }
+                }}
+                loading={isLoading}
+                disabledShowMore={page >= Math.ceil(totalReviews / 3)}
               />
             </TabsContent>
           </div>

@@ -21,7 +21,7 @@ interface Props {
 const DialogConfirm = (props: Props) => {
   const { children, onConfirm, title, description } = props;
   return (
-    <AlertDialog>
+    <AlertDialog defaultOpen={false}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -35,6 +35,7 @@ const DialogConfirm = (props: Props) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
+
           <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
