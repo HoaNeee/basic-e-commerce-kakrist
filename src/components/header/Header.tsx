@@ -16,7 +16,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { removeAuth } from "@/redux/reducer/authReducer";
 import { del, get, post } from "@/utils/requets";
-import { removeCartItem, syncCart } from "@/redux/reducer/cartReducer";
+import {
+  removeCart,
+  removeCartItem,
+  syncCart,
+} from "@/redux/reducer/cartReducer";
 import { Badge } from "../ui/badge";
 
 import { GoTrash } from "react-icons/go";
@@ -247,6 +251,7 @@ const Header = () => {
                   variant={"default"}
                   onClick={async () => {
                     dispatch(removeAuth());
+                    dispatch(removeCart([]));
                     await post("/auth/logout", {});
                   }}
                 >

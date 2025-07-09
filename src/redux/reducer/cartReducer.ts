@@ -77,6 +77,10 @@ const cartReducer = createSlice({
     addCartCheckout: (state, action) => {
       state.cart.cartsCheckout = action.payload;
     },
+    removeCart: (state, action) => {
+      state.cart.carts = action.payload;
+      state.cart.cartsCheckout = action.payload;
+    },
   },
 });
 
@@ -87,6 +91,7 @@ export const {
   changeQuantity,
   changeSubProduct,
   addCartCheckout,
+  removeCart,
 } = cartReducer.actions;
 
 export default cartReducer.reducer;

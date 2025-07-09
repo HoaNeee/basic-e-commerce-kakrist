@@ -26,6 +26,7 @@ import { CartModel } from "@/models/cartModel";
 import { RootState } from "@/redux/store";
 import { VND } from "@/utils/formatCurrency";
 import { get } from "@/utils/requets";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -41,6 +42,8 @@ const Checkout = () => {
   }>();
   const [grandTotal, setGrandTotal] = useState(0);
   const [isProceed, setIsProceed] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     if (cart) {
@@ -265,20 +268,39 @@ const Checkout = () => {
             </CardContent>
             <CardFooter
               className="py-4 flex flex-col transition-all duration-500 relative"
-              style={{
-                height: isProceed ? "60px" : "120px",
-              }}
+              // style={{
+              //   height: isProceed ? "60px" : "120px",
+              // }}
             >
               <div className="flex justify-between items-center font-bold w-full">
                 <p>Grand Total</p>
                 <p>{VND.format(grandTotal)}</p>
               </div>
-              {!isProceed && (
+              {!isProceed ? (
+                <div className="flex flex-col gap-1.5 w-full">
+                  <Button
+                    className="w-full py-6 mt-4"
+                    onClick={() => setIsProceed(true)}
+                  >
+                    Proceed to Checkout
+                  </Button>
+                  <Button
+                    className="w-full py-6"
+                    onClick={() => {
+                      router.back();
+                    }}
+                    variant={"outline"}
+                  >
+                    Return previous step
+                  </Button>
+                </div>
+              ) : (
                 <Button
                   className="w-full py-6 mt-4"
-                  onClick={() => setIsProceed(true)}
+                  onClick={() => setIsProceed(false)}
+                  variant={"outline"}
                 >
-                  Proceed to Checkout
+                  Cancel proceed
                 </Button>
               )}
             </CardFooter>

@@ -11,14 +11,16 @@ interface Props {
   onClick: any;
   styles?: React.CSSProperties | undefined;
   className?: string;
+  type?: "submit" | "button" | "reset";
 }
 
 const ButtonLoading = (props: Props) => {
-  const { loading, disabled, children, onClick, styles, className } = props;
+  const { loading, disabled, children, onClick, styles, className, type } =
+    props;
   return (
     <Button
       disabled={loading || disabled}
-      type="submit"
+      type={type || "submit"}
       className={cn(
         "transition-all duration-400 flex items-center justify-center relative",
         className

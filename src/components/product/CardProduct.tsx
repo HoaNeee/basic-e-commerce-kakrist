@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { ProductModel } from "@/models/productModel";
@@ -8,15 +9,20 @@ import Link from "next/link";
 import { IoEyeOutline } from "react-icons/io5";
 import { VND } from "@/utils/formatCurrency";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface Props {
   item: ProductModel;
   control?: boolean;
   className?: string;
+  onAddToCart?: (item: ProductModel) => void;
 }
 
-const CardProduct = ({ item, control, className }: Props) => {
+const CardProduct = ({ item, control, className, onAddToCart }: Props) => {
   //lg:w-[calc(100%/4-20px)] w-[calc(100%/2-18px)]
+
+  const router = useRouter();
+
   return (
     <Card
       className={
@@ -65,7 +71,19 @@ const CardProduct = ({ item, control, className }: Props) => {
           </Link>
         </div>
         <div className="w-full absolute bottom-5 -left-full group-hover:left-0 flex justify-center invisible group-hover:visible transition-all duration-300">
-          <Button className="cursor-pointer w-2/3 py-5" variant={"outline"}>
+          <Button
+            className="cursor-pointer w-2/3 py-5"
+            variant={"outline"}
+            onClick={() => {
+              if (item.productType === "variations") {
+                router.replace(`/shop/${item.slug}`);
+              } else {
+                if (onAddToCart) {
+                  onAddToCart(item);
+                }
+              }
+            }}
+          >
             Add to cart
           </Button>
         </div>

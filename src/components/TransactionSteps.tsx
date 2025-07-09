@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./ui/alert-dialog";
+import PaymentMethod from "./PaymentMethod";
 
 const {
   StepperProvider,
@@ -169,7 +170,9 @@ const Content = (props: StepProps) => {
               }}
             />
           </div>
-          <div className="min-w-full bg-black max-h-fit">Payment</div>
+          <div className="min-w-full max-h-fit">
+            <PaymentMethod />
+          </div>
           <div className="min-w-full bg-red-500">Reviews</div>
         </div>
       }

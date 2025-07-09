@@ -108,7 +108,7 @@ const ShippingAddress = (props: Props) => {
     <>
       <div className="w-full">
         <div className="my-6 space-y-2">
-          <p className="font-bold">Select a delivery address</p>
+          <p className="font-bold text-lg">Select a delivery address</p>
           <p className="text-sm tracking-wider">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque
             ratione fuga nulla, ducimus, pariatur expedita explicabo aut
