@@ -28,8 +28,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import Shipping from "@/components/home/Shipping";
-import HeadContent from "@/components/HeadContent";
-import CardProduct from "@/components/product/CardProduct";
 import { addProduct } from "@/redux/reducer/cartReducer";
 import { CartModel } from "@/models/cartModel";
 import { toast } from "sonner";
@@ -46,6 +44,14 @@ import RatingTab from "@/components/ReviewTab";
 import { ReviewModel } from "@/models/reviewModel";
 import { Rating, RatingButton } from "@/components/ui/rating";
 import { StarIcon } from "lucide-react";
+import { FaHeart } from "react-icons/fa";
+import lodash from "lodash";
+import {
+  handleToggleFavorite,
+  listFavoriteToggle,
+  toggleProduct,
+} from "@/redux/reducer/favoriteReducer";
+import RelatedProduct from "@/components/product/RelatedProduct";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -66,6 +72,7 @@ const ProductDetail = () => {
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
+  const listFavorite = useSelector((state: RootState) => state.favorite.list);
   const path = usePathname();
   const search = useSearchParams().toString();
   const router = useRouter();
@@ -345,6 +352,22 @@ const ProductDetail = () => {
     );
   };
 
+  const handleFavorite = async () => {
+    try {
+      if (productDetail?._id) {
+        dispatch(toggleProduct(productDetail._id));
+        const list = listFavoriteToggle(listFavorite, productDetail._id);
+        debounceToggleFavorite(list);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const debounceToggleFavorite = React.useRef(
+    lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
+  ).current;
+
   return (
     <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
       <div className="w-full my-6">
@@ -599,8 +622,33 @@ const ProductDetail = () => {
                 </Button>
               </div>
 
-              <Button variant={"outline"} className="h-[44px] w-[44px]">
-                <FaRegHeart size={20} />
+              <Button
+                variant={"outline"}
+                className="h-[44px] w-[44px] relative"
+                onClick={async () => {
+                  await handleFavorite();
+                }}
+              >
+                <div
+                  className="transition-all duration-300 absolute w-full h-full flex items-center justify-center"
+                  style={{
+                    opacity: listFavorite.includes(productDetail?._id || "")
+                      ? "0"
+                      : "1",
+                  }}
+                >
+                  <FaRegHeart size={22} className="size-5" />
+                </div>
+                <div
+                  className="transition-all duration-300 w-full h-full flex items-center justify-center text-red-500"
+                  style={{
+                    opacity: !listFavorite.includes(productDetail?._id || "")
+                      ? "0"
+                      : "1",
+                  }}
+                >
+                  <FaHeart size={20} className="size-5" />
+                </div>
               </Button>
             </div>
           </div>
@@ -700,14 +748,7 @@ const ProductDetail = () => {
         </Tabs>
       </div>
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-        <div className="w-full h-full">
-          <HeadContent title="Related Products" left={<></>} />
-          <div className="flex flex-wrap gap-6 w-full">
-            {relatedProducts.map((item) => (
-              <CardProduct key={item._id} item={item} />
-            ))}
-          </div>
-        </div>
+        <RelatedProduct products={relatedProducts} />
       </section>
       <section className="container xl:px-4 py-10 mx-auto px-2 md:px-0 w-full">
         <Shipping />

@@ -99,21 +99,17 @@ export const del = async function (path: string, id: string, token?: string) {
   }
 };
 
-export const postImage = async (
-  path: string,
-  key: string,
-  options: any,
-  token?: string
-) => {
+export const postImage = async (key: string, options: any, token?: string) => {
   const myHeaders = new Headers();
   // myHeaders.append("Content-Type", "multipart/form-data");
   if (token) {
     myHeaders.append("Authorization", `Bearer ${token}`);
   }
   const formdata = new FormData();
-  formdata.append(key, options);
+  const newOptions: any = await resizeFile(options);
+  formdata.append(key, newOptions);
   try {
-    const response = await fetch(`${API_URL}/upload/${path}`, {
+    const response = await fetch(`${API_URL}/upload`, {
       credentials: "include",
       method: "POST",
       headers: myHeaders,

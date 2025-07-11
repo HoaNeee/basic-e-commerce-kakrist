@@ -257,16 +257,6 @@ const Header = () => {
             </div>
             {auth.isLogin ? (
               <>
-                {/* <Button
-                  variant={"default"}
-                  onClick={async () => {
-                    dispatch(removeAuth());
-                    dispatch(removeCart([]));
-                    await post("/auth/logout", {});
-                  }}
-                >
-                  Logout
-                </Button> */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="focus:outline-none focus:ring-[2px] focus:ring-offset-2 focus:ring-primary rounded-full">
                     <Avatar className="h-9 w-9">

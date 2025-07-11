@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
-
-"use client";
-
 import React from "react";
 import HeadContent from "../HeadContent";
-import { ProductModel } from "@/models/productModel";
 import CardProduct from "./CardProduct";
+import { ProductModel } from "@/models/productModel";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import {
@@ -21,11 +17,10 @@ interface Props {
   products?: ProductModel[];
 }
 
-const OurBestSeller = (props: Props) => {
+const RelatedProduct = (props: Props) => {
   const { products } = props;
 
   const listFavorite = useSelector((state: RootState) => state.favorite.list);
-
   const dispatch = useDispatch();
 
   const handleFavorite = async (product_id: string) => {
@@ -44,7 +39,7 @@ const OurBestSeller = (props: Props) => {
 
   return (
     <div className="w-full h-full">
-      <HeadContent title="Our Bestseller" />
+      <HeadContent title="Related Products" left={<></>} />
       <div className="flex flex-wrap gap-6 w-full">
         {products &&
           products.map((item) => (
@@ -60,4 +55,4 @@ const OurBestSeller = (props: Props) => {
   );
 };
 
-export default OurBestSeller;
+export default RelatedProduct;

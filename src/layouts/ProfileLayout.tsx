@@ -1,0 +1,119 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RootState } from "@/redux/store";
+import {
+  Settings,
+  User,
+  Heart,
+  Package,
+  MapPin,
+  CreditCard,
+  Bell,
+} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { useSelector } from "react-redux";
+
+const tabs = [
+  {
+    name: "Personal Infomation",
+    value: "/",
+    icon: User,
+    component: <div>Profile</div>,
+  },
+  {
+    name: "My Order",
+    value: "/order",
+    icon: Package,
+  },
+  {
+    name: "My Wishlists",
+    value: "/wishlists",
+    icon: Heart,
+  },
+  {
+    name: "Manager Address",
+    value: "/address",
+    icon: MapPin,
+  },
+  {
+    name: "Saved Cards",
+    value: "/credit-card",
+    icon: CreditCard,
+  },
+  {
+    name: "Notifications",
+    value: "/notifications",
+    icon: Bell,
+  },
+  {
+    name: "Settings",
+    value: "/settings",
+    icon: Settings,
+  },
+];
+
+const ProfileLayout = ({ children }: { children: any }) => {
+  const router = useRouter();
+  const pathName = usePathname();
+  const auth = useSelector((state: RootState) => state.auth.auth);
+
+  return (
+    <div className="w-full">
+      <Tabs
+        orientation="vertical"
+        value={pathName.substring(8) || "/"}
+        className="w-full flex items-start gap-8 justify-center flex-row"
+        onValueChange={(value) => {
+          router.push(`/profile/${value}`);
+        }}
+      >
+        <TabsList className="shrink-0 grid grid-cols-1 p-0 bg-background border-2 border-muted rounded-none h-full pb-6 w-60">
+          <div className="py-6 px-4 border-b-2 border-muted">
+            <div className="flex items-center gap-3 text-black">
+              <Avatar className="h-13 w-13">
+                <AvatarImage src={auth.avatar} alt="avatar" />
+                <AvatarFallback className="">
+                  <User size={20} />
+                </AvatarFallback>
+              </Avatar>
+              <div className="">
+                <p className="">
+                  <span className="text-sm">Hello</span> 👋
+                </p>
+                <p className="font-bold text-wrap">
+                  {auth.firstName} {auth.lastName}
+                </p>
+              </div>
+            </div>
+          </div>
+          {tabs.map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="justify-start rounded-none data-[state=active]:shadow-none data-[state=active]:bg-black data-[state=active]:text-white py-4 transition-all duration-300 tracking-wider cursor-pointer px-5"
+            >
+              <tab.icon className="size-5 me-2" /> {tab.name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <div className="min-h-100 w-full">
+          {tabs.map((tab, index) => (
+            <TabsContent
+              key={index}
+              value={tab.value}
+              className="w-full h-full px-4"
+            >
+              {tab.value === (pathName.substring(8) || "/") ? children : null}
+            </TabsContent>
+          ))}
+        </div>
+      </Tabs>
+    </div>
+  );
+};
+
+export default ProfileLayout;
