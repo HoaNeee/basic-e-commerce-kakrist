@@ -26,7 +26,6 @@ import { VariationModel } from "@/models/variationModel";
 import { VND } from "@/utils/formatCurrency";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import Shipping from "@/components/home/Shipping";
 import HeadContent from "@/components/HeadContent";

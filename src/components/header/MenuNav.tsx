@@ -34,7 +34,7 @@ export function MenuNav() {
   };
   return (
     <NavigationMenu viewport={false} className="">
-      <NavigationMenuList className="xl:gap-4 gap-2">
+      <NavigationMenuList className="xl:gap-4 lg:gap-2 gap-0">
         <NavigationMenuItem className="">
           <NavigationMenuLink asChild>
             <Link href={"/"} className="lg:text-[16px] text-sm">
@@ -45,7 +45,9 @@ export function MenuNav() {
         <NavigationMenuItem className="">
           <NavigationMenuTrigger className="lg:text-[16px] text-sm">
             <NavigationMenuLink asChild>
-              <Link href={"/shop"}>Shop</Link>
+              <Link href={"/shop"} className="lg:text-[16px] text-sm">
+                Shop
+              </Link>
             </NavigationMenuLink>
           </NavigationMenuTrigger>
           <NavigationMenuContent

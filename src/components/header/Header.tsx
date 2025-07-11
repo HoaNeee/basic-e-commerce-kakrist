@@ -32,6 +32,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
 import DialogConfirm from "../dialog/DialogConfirm";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { LogOut, User } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const Header = () => {
   const [loading, setLoading] = useState(true);
@@ -247,7 +257,7 @@ const Header = () => {
             </div>
             {auth.isLogin ? (
               <>
-                <Button
+                {/* <Button
                   variant={"default"}
                   onClick={async () => {
                     dispatch(removeAuth());
@@ -256,7 +266,40 @@ const Header = () => {
                   }}
                 >
                   Logout
-                </Button>
+                </Button> */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="focus:outline-none focus:ring-[2px] focus:ring-offset-2 focus:ring-primary rounded-full">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={auth.avatar} alt="avatar" />
+                      <AvatarFallback>
+                        <User />
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link
+                        href={"/profile"}
+                        className="flex items-center w-full h-full gap-2"
+                      >
+                        <User className="h-4 w-4" /> Profile
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={async () => {
+                        dispatch(removeAuth());
+                        dispatch(removeCart([]));
+                        await post("/auth/logout", {});
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 text-destructive" /> Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               !loading && (

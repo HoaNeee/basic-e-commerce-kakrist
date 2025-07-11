@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import MyAlertDialog from "@/components/dialog/MyAlertDialog";
 import HeadContent from "@/components/HeadContent";
 import { TableCart } from "@/components/TableCart";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 const Cart = () => {
   const [rowSelection, setRowSelection] = useState<any>({});
   const [dataSelected, setDataSelected] = useState<CartModel[]>([]);
+  const [openAlertDialog, setOpenAlertDialog] = useState(false);
 
   const cart = useSelector((state: RootState) => state.cart.cart);
 
@@ -35,57 +37,68 @@ const Cart = () => {
   }, [rowSelection, cart.carts]);
 
   return (
-    <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-      <div className="w-full h-full">
-        <HeadContent
-          left={<></>}
-          title="My Cart"
-          styles={{
-            marginBottom: "10px",
-          }}
-        />
-        <div className="flex pb-6 gap-4">
-          <div className="w-3/4">
-            <TableCart
-              selection={rowSelection}
-              setSelection={setRowSelection}
-            />
-          </div>
-          <div className="flex-1">
-            <Card>
-              <CardHeader className="flex justify-between items-center font-bold">
-                <p>Subtotal</p>
-                <p>
-                  {VND.format(
-                    dataSelected.reduce(
-                      (val, item) =>
-                        val +
-                        item.quantity *
-                          (item.discountedPrice !== undefined &&
-                          item.discountedPrice !== null
-                            ? item.discountedPrice
-                            : item.price),
-                      0
-                    )
-                  )}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  className="w-full py-6"
-                  onClick={() => {
-                    dispatch(addCartCheckout(dataSelected));
-                    router.push("/cart/checkout");
-                  }}
-                >
-                  Checkout
-                </Button>
-              </CardContent>
-            </Card>
+    <>
+      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+        <div className="w-full h-full">
+          <HeadContent
+            left={<></>}
+            title="My Cart"
+            styles={{
+              marginBottom: "10px",
+            }}
+          />
+          <div className="flex pb-6 gap-4">
+            <div className="w-3/4">
+              <TableCart
+                selection={rowSelection}
+                setSelection={setRowSelection}
+              />
+            </div>
+            <div className="flex-1">
+              <Card>
+                <CardHeader className="flex justify-between items-center font-bold">
+                  <p>Subtotal</p>
+                  <p>
+                    {VND.format(
+                      dataSelected.reduce(
+                        (val, item) =>
+                          val +
+                          item.quantity *
+                            (item.discountedPrice !== undefined &&
+                            item.discountedPrice !== null
+                              ? item.discountedPrice
+                              : item.price),
+                        0
+                      )
+                    )}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    className="w-full py-6"
+                    onClick={() => {
+                      if (dataSelected) {
+                        if (dataSelected.length > 0) {
+                          dispatch(addCartCheckout(dataSelected));
+                          router.push("/cart/checkout");
+                        } else {
+                          setOpenAlertDialog(true);
+                        }
+                      } else {
+                        setOpenAlertDialog(true);
+                      }
+                    }}
+                  >
+                    Checkout
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <MyAlertDialog open={openAlertDialog} setOpen={setOpenAlertDialog} />
+    </>
   );
 };
 

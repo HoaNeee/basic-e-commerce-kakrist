@@ -18,8 +18,17 @@ import {
 } from "./ui/card";
 import { Checkbox } from "./ui/checkbox";
 import { PaymentMethodModel } from "@/models/paymentMethod";
+import { Button } from "./ui/button";
 
-const PaymentMethod = () => {
+interface Props {
+  onNext: (val: {
+    method: string;
+    paymentChecked?: PaymentMethodModel;
+  }) => void;
+}
+
+const PaymentMethod = (props: Props) => {
+  const { onNext } = props;
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [payments, setPayments] = useState<PaymentMethodModel[]>([]);
   const [paymentChecked, setPaymentChecked] = useState<PaymentMethodModel>();
@@ -131,28 +140,53 @@ const PaymentMethod = () => {
             </Label>
           </div>
 
-          <Collapsible>
-            <CollapsibleTrigger asChild>
-              <div className="flex items-center gap-5">
-                <RadioGroupItem
-                  value="credit"
-                  id="credit"
-                  className="size-5 data-[state=checked]:border-2 data-[state=checked]:border-black"
-                  classNameChildren="size-2.5 left-[calc(50%-0.5px)] -translate-x-[calc(50%-0.5px)] -translate-y-[calc(50%-0.5px)]"
-                />
-                <CollapsibleTrigger asChild>
-                  <Label htmlFor="credit" className="text-lg font-bold">
-                    Debit/Credit Card
-                  </Label>
-                </CollapsibleTrigger>
-              </div>
-            </CollapsibleTrigger>
-            {paymentMethod !== "cod" && (
-              <CollapsibleContent className="mt-3">
-                <AddPaymentMethod />
-              </CollapsibleContent>
-            )}
-          </Collapsible>
+          <div className="border-b-2 border-muted pb-4">
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <div className="flex items-center gap-5">
+                  <RadioGroupItem
+                    value="credit"
+                    id="credit"
+                    className="size-5 data-[state=checked]:border-2 data-[state=checked]:border-black"
+                    classNameChildren="size-2.5 left-[calc(50%-0.5px)] -translate-x-[calc(50%-0.5px)] -translate-y-[calc(50%-0.5px)]"
+                  />
+                  <CollapsibleTrigger asChild>
+                    <Label htmlFor="credit" className="text-lg font-bold">
+                      Debit/Credit Card
+                    </Label>
+                  </CollapsibleTrigger>
+                </div>
+              </CollapsibleTrigger>
+              {paymentMethod !== "cod" && (
+                <CollapsibleContent className="mt-3">
+                  <AddPaymentMethod
+                    onAddNew={(val) => {
+                      setPayments([...payments, val]);
+                      if (window) {
+                        window.scroll({
+                          top: 0,
+                          behavior: "smooth",
+                        });
+                      }
+                    }}
+                  />
+                </CollapsibleContent>
+              )}
+            </Collapsible>
+          </div>
+          <div className="md:w-1/4 sm:w-1/2 w-full mt-4">
+            <Button
+              className="w-full py-6"
+              onClick={() => {
+                onNext({
+                  method: paymentMethod,
+                  paymentChecked: paymentChecked,
+                });
+              }}
+            >
+              Continue
+            </Button>
+          </div>
         </RadioGroup>
       </div>
     </div>

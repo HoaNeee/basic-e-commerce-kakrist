@@ -105,25 +105,6 @@ const AddPaymentMethod = (props: Props) => {
     }
   };
 
-  function formatDate(date: Date | undefined) {
-    if (!date) {
-      return "";
-    }
-    return date.toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  }
-
-  function isValidDate(date: Date | undefined) {
-    if (!date) {
-      return false;
-    }
-    const newDate = new Date(date);
-    return !isNaN(newDate.getTime());
-  }
-
   return (
     <div className="m-1">
       <Form {...form}>

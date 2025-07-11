@@ -21,6 +21,9 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import PaymentMethod from "./PaymentMethod";
+import { toast } from "sonner";
+import ReviewOrder from "./ReviewOrder";
+import { CartModel } from "@/models/cartModel";
 
 const {
   StepperProvider,
@@ -47,9 +50,17 @@ const {
   }
 );
 
-export function TransactionSteps() {
+interface Props {
+  onNextStep?: (step: string, val?: any) => void;
+  cartsCheckout?: CartModel[];
+}
+
+export function TransactionSteps(props: Props) {
+  const { onNextStep, cartsCheckout } = props;
+
   const [openDialog, setOpenDialog] = useState(false);
   const [prevStep, setPrevStep] = useState<any>();
+
   return (
     <>
       <StepperProvider className="space-y-4 relative" variant="horizontal">
@@ -64,6 +75,7 @@ export function TransactionSteps() {
                     const current = methods.current;
                     if (current.id > step.id) {
                       setPrevStep(step.id);
+
                       setOpenDialog(true);
                     }
 
@@ -78,14 +90,43 @@ export function TransactionSteps() {
             {methods.switch({
               "1": (step) => (
                 <Content
-                  id={step.id}
-                  onNextStep={(id) => {
+                  step={step.id}
+                  onNextStep={(id, val) => {
+                    if (onNextStep) {
+                      onNextStep(id, {
+                        address: val,
+                      });
+                    }
                     methods.goTo(id);
                   }}
                 />
               ),
-              "2": (step) => <Content id={step.id} />,
-              "3": (step) => <Content id={step.id} />,
+              "2": (step) => (
+                <Content
+                  step={step.id}
+                  onNextStep={(id, val) => {
+                    if (onNextStep) {
+                      onNextStep(id, {
+                        payment: val,
+                      });
+                    }
+                    methods.goTo(id);
+                  }}
+                />
+              ),
+              "3": (step) => (
+                <Content
+                  step={step.id}
+                  //FIX THIS
+                  onNextStep={(id, val) => {
+                    if (onNextStep) {
+                      onNextStep(id, val);
+                    }
+                    methods.goTo(id);
+                  }}
+                  cartsCheckout={cartsCheckout}
+                />
+              ),
             })}
             <Dialog
               open={openDialog}
@@ -93,6 +134,9 @@ export function TransactionSteps() {
               onOK={() => {
                 if (prevStep) {
                   methods.goTo(prevStep);
+                  if (onNextStep) {
+                    onNextStep(prevStep);
+                  }
                 }
               }}
             />
@@ -104,14 +148,16 @@ export function TransactionSteps() {
 }
 
 interface StepProps {
-  id: "1" | "2" | "3";
-  onNextStep?: (id: "1" | "2" | "3") => void;
+  step: "1" | "2" | "3";
+  onNextStep: (step: "1" | "2" | "3", val?: any) => void;
+  cartsCheckout?: CartModel[];
 }
 
 const Content = (props: StepProps) => {
-  const { id, onNextStep } = props;
+  const { step, onNextStep, cartsCheckout } = props;
   const [address, setAddress] = useState<AddressModel[]>([]);
   const [addressChecked, setAddressChecked] = useState<AddressModel>();
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   useEffect(() => {
     getAddress();
@@ -132,14 +178,14 @@ const Content = (props: StepProps) => {
         <div
           className="w-full relative flex flex-nowrap transition-all duration-300 max-h-fit"
           style={{
-            transform: `translateX(-${(Number(id) - 1) * 100}%)`,
+            transform: `translateX(-${(Number(step) - 1) * 100}%)`,
           }}
         >
           <div
             className="min-w-full transition-all duration-500"
             style={{
-              visibility: id !== "1" ? "hidden" : "visible",
-              height: id !== "1" ? "0px" : "auto",
+              visibility: step !== "1" ? "hidden" : "visible",
+              height: step !== "1" ? "0px" : "auto",
             }}
           >
             <ShippingAddress
@@ -148,7 +194,7 @@ const Content = (props: StepProps) => {
               onNext={(val) => {
                 setAddressChecked(val);
                 if (onNextStep) {
-                  onNextStep("2");
+                  onNextStep("2", val);
                 }
               }}
               onAddNew={(val) => {
@@ -170,10 +216,38 @@ const Content = (props: StepProps) => {
               }}
             />
           </div>
-          <div className="min-w-full max-h-fit">
-            <PaymentMethod />
+          <div
+            className="min-w-full max-h-fit"
+            style={{
+              visibility: step !== "2" ? "hidden" : "visible",
+              height: step !== "2" ? "0px" : "auto",
+            }}
+          >
+            <PaymentMethod
+              onNext={(val) => {
+                if (val.method === "cod") {
+                  setPaymentMethod(val.method);
+                  onNextStep("3", val);
+                } else if (val.method === "credit") {
+                  console.log(val.paymentChecked);
+                  toast.info("This function is updating...");
+                }
+              }}
+            />
           </div>
-          <div className="min-w-full bg-red-500">Reviews</div>
+          <div
+            className="min-w-full max-h-fit"
+            style={{
+              visibility: step !== "3" ? "hidden" : "visible",
+              height: step !== "3" ? "0px" : "auto",
+            }}
+          >
+            <ReviewOrder
+              cartsCheckout={cartsCheckout}
+              shippingAddress={addressChecked}
+              paymentMethod={paymentMethod}
+            />
+          </div>
         </div>
       }
     </StepperPanel>

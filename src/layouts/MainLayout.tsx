@@ -3,6 +3,7 @@
 import FooterComponent from "@/components/footer/FooterComponent";
 import Header from "@/components/header/Header";
 import { addAuth, removeAuth } from "@/redux/reducer/authReducer";
+import { removeCart } from "@/redux/reducer/cartReducer";
 import { get } from "@/utils/requets";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { usePathname } from "next/navigation";
@@ -28,7 +29,7 @@ const MainLayout = ({
 
   const getInfo = async () => {
     try {
-      const response = await get("/auth/my-info");
+      const response = await get("/auth/profile");
       console.log(response);
       //DO THEN
       dispatch(
@@ -40,6 +41,7 @@ const MainLayout = ({
     } catch (error) {
       console.log(error);
       dispatch(removeAuth());
+      dispatch(removeCart([]));
     }
   };
 
