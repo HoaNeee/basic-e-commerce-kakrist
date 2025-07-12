@@ -61,9 +61,10 @@ interface Props {
   onAddNew?: (val: AddressModel) => void;
   address?: AddressModel;
   onClose?: () => void;
+  isModal?: boolean;
 }
 
-const AddShippingAddress = ({ onAddNew, address, onClose }: Props) => {
+const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
   const [dataSelect, setDataSelect] = useState<{
     cities: SelectModel[];
     districts?: SelectModel[];
@@ -201,6 +202,10 @@ const AddShippingAddress = ({ onAddNew, address, onClose }: Props) => {
       form.resetField("name");
       form.resetField("phone");
       form.resetField("houseNo");
+
+      if (onClose) {
+        onClose();
+      }
 
       toast.success(response.message, {
         description: "Created new address success",
@@ -497,13 +502,15 @@ const AddShippingAddress = ({ onAddNew, address, onClose }: Props) => {
                       onChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel>Use as my default address and select it</FormLabel>
+                  <FormLabel>
+                    Use as my default address {!isModal && "and select it"}
+                  </FormLabel>
                 </FormItem>
               );
             }}
           />
 
-          {!address ? (
+          {!address && !isModal ? (
             <div className="w-1/3">
               <Button
                 disabled={false}
@@ -532,23 +539,25 @@ const AddShippingAddress = ({ onAddNew, address, onClose }: Props) => {
               </Button>
             </div>
           ) : (
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant={"outline"} type="button">
-                  Cancel
-                </Button>
-              </DialogClose>
+            (isModal || address) && (
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant={"outline"} type="button">
+                    Cancel
+                  </Button>
+                </DialogClose>
 
-              <ButtonLoading
-                loading={isUpdating}
-                onClick={() => {}}
-                styles={{
-                  padding: "0 30px",
-                }}
-              >
-                Save
-              </ButtonLoading>
-            </DialogFooter>
+                <ButtonLoading
+                  loading={isUpdating}
+                  onClick={() => {}}
+                  styles={{
+                    padding: "0 30px",
+                  }}
+                >
+                  Save
+                </ButtonLoading>
+              </DialogFooter>
+            )
           )}
         </form>
       </Form>

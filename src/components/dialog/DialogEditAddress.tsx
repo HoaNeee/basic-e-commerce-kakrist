@@ -23,27 +23,26 @@ const DialogEditAddress = (props: Props) => {
   const { onOK, open, setOpen, onCancel, address } = props;
 
   return (
-    address && (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Change other option</DialogTitle>
-          </DialogHeader>
-          <DialogDescription />
-          <div className="md:gap-0 gap-4">
-            <AddShippingAddress
-              onAddNew={(val) => {
-                if (onOK) {
-                  onOK(val);
-                }
-              }}
-              address={address}
-              onClose={onCancel}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-    )
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Address</DialogTitle>
+        </DialogHeader>
+        <DialogDescription />
+        <div className="md:gap-0 gap-4">
+          <AddShippingAddress
+            onAddNew={(val) => {
+              if (onOK) {
+                onOK(val);
+              }
+            }}
+            address={address}
+            onClose={onCancel}
+            isModal
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

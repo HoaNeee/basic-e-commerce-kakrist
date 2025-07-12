@@ -106,7 +106,12 @@ const Header = () => {
           </div>
           <div className="flex gap-4 items-center">
             <LuSearch className="lg:text-2xl text-xl" />
-            <IoIosHeartEmpty className="lg:text-2xl text-xl" />
+            <IoIosHeartEmpty
+              className="lg:text-2xl text-xl cursor-pointer"
+              onClick={() => {
+                router.push("/profile/wishlists");
+              }}
+            />
             <div className="relative">
               {!pathName.includes("/cart") ? (
                 <Popover
