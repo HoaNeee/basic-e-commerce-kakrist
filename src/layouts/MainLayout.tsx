@@ -4,7 +4,6 @@ import FooterComponent from "@/components/footer/FooterComponent";
 import Header from "@/components/header/Header";
 import { addAuth, removeAuth } from "@/redux/reducer/authReducer";
 import { removeCart } from "@/redux/reducer/cartReducer";
-import { syncList } from "@/redux/reducer/favoriteReducer";
 import { get } from "@/utils/requets";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { usePathname } from "next/navigation";
@@ -25,19 +24,8 @@ const MainLayout = ({
   useEffect(() => {
     if (token?.value) {
       getInfo();
-      getListFavorite();
     }
   }, [token]);
-
-  const getListFavorite = async () => {
-    try {
-      const response = await get("/favorites");
-      const list = response.data.list.products || [];
-      dispatch(syncList(list));
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const getInfo = async () => {
     try {

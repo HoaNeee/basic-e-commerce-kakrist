@@ -42,6 +42,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { removeList, syncList } from "@/redux/reducer/favoriteReducer";
 
 const Header = () => {
   const [loading, setLoading] = useState(true);
@@ -60,6 +61,7 @@ const Header = () => {
   useEffect(() => {
     if (auth.isLogin) {
       getCart();
+      getListFavorite();
     }
   }, [auth]);
 
@@ -67,6 +69,16 @@ const Header = () => {
     try {
       const response = await get("/cart");
       dispatch(syncCart(response.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getListFavorite = async () => {
+    try {
+      const response = await get("/favorites");
+      const list = response.data.list.products || [];
+      dispatch(syncList(list));
     } catch (error) {
       console.log(error);
     }
@@ -269,13 +281,13 @@ const Header = () => {
                   <DropdownMenuContent>
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Link
-                        href={"/profile"}
-                        className="flex items-center w-full h-full gap-2"
-                      >
-                        <User className="h-4 w-4" /> Profile
-                      </Link>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        router.replace("/profile");
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <User className="h-4 w-4" /> Profile
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
@@ -283,6 +295,7 @@ const Header = () => {
                       onClick={async () => {
                         dispatch(removeAuth());
                         dispatch(removeCart([]));
+                        dispatch(removeList([]));
                         await post("/auth/logout", {});
                       }}
                     >

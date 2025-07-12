@@ -97,6 +97,7 @@ const CardProduct = ({
             <Button
               variant={"outline"}
               className="rounded-full h-8 w-8 duration-300 absolute sm:group-hover:right-2 -right-full top-4 flex flex-col gap-1.5 invisible sm:group-hover:visible z-20 transition-all"
+              onClick={onToggleFavorite}
             >
               <Trash color="red" />
             </Button>

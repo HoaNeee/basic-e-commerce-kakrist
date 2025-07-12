@@ -50,6 +50,7 @@ const Checkout = () => {
   const [infomationOrder, setInfomationOrder] = useState<any>();
   const [isPosting, setIsPosting] = useState(false);
   const [openDialogSuccess, setOpenDialogSuccess] = useState(false);
+  const [subTotal, setSubTotal] = useState(0);
 
   const router = useRouter();
 
@@ -74,6 +75,7 @@ const Checkout = () => {
               : item.price),
         0
       );
+      setSubTotal(total);
       setGrandTotal(total);
     }
   }, [cartCheckout]);
@@ -81,11 +83,10 @@ const Checkout = () => {
   useEffect(() => {
     if (discount?.value) {
       if (discount.type === "percent") {
-        const dis = grandTotal * (discount.value / 100);
-
-        setGrandTotal(Math.max(grandTotal - dis, 0));
+        const dis = subTotal * (discount.value / 100);
+        setGrandTotal(Math.max(subTotal - dis, 0));
       } else {
-        setGrandTotal(Math.max(grandTotal - discount.value, 0));
+        setGrandTotal(Math.max(subTotal - discount.value, 0));
       }
     }
   }, [discount]);
@@ -214,7 +215,7 @@ const Checkout = () => {
               }`}
               style={{
                 transform: isProceed ? "translateX(-200%)" : "translateX(0)",
-                maxHeight: !isProceed ? "1000px" : "0px",
+                maxHeight: !isProceed ? "auto" : "0px",
                 visibility: !isProceed ? "visible" : "hidden",
                 opacity: !isProceed ? "1" : "0",
                 pointerEvents: !isProceed ? "all" : "none",
@@ -243,7 +244,7 @@ const Checkout = () => {
               }`}
               style={{
                 transform: isProceed ? "translateY(0)" : "translateY(200%)",
-                maxHeight: isProceed ? "1000px" : "0px",
+                maxHeight: isProceed ? "2000px" : "0px",
                 visibility: isProceed ? "visible" : "hidden",
                 opacity: isProceed ? "1" : "0",
                 pointerEvents: isProceed ? "all" : "none",
@@ -336,18 +337,7 @@ const Checkout = () => {
                                 value: 0,
                                 type: "",
                               });
-                              setGrandTotal(
-                                cartCheckout.reduce(
-                                  (val, item) =>
-                                    val +
-                                    item.quantity *
-                                      (item.discountedPrice !== undefined &&
-                                      item.discountedPrice !== null
-                                        ? item.discountedPrice
-                                        : item.price),
-                                  0
-                                )
-                              );
+                              setGrandTotal(subTotal);
                             }}
                           >
                             Remove
@@ -413,7 +403,7 @@ const Checkout = () => {
       <DialogCheckoutSuccess
         open={openDialogSuccess}
         setOpen={setOpenDialogSuccess}
-      ></DialogCheckoutSuccess>
+      />
     </>
   );
 };

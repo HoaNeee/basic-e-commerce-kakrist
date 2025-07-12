@@ -24,6 +24,26 @@ const Order = () => {
     }
   };
 
+  const totalBillItem = (bill: BillModel) => {
+    const promotion = bill.promotion;
+
+    const total = bill.products.reduce(
+      (val, item) => val + item.price * item.quantity,
+      0
+    );
+
+    if (promotion && promotion.value) {
+      if (promotion.promotionType === "percent") {
+        const discounted = total * (promotion?.value / 100);
+
+        return total - discounted;
+      }
+      return Math.max(total - promotion.value, 0);
+    }
+
+    return total;
+  };
+
   return (
     <div className="w-full h-full">
       <div className="flex flex-col gap-5">
@@ -42,6 +62,12 @@ const Order = () => {
                   <div className="text-sm flex flex-col gap-1">
                     <p className="font-bold text-base">
                       {bill.products[0].title}
+                      {bill.products.length > 1 && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          (+{bill.products.length - 1} other products)
+                        </span>
+                      )}
                     </p>
                     <p className="text-muted-foreground">
                       {bill.products[0].options.length > 0
@@ -52,7 +78,7 @@ const Order = () => {
                   </div>
                 </div>
                 <div className="font-bold">
-                  {VND.format(bill.products[0].price)}
+                  {VND.format(totalBillItem(bill))}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Button variant={"outline"} className="py-5">

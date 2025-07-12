@@ -24,6 +24,9 @@ const favoriteReducer = createSlice({
     syncList: (state, action) => {
       state.list = action.payload;
     },
+    removeList: (state, action) => {
+      state.list = action.payload;
+    },
   },
 });
 
@@ -49,6 +52,6 @@ export const handleToggleFavorite = async (list: string[]) => {
   }
 };
 
-export const { toggleProduct, syncList } = favoriteReducer.actions;
+export const { toggleProduct, syncList, removeList } = favoriteReducer.actions;
 
 export default favoriteReducer.reducer;

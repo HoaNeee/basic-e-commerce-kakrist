@@ -14,7 +14,7 @@ export interface BillModel {
 
 interface Promotion {
   promotionType: string;
-  value: string;
+  value: number;
   code: string;
 }
 

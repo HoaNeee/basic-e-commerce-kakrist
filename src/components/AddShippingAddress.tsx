@@ -27,6 +27,8 @@ import { Checkbox } from "./ui/checkbox";
 import { AddressModel } from "@/models/addressModel";
 import { DialogClose, DialogFooter } from "./ui/dialog";
 import ButtonLoading from "./ButtonLoading";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -74,6 +76,8 @@ const AddShippingAddress = ({ onAddNew, address, onClose }: Props) => {
   }>();
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const auth = useSelector((state: RootState) => state.auth.auth);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: address
@@ -87,8 +91,11 @@ const AddShippingAddress = ({ onAddNew, address, onClose }: Props) => {
           isDefault: address?.isDefault,
         }
       : {
-          name: "",
-          phone: "",
+          name:
+            auth.firstName && auth.lastName
+              ? `${auth.firstName} ${auth.lastName}`
+              : "",
+          phone: auth.phone ? auth.phone : "",
           city: undefined,
           district: undefined,
           ward: undefined,

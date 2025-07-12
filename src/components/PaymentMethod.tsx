@@ -121,7 +121,7 @@ const PaymentMethod = (props: Props) => {
                 </Label>
               ))
             ) : (
-              <div>NO data</div>
+              <div>No data</div>
             )}
           </div>
         </div>

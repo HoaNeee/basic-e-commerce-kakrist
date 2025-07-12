@@ -27,7 +27,11 @@ const DialogCheckoutSuccess = (props: Props) => {
       <AlertDialogContent className="">
         <AlertDialogHeader className="items-center justify-center max-w-sm mx-auto">
           <div className="text-white h-14 w-14 flex items-center justify-center rounded-full bg-[#131118] my-checkout-success my-5">
-            <ShoppingBagIcon size={20} />
+            <div className="w-full h-full absolute justify-center flex items-center bg-[#131118] rounded-full">
+              <ShoppingBagIcon size={20} />
+            </div>
+            <div className="circle-1" />
+            <div className="circle-2" />
           </div>
           <AlertDialogTitle>
             <p>{"Your Order is confirmed"}</p>
@@ -42,7 +46,7 @@ const DialogCheckoutSuccess = (props: Props) => {
             <AlertDialogAction
               className="py-6"
               onClick={() => {
-                router.replace("/");
+                router.replace("/profile/order");
               }}
             >
               View Order
