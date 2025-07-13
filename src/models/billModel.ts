@@ -3,11 +3,15 @@ export interface BillModel {
   user_id: string;
   products: Product[];
   promotion?: Promotion;
-  shippingAddress: string;
+  shippingAddress: Address;
   status: string;
   paymentMethod: string;
   paymentStatus: number;
   deleted: boolean;
+  estimatedDelivery: Date;
+  delivered: Date;
+  resonCancel: string;
+  canceledBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,6 +20,12 @@ interface Promotion {
   promotionType: string;
   value: number;
   code: string;
+}
+
+interface Address {
+  name: string;
+  address: string;
+  phone: string;
 }
 
 interface Product {

@@ -19,7 +19,7 @@ const payment = [AMEX, GOOGLE, PAYPAL, MASTER, VISA];
 
 const FooterComponent = () => {
   return (
-    <footer className="w-full bg-[#131118]">
+    <footer className="w-full bg-[#131118] tracking-wider font-light">
       <div className="container w-full xl:px-4 px-2 md:px-0 mx-auto">
         <div className="grid grid-cols-2 md:gap-0 gap-6 md:grid-cols-4 py-16 text-white">
           <div>

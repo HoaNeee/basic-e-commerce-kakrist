@@ -16,10 +16,11 @@ interface Props {
   onConfirm: () => void;
   title?: string | ReactNode;
   description?: string | ReactNode;
+  extraContent?: ReactNode;
 }
 
 const DialogConfirm = (props: Props) => {
-  const { children, onConfirm, title, description } = props;
+  const { children, onConfirm, title, description, extraContent } = props;
   return (
     <AlertDialog defaultOpen={false}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -33,9 +34,9 @@ const DialogConfirm = (props: Props) => {
               "This action cannot be undone. This will permanently delete your data from our servers."}
           </AlertDialogDescription>
         </AlertDialogHeader>
+        {extraContent}
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-
           <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

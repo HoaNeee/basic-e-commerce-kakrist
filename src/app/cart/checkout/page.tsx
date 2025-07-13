@@ -174,14 +174,21 @@ const Checkout = () => {
         };
       });
 
-      const shippingAddress = `${infomationOrder.address.houseNo}, ${infomationOrder.address.ward.title}, ${infomationOrder.address.district.title}, ${infomationOrder.address.city.title}`;
+      const shippingAddress = {
+        name: infomationOrder.address.name,
+        phone: infomationOrder.address.phone,
+        address: `${infomationOrder.address.houseNo}, ${infomationOrder.address.ward.title}, ${infomationOrder.address.district.title}, ${infomationOrder.address.city.title}`,
+      };
       const paymentMethod = infomationOrder.payment.method;
+
+      const estimatedDelivery = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3); //FIX THEN
 
       const payload: any = {
         products,
         shippingAddress,
         paymentMethod,
         cartItem_ids: cartCheckout.map((item) => item.cartItem_id),
+        estimatedDelivery: estimatedDelivery.toISOString(),
       };
 
       if (discount) {
@@ -296,6 +303,7 @@ const Checkout = () => {
 
                           setCODE(e.target.value);
                         }}
+                        name="promotionCode"
                       />
                       <div className="bg-white absolute right-0 z-20 overflow-hidden h-full">
                         <Button
