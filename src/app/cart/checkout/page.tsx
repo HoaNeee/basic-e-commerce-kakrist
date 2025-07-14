@@ -151,7 +151,7 @@ const Checkout = () => {
     }
   };
 
-  const handleSubmitBill = async () => {
+  const handleSubmitOrder = async () => {
     if (!infomationOrder) {
       return;
     }
@@ -199,7 +199,7 @@ const Checkout = () => {
         };
       }
 
-      const response = await post("/bills/create", payload);
+      const response = await post("/orders/create", payload);
       console.log(response);
       setOpenDialogSuccess(true);
     } catch (error: any) {
@@ -365,7 +365,7 @@ const Checkout = () => {
                 {currentStep === "3" && (
                   <ButtonLoading
                     className="w-full py-6 mt-4"
-                    onClick={handleSubmitBill}
+                    onClick={handleSubmitOrder}
                     loading={isPosting}
                   >
                     Place Order

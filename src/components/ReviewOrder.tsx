@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { FaRegEdit } from "react-icons/fa";
 import { VND } from "@/utils/formatCurrency";
 import { format } from "date-fns";
-import { BillModel } from "@/models/billModel";
+import { OrderModel } from "@/models/orderModel";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
 
@@ -16,26 +16,26 @@ interface Props {
   shippingAddress?: AddressModel;
   paymentMethod?: string;
   paymentCard?: PaymentMethodModel;
-  bill?: BillModel;
+  order?: OrderModel;
 }
 
 const ReviewOrder = (props: Props) => {
-  const { cartsCheckout, shippingAddress, paymentCard, paymentMethod, bill } =
+  const { cartsCheckout, shippingAddress, paymentCard, paymentMethod, order } =
     props;
 
   const estimatedDelivery = new Date().getTime() + 1000 * 60 * 60 * 24 * 3;
 
-  const renderTotal = (bill: BillModel) => {
-    const subTotal = bill.products.reduce(
+  const renderTotal = (order: OrderModel) => {
+    const subTotal = order.products.reduce(
       (val, item) => val + item.price * item.quantity,
       0
     );
 
     let discountValue = 0;
-    if (bill.promotion) {
-      if (bill.promotion.promotionType === "percent") {
-        discountValue = subTotal * (bill.promotion.value / 100);
-      } else discountValue = bill.promotion.value;
+    if (order.promotion) {
+      if (order.promotion.promotionType === "percent") {
+        discountValue = subTotal * (order.promotion.value / 100);
+      } else discountValue = order.promotion.value;
     }
 
     const granTotal = Math.max(0, subTotal - discountValue);
@@ -52,7 +52,7 @@ const ReviewOrder = (props: Props) => {
           <div className="border-b-2 border-muted py-4">
             <div className="space-y-2 flex items-center gap-2">
               Promotion:{" "}
-              {bill.promotion ? (
+              {order.promotion ? (
                 <Badge className="bg-red-100/50 text-red-500 rounded-sm">
                   - {VND.format(discountValue)}
                 </Badge>
@@ -77,18 +77,18 @@ const ReviewOrder = (props: Props) => {
       <ol
         className="flex mt-6"
         style={{
-          flexDirection: bill ? "column-reverse" : "column",
-          marginTop: bill ? "" : "0px",
+          flexDirection: order ? "column-reverse" : "column",
+          marginTop: order ? "" : "0px",
         }}
       >
         <li
           className="text-lg font-bold my-6"
           style={{
-            order: bill ? "3" : "1",
+            order: order ? "3" : "1",
           }}
         >
           Estimated delivery:{" "}
-          {format(!bill ? estimatedDelivery : bill.estimatedDelivery, "PP")}
+          {format(!order ? estimatedDelivery : order.estimatedDelivery, "PP")}
         </li>
         <li className="order-2">
           {cartsCheckout && cartsCheckout.length > 0 ? (
@@ -111,10 +111,11 @@ const ReviewOrder = (props: Props) => {
                   <div className="flex flex-col gap-1 text-sm">
                     <p className="font-bold text-base">{item.title}</p>
                     <p>
+                      {item.quantity} x{" "}
                       {item.discountedPrice !== null &&
                       item.discountedPrice !== undefined
                         ? VND.format(item.discountedPrice)
-                        : VND.format(item.price)}
+                        : VND.format(item.price)}{" "}
                     </p>
                     {item.productType === "variations" ? (
                       <p className="text-muted-foreground">
@@ -130,9 +131,9 @@ const ReviewOrder = (props: Props) => {
                 </div>
               ))}
             </div>
-          ) : bill && bill.products.length > 0 ? (
+          ) : order && order.products.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {bill.products.map((item, index) => (
+              {order.products.map((item, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 pb-5 border-b-2 border-muted"
@@ -149,7 +150,9 @@ const ReviewOrder = (props: Props) => {
                   </div>
                   <div className="flex flex-col gap-1 text-sm">
                     <p className="font-bold text-base">{item.title}</p>
-                    <p>{VND.format(item.price)}</p>
+                    <p>
+                      {item.quantity} x {VND.format(item.price)}
+                    </p>
                     {item.options ? (
                       <p className="text-muted-foreground">
                         options:{" "}
@@ -185,12 +188,12 @@ const ReviewOrder = (props: Props) => {
               </div>
             </div>
           ) : (
-            bill && (
+            order && (
               <div className="flex items-center justify-between">
                 <div className="mt-4">
-                  <p className="font-semibold">{bill.shippingAddress.name}</p>
+                  <p className="font-semibold">{order.shippingAddress.name}</p>
                   <p className="mt-2 tracking-wider text-sm">
-                    {bill.shippingAddress.address}
+                    {order.shippingAddress.address}
                   </p>
                 </div>
                 <div>
@@ -232,11 +235,11 @@ const ReviewOrder = (props: Props) => {
             ) : (
               <div className="flex items-center justify-between">
                 <div className="mt-4">
-                  {bill?.paymentMethod === "cod" ? (
+                  {order?.paymentMethod === "cod" ? (
                     <div className="font-semibold">Cash on Delivering</div>
                   ) : (
                     // updateting
-                    <div>{bill?.paymentMethod}</div>
+                    <div>{order?.paymentMethod}</div>
                   )}
                 </div>
                 <div>
@@ -252,7 +255,7 @@ const ReviewOrder = (props: Props) => {
             )}
           </>
         </li>
-        {bill && <li className="mb-6 order-6">{renderTotal(bill)}</li>}
+        {order && <li className="mb-6 order-6">{renderTotal(order)}</li>}
       </ol>
     </div>
   );

@@ -8,7 +8,7 @@ import OrderDetail from "@/components/OrderDetail";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { BillModel } from "@/models/billModel";
+import { OrderModel } from "@/models/orderModel";
 import { VND } from "@/utils/formatCurrency";
 import { get, patch } from "@/utils/requets";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,10 +16,10 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const Order = () => {
-  const [bills, setBills] = useState<BillModel[]>([]);
+  const [orders, setOrders] = useState<OrderModel[]>([]);
   const [resonCancel, setResonCancel] = useState("");
   const [isUpdating, setIsUpdating] = useState<{
-    bill_id: string;
+    order_id: string;
     loading: boolean;
   }>();
 
@@ -28,22 +28,22 @@ const Order = () => {
   const order_id = searchParams.get("order_id");
 
   useEffect(() => {
-    getBills();
+    getOrders();
   }, []);
 
-  const getBills = async () => {
+  const getOrders = async () => {
     try {
-      const response = await get("/bills");
-      setBills(response.data.bills);
+      const response = await get("/orders");
+      setOrders(response.data.orders);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const totalBillItem = (bill: BillModel) => {
-    const promotion = bill.promotion;
+  const totalOrderItem = (order: OrderModel) => {
+    const promotion = order.promotion;
 
-    const total = bill.products.reduce(
+    const total = order.products.reduce(
       (val, item) => val + item.price * item.quantity,
       0
     );
@@ -60,9 +60,9 @@ const Order = () => {
     return total;
   };
 
-  const billStatus = (bill: BillModel) => {
-    switch (bill.status) {
-      case "completed":
+  const orderStatus = (order: OrderModel) => {
+    switch (order.status) {
+      case "delivered":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
             <Badge className="rounded-xs bg-green-100/50 text-green-600">
@@ -73,14 +73,14 @@ const Order = () => {
             </p>
           </div>
         );
-      case "delivering":
+      case "shipping":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
             <Badge className="rounded-xs bg-yellow-100/50 text-yellow-600">
-              In Progess
+              Shipping
             </Badge>
             <p className="text-sm tracking-wider">
-              Your order has been Inprogess
+              Your order is being shipped
             </p>
           </div>
         );
@@ -96,27 +96,37 @@ const Order = () => {
           </div>
         );
 
+      case "confirmed":
+        return (
+          <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
+            <Badge className="rounded-xs bg-blue-100/50 text-blue-600">
+              Confirmed
+            </Badge>
+            <p className="text-sm tracking-wider">
+              Your order has been Confirmed
+            </p>
+          </div>
+        );
+
       default:
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-red-100/50 text-red-600">
-              Initial
+            <Badge className="rounded-xs bg-orange-100/50 text-orange-600">
+              Pending
             </Badge>
-            <p className="text-sm tracking-wider">
-              Your order has been Initial
-            </p>
+            <p className="text-sm tracking-wider">Your order is pending</p>
           </div>
         );
     }
   };
 
-  const handleCancelBill = async (bill: BillModel) => {
+  const handleCancelOrder = async (order: OrderModel) => {
     try {
       setIsUpdating({
-        bill_id: bill._id,
+        order_id: order._id,
         loading: true,
       });
-      await patch("/bills/change-status/" + bill._id, {
+      await patch("/orders/change-status/" + order._id, {
         status: "canceled",
         canceledBy: "customer",
         resonCancel: resonCancel,
@@ -130,17 +140,17 @@ const Order = () => {
         position: "top-center",
       });
 
-      const items = [...bills];
-      const index = items.findIndex((item) => item._id === bill._id);
+      const items = [...orders];
+      const index = items.findIndex((item) => item._id === order._id);
       if (index !== -1) {
         items[index].status = "canceled";
       }
-      setBills(items);
+      setOrders(items);
     } catch (error: any) {
       toast.error(error.message);
     } finally {
       setIsUpdating({
-        bill_id: bill._id,
+        order_id: order._id,
         loading: false,
       });
     }
@@ -151,76 +161,76 @@ const Order = () => {
   ) : (
     <div className="w-full h-full">
       <div className="flex flex-col gap-5">
-        {bills && bills.length > 0 ? (
-          bills.map((bill) => (
+        {orders && orders.length > 0 ? (
+          orders.map((order) => (
             <div
-              key={bill._id}
+              key={order._id}
               className="w-full pb-4 border-b-2 border-muted"
               style={{
-                opacity: bill.status === "canceled" ? "0.7" : "1",
+                opacity: order.status === "canceled" ? "0.7" : "1",
               }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-18 h-18 bg-muted">
                     <img
-                      src={bill.products[0].thumbnail}
+                      src={order.products[0].thumbnail}
                       alt={""}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="text-sm flex flex-col gap-1">
                     <p className="font-bold text-base">
-                      {bill.products[0].title}
-                      {bill.products.length > 1 && (
+                      {order.products[0].title}
+                      {order.products.length > 1 && (
                         <span className="text-muted-foreground">
                           {" "}
-                          (+{bill.products.length - 1} other products)
+                          (+{order.products.length - 1} other products)
                         </span>
                       )}
                     </p>
-                    {bill.status !== "canceled" ? (
+                    {order.status !== "canceled" ? (
                       <>
                         <p className="text-muted-foreground">
-                          {bill.products[0].options.length > 0
-                            ? `${bill.products[0].options.join(", ")}`
+                          {order.products[0].options.length > 0
+                            ? `${order.products[0].options.join(", ")}`
                             : ""}
                         </p>
-                        <p>Qyt: {bill.products[0].quantity}</p>
+                        <p>Qyt: {order.products[0].quantity}</p>
                       </>
                     ) : (
                       <>
                         <p className="text-sm tracking-wider">
                           Cancel By:{" "}
-                          {bill.canceledBy === "admin" ? "Shop" : "You"}
+                          {order.canceledBy === "admin" ? "Shop" : "You"}
                         </p>
                         <p className="text-sm tracking-wider">
-                          Reson: {bill.resonCancel}
+                          Reson: {order.resonCancel}
                         </p>
                       </>
                     )}
                   </div>
                 </div>
                 <div className="font-bold">
-                  {VND.format(totalBillItem(bill))}
+                  {VND.format(totalOrderItem(order))}
                 </div>
-                {bill.status !== "canceled" && (
+                {order.status !== "canceled" && (
                   <div className="flex flex-col gap-2">
                     <Button
                       variant={"outline"}
                       className="py-5"
                       onClick={() => {
-                        router.push("/profile/order?order_id=" + bill._id);
+                        router.push("/profile/order?order_id=" + order._id);
                       }}
                     >
                       View Order
                     </Button>
-                    {bill.status === "completed" ? (
+                    {order.status === "completed" ? (
                       <Button className="py-5">Write A review</Button>
                     ) : (
-                      bill.status !== "delivering" && (
+                      order.status !== "delivering" && (
                         <DialogConfirm
-                          onConfirm={() => handleCancelBill(bill)}
+                          onConfirm={() => handleCancelOrder(order)}
                           description="Can you tell us why you want to cancel?"
                           extraContent={
                             <div className="w-full">
@@ -237,7 +247,7 @@ const Order = () => {
                           <ButtonLoading
                             typeLoading={1}
                             loading={
-                              isUpdating?.bill_id === bill._id
+                              isUpdating?.order_id === order._id
                                 ? isUpdating.loading
                                 : false
                             }
@@ -251,7 +261,7 @@ const Order = () => {
                   </div>
                 )}
               </div>
-              {billStatus(bill)}
+              {orderStatus(order)}
             </div>
           ))
         ) : (

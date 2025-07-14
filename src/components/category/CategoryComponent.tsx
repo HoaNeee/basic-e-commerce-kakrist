@@ -12,6 +12,7 @@ import {
 import { Button } from "../ui/button";
 import { CarouselComponent } from "../CarouselComponent";
 import { CategoryModel } from "@/models/categoryModel";
+import Link from "next/link";
 
 interface Props {
   categories?: CategoryModel[];
@@ -111,8 +112,17 @@ const CategoryComponent = (props: Props) => {
                       }}
                     >
                       <div className="w-full">
-                        <Button variant={"outline"} className="w-full shadow">
-                          <span className="font-medium">{item.title}</span>
+                        <Button
+                          variant={"outline"}
+                          className="w-full shadow"
+                          asChild
+                        >
+                          <Link
+                            href={`/shop?filter_cats=${item._id}`}
+                            className="font-medium h-full w-full inline-block py-3.5 tracking-wider"
+                          >
+                            {item.title}
+                          </Link>
                         </Button>
                       </div>
                     </CardContent>

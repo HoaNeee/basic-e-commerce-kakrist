@@ -1,4 +1,4 @@
-export interface BillModel {
+export interface OrderModel {
   _id: string;
   user_id: string;
   products: Product[];

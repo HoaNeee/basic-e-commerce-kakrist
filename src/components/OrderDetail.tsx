@@ -1,7 +1,7 @@
 import { get } from "@/utils/requets";
 import React, { useEffect, useState } from "react";
 import ReviewOrder from "./ReviewOrder";
-import { BillModel } from "@/models/billModel";
+import { OrderModel } from "@/models/orderModel";
 import { Button } from "./ui/button";
 import { IoArrowBack } from "react-icons/io5";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ interface Props {
 const OrderDetail = (props: Props) => {
   const { order_id } = props;
 
-  const [bill, setBill] = useState<BillModel>();
+  const [order, setOrder] = useState<OrderModel>();
 
   const router = useRouter();
 
@@ -24,8 +24,8 @@ const OrderDetail = (props: Props) => {
 
   const getData = async () => {
     try {
-      const response = await get("/bills/detail/" + order_id);
-      setBill(response.data);
+      const response = await get("/orders/detail/" + order_id);
+      setOrder(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -38,7 +38,7 @@ const OrderDetail = (props: Props) => {
           <IoArrowBack />
         </Button>
       </div>
-      <ReviewOrder bill={bill} />
+      <ReviewOrder order={order} />
     </div>
   );
 };

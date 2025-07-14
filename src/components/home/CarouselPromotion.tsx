@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Button } from "../ui/button";
@@ -7,6 +5,7 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import { CarouselComponent } from "../CarouselComponent";
 import { PromotionModel } from "@/models/promotionModel";
 import { VND } from "@/utils/formatCurrency";
+import Link from "next/link";
 
 interface Props {
   promotions?: PromotionModel[];
@@ -51,9 +50,12 @@ export function CarouselPromotion(props: Props) {
                       {item.promotionType === "percent" ? "%" : ""} OFF
                     </p>
                     <div>
-                      <Button className="py-6">
-                        Shop now
-                        <FaLongArrowAltRight />
+                      <Button className="py-6" asChild>
+                        <Link href={"/shop"}>
+                          {" "}
+                          Shop now
+                          <FaLongArrowAltRight />
+                        </Link>
                       </Button>
                     </div>
                   </div>

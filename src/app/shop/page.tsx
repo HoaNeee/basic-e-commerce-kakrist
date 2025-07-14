@@ -36,6 +36,11 @@ import { CategoryModel } from "@/models/categoryModel";
 import { ProductModel } from "@/models/productModel";
 import { Supplier } from "@/models/supplier";
 import { addProduct } from "@/redux/reducer/cartReducer";
+import {
+  handleToggleFavorite,
+  listFavoriteToggle,
+  toggleProduct,
+} from "@/redux/reducer/favoriteReducer";
 import { RootState } from "@/redux/store";
 import { createTree } from "@/utils/createTree";
 import { get, post } from "@/utils/requets";
@@ -53,6 +58,7 @@ import { LuPlus } from "react-icons/lu";
 import { RiListCheck2 } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
+import lodash from "lodash";
 
 const Shop = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -70,6 +76,7 @@ const Shop = () => {
   const pathName = usePathname();
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
+  const listFavorite = useSelector((state: RootState) => state.favorite.list);
   const dispatch = useDispatch();
 
   const filter_cats = searchParams.get("filter_cats");
@@ -613,6 +620,27 @@ const Shop = () => {
     }
   };
 
+  const handleFavorite = async (product_id: string) => {
+    try {
+      if (!auth.isLogin) {
+        const next = encodeURIComponent(`${pathName}?${searchParams}`);
+
+        router.push("/auth/login?next=" + next);
+
+        return;
+      }
+      dispatch(toggleProduct(product_id));
+      const list = listFavoriteToggle(listFavorite, product_id);
+      debounceToggleFavorite(list);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const debounceToggleFavorite = React.useRef(
+    lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
+  ).current;
+
   return (
     <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
       <div className="flex">
@@ -620,7 +648,7 @@ const Shop = () => {
           <Accordion
             type="multiple"
             className="w-full space-y-3"
-            defaultValue={["item-3"]}
+            defaultValue={["item-1"]}
           >
             <AccordionItem
               value="item-1"
@@ -766,6 +794,8 @@ const Shop = () => {
                     onAddToCart={(item) => {
                       handleCart(item);
                     }}
+                    onToggleFavorite={() => handleFavorite(item._id)}
+                    favorited={listFavorite.includes(item._id)}
                   />
                 ))}
               </div>
