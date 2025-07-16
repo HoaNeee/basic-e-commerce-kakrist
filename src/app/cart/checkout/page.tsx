@@ -171,6 +171,8 @@ const Checkout = () => {
               : item.price,
           options: item?.options_info?.map((it) => it.title),
           quantity: item.quantity,
+          cost: item.cost,
+          SKU: item.SKU,
         };
       });
 

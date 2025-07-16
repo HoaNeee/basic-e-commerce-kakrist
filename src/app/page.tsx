@@ -40,7 +40,7 @@ const getPromotions = async () => {
 
 const getBestSeller = async () => {
   try {
-    const api = `/products/best-seller`;
+    const api = `/products/best-seller?page=1&limit=8`;
     const response = await get(api);
 
     return response.data;
