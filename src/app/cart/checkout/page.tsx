@@ -98,9 +98,9 @@ const Checkout = () => {
           <div className="flex items-center gap-3 py-2">
             <div className="w-16 h-16 bg-[#f1f1f3]">
               <img
-                src={item.thumbnail}
+                src={item.thumbnail ? item.thumbnail : item.thumbnail_product}
                 alt={item.title}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-xs"
               />
             </div>
             <div className="flex flex-col gap-2 flex-1">
@@ -164,7 +164,7 @@ const Checkout = () => {
           product_id: item.product_id,
           sub_product_id: item.sub_product_id || null,
           title: item.title,
-          thumbnail: item.thumbnail,
+          thumbnail: item.thumbnail ? item.thumbnail : item.thumbnail_product,
           price:
             item.discountedPrice !== null && item.discountedPrice !== undefined
               ? item.discountedPrice

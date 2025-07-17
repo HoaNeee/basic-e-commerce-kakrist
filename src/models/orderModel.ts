@@ -4,6 +4,8 @@ export interface OrderModel {
   products: Product[];
   promotion?: Promotion;
   shippingAddress: Address;
+  totalPrice?: number;
+  orderNo: string;
   status: string;
   paymentMethod: string;
   paymentStatus: number;

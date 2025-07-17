@@ -19,13 +19,13 @@ const Order = () => {
   const [orders, setOrders] = useState<OrderModel[]>([]);
   const [resonCancel, setResonCancel] = useState("");
   const [isUpdating, setIsUpdating] = useState<{
-    order_id: string;
+    order_no: string;
     loading: boolean;
   }>();
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const order_id = searchParams.get("order_id");
+  const order_no = searchParams.get("order_no");
 
   useEffect(() => {
     getOrders();
@@ -123,7 +123,7 @@ const Order = () => {
   const handleCancelOrder = async (order: OrderModel) => {
     try {
       setIsUpdating({
-        order_id: order._id,
+        order_no: order.orderNo,
         loading: true,
       });
       await patch("/orders/change-status/" + order._id, {
@@ -150,14 +150,14 @@ const Order = () => {
       toast.error(error.message);
     } finally {
       setIsUpdating({
-        order_id: order._id,
+        order_no: order._id,
         loading: false,
       });
     }
   };
 
-  return order_id ? (
-    <OrderDetail order_id={order_id} />
+  return order_no ? (
+    <OrderDetail order_no={order_no} />
   ) : (
     <div className="w-full h-full">
       <div className="flex flex-col gap-5">
@@ -174,9 +174,9 @@ const Order = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-18 h-18 bg-muted">
                     <img
-                      src={order.products[0].thumbnail}
+                      src={order?.products[0].thumbnail}
                       alt={""}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover rounded-xs"
                     />
                   </div>
                   <div className="text-sm flex flex-col gap-1">
@@ -220,7 +220,9 @@ const Order = () => {
                       variant={"outline"}
                       className="py-5"
                       onClick={() => {
-                        router.push("/profile/order?order_id=" + order._id);
+                        router.push(
+                          "/profile/orders?order_no=" + order.orderNo
+                        );
                       }}
                     >
                       View Order
@@ -247,7 +249,7 @@ const Order = () => {
                           <ButtonLoading
                             typeLoading={1}
                             loading={
-                              isUpdating?.order_id === order._id
+                              isUpdating?.order_no === order.orderNo
                                 ? isUpdating.loading
                                 : false
                             }

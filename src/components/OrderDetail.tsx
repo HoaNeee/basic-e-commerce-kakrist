@@ -7,11 +7,11 @@ import { IoArrowBack } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  order_id: string;
+  order_no: string;
 }
 
 const OrderDetail = (props: Props) => {
-  const { order_id } = props;
+  const { order_no } = props;
 
   const [order, setOrder] = useState<OrderModel>();
 
@@ -19,12 +19,12 @@ const OrderDetail = (props: Props) => {
 
   useEffect(() => {
     getData();
-    console.log(order_id);
+    console.log(order_no);
   }, []);
 
   const getData = async () => {
     try {
-      const response = await get("/orders/detail/" + order_id);
+      const response = await get("/orders/detail/" + order_no);
       setOrder(response.data);
     } catch (error) {
       console.log(error);

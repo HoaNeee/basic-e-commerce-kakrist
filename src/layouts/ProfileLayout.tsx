@@ -26,7 +26,7 @@ const tabs = [
   },
   {
     name: "My Order",
-    value: "/order",
+    value: "/orders",
     icon: Package,
   },
   {

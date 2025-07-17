@@ -150,9 +150,13 @@ const Header = () => {
                                 >
                                   <div className="w-17 h-17 object-cover bg-[#F1F1F3]">
                                     <img
-                                      src={item.thumbnail}
+                                      src={
+                                        item.thumbnail
+                                          ? item.thumbnail
+                                          : item.thumbnail_product
+                                      }
                                       alt="image"
-                                      className="w-full h-full"
+                                      className="w-full h-full object-cover rounded-xs"
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 items-start justify-self-start">

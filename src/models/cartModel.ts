@@ -12,8 +12,8 @@ export interface CartModel {
   createdAt?: string;
   updatedAt?: string;
   thumbnail?: string;
-  thumbnail_sub_product?: string;
-  cost: number;
+  thumbnail_product?: string;
+  cost?: number;
   price: number;
   discountedPrice?: number;
   productType: "simple" | "variations";

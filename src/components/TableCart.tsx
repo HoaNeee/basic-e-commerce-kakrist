@@ -126,7 +126,7 @@ export function TableCart(props: Props) {
               <img
                 src={product.thumbnail}
                 alt={product.title}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-xs"
               />
             </div>
             <div className="flex flex-col gap-2 flex-1">
