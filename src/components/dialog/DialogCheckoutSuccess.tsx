@@ -46,7 +46,7 @@ const DialogCheckoutSuccess = (props: Props) => {
             <AlertDialogAction
               className="py-6"
               onClick={() => {
-                router.replace("/profile/order");
+                router.replace("/profile/orders");
               }}
             >
               View Order

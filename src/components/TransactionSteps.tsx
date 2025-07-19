@@ -53,97 +53,97 @@ const {
 interface Props {
   onNextStep?: (step: string, val?: any) => void;
   cartsCheckout?: CartModel[];
+  isProceed?: boolean;
 }
 
 export function TransactionSteps(props: Props) {
-  const { onNextStep, cartsCheckout } = props;
+  const { onNextStep, cartsCheckout, isProceed } = props;
 
   const [openDialog, setOpenDialog] = useState(false);
   const [prevStep, setPrevStep] = useState<any>();
 
   return (
-    <>
-      <StepperProvider className="space-y-4 relative" variant="horizontal">
-        {({ methods }) => (
-          <>
-            <StepperNavigation>
-              {methods.all.map((step) => (
-                <StepperStep
-                  key={step.id}
-                  of={step.id}
-                  onClick={() => {
-                    const current = methods.current;
-                    if (current.id > step.id) {
-                      setPrevStep(step.id);
-
-                      setOpenDialog(true);
-                    }
-
-                    // console.log(step)
-                  }}
-                  icon={<div className="">{step.icon}</div>}
-                >
-                  <StepperTitle>{step.title}</StepperTitle>
-                </StepperStep>
-              ))}
-            </StepperNavigation>
-            {methods.switch({
-              "1": (step) => (
-                <Content
-                  step={step.id}
-                  onNextStep={(id, val) => {
+    isProceed && (
+      <>
+        <StepperProvider className="space-y-4 relative" variant="horizontal">
+          {({ methods }) => (
+            <>
+              <StepperNavigation>
+                {methods.all.map((step) => (
+                  <StepperStep
+                    key={step.id}
+                    of={step.id}
+                    onClick={() => {
+                      const current = methods.current;
+                      if (current.id > step.id) {
+                        setPrevStep(step.id);
+                        setOpenDialog(true);
+                      }
+                    }}
+                    icon={<div className="">{step.icon}</div>}
+                  >
+                    <StepperTitle>{step.title}</StepperTitle>
+                  </StepperStep>
+                ))}
+              </StepperNavigation>
+              {methods.switch({
+                "1": (step) => (
+                  <Content
+                    step={step.id}
+                    onNextStep={(id, val) => {
+                      if (onNextStep) {
+                        onNextStep(id, {
+                          address: val,
+                        });
+                      }
+                      methods.goTo(id);
+                    }}
+                  />
+                ),
+                "2": (step) => (
+                  <Content
+                    step={step.id}
+                    onNextStep={(id, val) => {
+                      if (onNextStep) {
+                        onNextStep(id, {
+                          payment: val,
+                        });
+                      }
+                      methods.goTo(id);
+                    }}
+                  />
+                ),
+                "3": (step) => (
+                  <Content
+                    step={step.id}
+                    //FIX THIS
+                    onNextStep={(id, val) => {
+                      if (onNextStep) {
+                        onNextStep(id, val);
+                      }
+                      methods.goTo(id);
+                    }}
+                    cartsCheckout={cartsCheckout}
+                  />
+                ),
+              })}
+              <Dialog
+                open={openDialog}
+                setOpen={setOpenDialog}
+                onOK={() => {
+                  if (prevStep) {
+                    methods.goTo(prevStep);
                     if (onNextStep) {
-                      onNextStep(id, {
-                        address: val,
-                      });
+                      onNextStep(prevStep);
                     }
-                    methods.goTo(id);
-                  }}
-                />
-              ),
-              "2": (step) => (
-                <Content
-                  step={step.id}
-                  onNextStep={(id, val) => {
-                    if (onNextStep) {
-                      onNextStep(id, {
-                        payment: val,
-                      });
-                    }
-                    methods.goTo(id);
-                  }}
-                />
-              ),
-              "3": (step) => (
-                <Content
-                  step={step.id}
-                  //FIX THIS
-                  onNextStep={(id, val) => {
-                    if (onNextStep) {
-                      onNextStep(id, val);
-                    }
-                    methods.goTo(id);
-                  }}
-                  cartsCheckout={cartsCheckout}
-                />
-              ),
-            })}
-            <Dialog
-              open={openDialog}
-              setOpen={setOpenDialog}
-              onOK={() => {
-                if (prevStep) {
-                  methods.goTo(prevStep);
-                  if (onNextStep) {
-                    onNextStep(prevStep);
                   }
-                }
-              }}
-            />
-          </>
-        )}
-      </StepperProvider>
-    </>
+                }}
+              />
+            </>
+          )}
+        </StepperProvider>
+      </>
+    )
   );
 }
 

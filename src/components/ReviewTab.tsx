@@ -25,6 +25,8 @@ import {
 import { Button } from "./ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface Props {
   product?: ProductModel;
@@ -58,6 +60,8 @@ const RatingTab = (props: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
+  const path = usePathname();
+  const search = useSearchParams().toString();
 
   const handleSubmitReview = async () => {
     setIsPosting(true);
@@ -228,121 +232,143 @@ const RatingTab = (props: Props) => {
       <div className="w-full py-6">
         <h3 className="font-bold">Add Your Review</h3>
 
-        <div className="mt-4">
-          <p className="text-sm">Your Rating</p>
-          <Rating
-            className="mt-1"
-            onValueChange={(e) => {
-              setRateScore(e);
-            }}
-            value={rateScore}
-          >
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <RatingButton
-                key={idx}
-                size={25}
-                className="text-yellow-500"
-                icon={<StarIcon strokeWidth={1} />}
-                index={idx}
-              />
-            ))}
-          </Rating>
-        </div>
-
-        <div className="mt-4 md:w-1/2 w-full">
-          <div className="space-y-1">
-            <Label htmlFor="title" className="text-xs">
-              Title
-            </Label>
-            <Input
-              id="content"
-              placeholder="Your title review"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+        {!auth.isLogin ? (
+          <div className="mt-3 text-muted-foreground">
+            Please{" "}
+            <Link
+              href={`/auth/login?next=${encodeURIComponent(
+                path + (search ? `?${search}` : ``)
+              )}`}
+              className="italic underline text-blue-400"
+            >
+              login
+            </Link>{" "}
+            to write your review.
           </div>
-          <div className="space-y-1 mt-4">
-            <Label htmlFor="content" className="text-xs">
-              Your Reviews
-            </Label>
-            <Textarea
-              id="content"
-              placeholder="Write something here..."
-              className="min-h-50"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-          </div>
-          <FileUpload
-            value={files}
-            onValueChange={setFiles}
-            accept="image/*"
-            maxFiles={5}
-            className="w-full max-w-xs mt-6"
-            multiple
-          >
-            <FileUploadDropzone>
-              <div className="flex flex-col items-center gap-1">
-                <div className="flex items-center justify-center rounded-full border p-2.5">
-                  <Upload className="size-6 text-muted-foreground" />
-                </div>
-                <p className="font-medium text-sm">Drag & drop files here</p>
-                <p className="text-muted-foreground text-xs">
-                  Or click to browse (max 5 files)
-                </p>
-              </div>
-              <FileUploadTrigger asChild>
-                <Button variant="outline" size="sm" className="mt-2 w-fit">
-                  Browse files
-                </Button>
-              </FileUploadTrigger>
-            </FileUploadDropzone>
-            <FileUploadList orientation="horizontal" className="gap-3">
-              {files.map((file, index) => (
-                <FileUploadItem
-                  key={index}
-                  value={file}
-                  className="p-0 border-none relative"
-                >
-                  <FileUploadItemPreview
-                    className="h-20 w-20"
-                    render={() => {
-                      return (
-                        <div className="relative w-full h-full">
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt="this is image"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      );
-                    }}
+        ) : (
+          <>
+            <div className="mt-4">
+              <p className="text-sm">Your Rating</p>
+              <Rating
+                className="mt-1"
+                onValueChange={(e) => {
+                  setRateScore(e);
+                }}
+                value={rateScore}
+              >
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <RatingButton
+                    key={idx}
+                    size={25}
+                    className="text-yellow-500"
+                    icon={<StarIcon strokeWidth={1} />}
+                    index={idx}
                   />
-                  <div className="absolute -top-2.5 -right-3 bg-muted rounded-full">
-                    <FileUploadItemDelete
-                      asChild
-                      className="hover:rounded-full"
-                      title="Remove this file"
-                    >
-                      <Button variant="ghost" size="icon" className="size-7">
-                        <X />
-                      </Button>
-                    </FileUploadItemDelete>
-                  </div>
-                </FileUploadItem>
-              ))}
-            </FileUploadList>
-          </FileUpload>
-        </div>
+                ))}
+              </Rating>
+            </div>
 
-        <ButtonLoading
-          loading={isPosting}
-          disabled={!rateScore}
-          className="px-10 py-6 mt-6"
-          onClick={handleSubmitReview}
-        >
-          Submit
-        </ButtonLoading>
+            <div className="mt-4 md:w-1/2 w-full">
+              <div className="space-y-1">
+                <Label htmlFor="title" className="text-xs">
+                  Title
+                </Label>
+                <Input
+                  id="content"
+                  placeholder="Your title review"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1 mt-4">
+                <Label htmlFor="content" className="text-xs">
+                  Your Reviews
+                </Label>
+                <Textarea
+                  id="content"
+                  placeholder="Write something here..."
+                  className="min-h-50"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+              </div>
+              <FileUpload
+                value={files}
+                onValueChange={setFiles}
+                accept="image/*"
+                maxFiles={5}
+                className="w-full max-w-xs mt-6"
+                multiple
+              >
+                <FileUploadDropzone>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex items-center justify-center rounded-full border p-2.5">
+                      <Upload className="size-6 text-muted-foreground" />
+                    </div>
+                    <p className="font-medium text-sm">
+                      Drag & drop files here
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      Or click to browse (max 5 files)
+                    </p>
+                  </div>
+                  <FileUploadTrigger asChild>
+                    <Button variant="outline" size="sm" className="mt-2 w-fit">
+                      Browse files
+                    </Button>
+                  </FileUploadTrigger>
+                </FileUploadDropzone>
+                <FileUploadList orientation="horizontal" className="gap-3">
+                  {files.map((file, index) => (
+                    <FileUploadItem
+                      key={index}
+                      value={file}
+                      className="p-0 border-none relative"
+                    >
+                      <FileUploadItemPreview
+                        className="h-20 w-20"
+                        render={() => {
+                          return (
+                            <div className="relative w-full h-full">
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt="this is image"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          );
+                        }}
+                      />
+                      <div className="absolute -top-2.5 -right-3 bg-muted rounded-full">
+                        <FileUploadItemDelete
+                          asChild
+                          className="hover:rounded-full"
+                          title="Remove this file"
+                        >
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                          >
+                            <X />
+                          </Button>
+                        </FileUploadItemDelete>
+                      </div>
+                    </FileUploadItem>
+                  ))}
+                </FileUploadList>
+              </FileUpload>
+            </div>
+            <ButtonLoading
+              loading={isPosting}
+              disabled={!rateScore}
+              className="px-10 py-6 mt-6"
+              onClick={handleSubmitReview}
+            >
+              Submit
+            </ButtonLoading>
+          </>
+        )}
       </div>
     </div>
   );

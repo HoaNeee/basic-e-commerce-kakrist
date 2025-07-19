@@ -31,8 +31,6 @@ const CardProduct = ({
   favorited,
   onToggleFavorite,
 }: Props) => {
-  //lg:w-[calc(100%/4-20px)] w-[calc(100%/2-18px)]
-
   const router = useRouter();
 
   return (
@@ -59,7 +57,7 @@ const CardProduct = ({
           href={`/shop/${item.slug}`}
           className="h-full w-full absolute bg-transparent sm:hidden inline-block"
         />
-        {/* opacity-0 group-hover:opacity-100 */}
+
         <div className="flex flex-col gap-1.5">
           {!isListFavorite ? (
             <>
@@ -119,7 +117,7 @@ const CardProduct = ({
             variant={"outline"}
             onClick={() => {
               if (item.productType === "variations") {
-                router.replace(`/shop/${item.slug}`);
+                router.push(`/shop/${item.slug}`);
               } else {
                 if (onAddToCart) {
                   onAddToCart(item);

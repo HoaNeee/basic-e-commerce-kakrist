@@ -66,7 +66,7 @@ const ProductDetail = () => {
   const [count, setCount] = useState(1);
   const [tabSelected, setTabSelected] = useState<any>();
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
-  const [page, setPage] = useState(1);
+  const [pageReview, setPageReview] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [totalReviews, setTotalReviews] = useState(0);
 
@@ -124,10 +124,10 @@ const ProductDetail = () => {
   }, [productDetail]);
 
   useEffect(() => {
-    if (page !== 1 && productDetail) {
-      showMoreReviews(productDetail._id, page);
+    if (pageReview !== 1 && productDetail) {
+      showMoreReviews(productDetail._id, pageReview);
     }
-  }, [page]);
+  }, [pageReview]);
 
   const getProductDetail = async () => {
     try {
@@ -189,7 +189,9 @@ const ProductDetail = () => {
 
   const getRelatedProducts = async () => {
     try {
-      const response = await get(`/products/related`);
+      const response = await get(
+        `/products/related?product_id=${productDetail?._id}`
+      );
       setRelatedProducts(response.data);
     } catch (error) {
       console.log(error);
@@ -238,6 +240,7 @@ const ProductDetail = () => {
           productType: "variations",
           title: productDetail.title,
           slug: productDetail.slug,
+          SKU: subProductDetail.SKU || "",
         };
 
         const response = await post(`/cart/add-product/${cart.cart_id}`, item);
@@ -260,6 +263,7 @@ const ProductDetail = () => {
           productType: "simple",
           title: productDetail?.title,
           slug: productDetail?.slug,
+          SKU: productDetail?.SKU || "",
         };
         const response = await post(`/cart/add-product/${cart.cart_id}`, item);
 
@@ -737,11 +741,11 @@ const ProductDetail = () => {
                 }}
                 onShowMore={async () => {
                   if (productDetail) {
-                    setPage(page + 1);
+                    setPageReview(pageReview + 1);
                   }
                 }}
                 loading={isLoading}
-                disabledShowMore={page >= Math.ceil(totalReviews / 3)}
+                disabledShowMore={pageReview >= Math.ceil(totalReviews / 3)}
               />
             </TabsContent>
           </div>

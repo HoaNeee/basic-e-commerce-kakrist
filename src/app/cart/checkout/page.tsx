@@ -26,16 +26,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CartModel } from "@/models/cartModel";
+import { syncCart } from "@/redux/reducer/cartReducer";
 import { RootState } from "@/redux/store";
 import { VND } from "@/utils/formatCurrency";
 import { get, post } from "@/utils/requets";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 const Checkout = () => {
-  const cart = useSelector((state: RootState) => state.cart.cart);
   const [cartCheckout, setCartCheckout] = useState<CartModel[]>([]);
   const [CODE, setCODE] = useState("");
   const [errorCode, setErrorCode] = useState("");
@@ -52,7 +52,9 @@ const Checkout = () => {
   const [openDialogSuccess, setOpenDialogSuccess] = useState(false);
   const [subTotal, setSubTotal] = useState(0);
 
+  const cart = useSelector((state: RootState) => state.cart.cart);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (cart) {
@@ -62,7 +64,7 @@ const Checkout = () => {
         setCartCheckout(cart.carts);
       }
     }
-  }, [cart]);
+  }, []);
 
   useEffect(() => {
     if (cartCheckout) {
@@ -185,11 +187,13 @@ const Checkout = () => {
 
       const estimatedDelivery = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3); //FIX THEN
 
+      const cartItem_ids = cartCheckout.map((item) => item.cartItem_id);
+
       const payload: any = {
         products,
         shippingAddress,
         paymentMethod,
-        cartItem_ids: cartCheckout.map((item) => item.cartItem_id),
+        cartItem_ids,
         estimatedDelivery: estimatedDelivery.toISOString(),
       };
 
@@ -201,8 +205,21 @@ const Checkout = () => {
         };
       }
 
-      const response = await post("/orders/create", payload);
-      console.log(response);
+      await post("/orders/create", payload);
+      const newCart = cart.carts.filter((item) => {
+        const id = cartItem_ids.find((it) => it === item.cartItem_id);
+
+        return item.cartItem_id !== id;
+      });
+
+      dispatch(
+        syncCart({
+          cart_id: cart.cart_id,
+          carts: newCart,
+          cartCheckout: cartCheckout,
+        })
+      );
+
       setOpenDialogSuccess(true);
     } catch (error: any) {
       console.log(error);
@@ -265,6 +282,7 @@ const Checkout = () => {
                   setInfomationOrder({ ...infomationOrder, ...val });
                 }}
                 cartsCheckout={cartCheckout}
+                isProceed={isProceed}
               />
             </div>
           </div>

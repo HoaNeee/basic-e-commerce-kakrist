@@ -70,7 +70,7 @@ const FooterComponent = () => {
                     className="w-full h-full outline-0 pl-2 bg-transparent dark"
                     placeholder="Your Email"
                   />
-                  <Button>
+                  <Button title="Subscribe">
                     <FaLongArrowAltRight />
                   </Button>
                 </div>

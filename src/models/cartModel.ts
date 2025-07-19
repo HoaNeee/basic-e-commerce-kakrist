@@ -20,5 +20,5 @@ export interface CartModel {
   title?: string;
   stock?: number;
   slug?: string;
-  SKU?: string;
+  SKU: string;
 }

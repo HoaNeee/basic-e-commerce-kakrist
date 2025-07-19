@@ -577,6 +577,7 @@ const Shop = () => {
         productType: "simple",
         title: product?.title,
         slug: product?.slug,
+        SKU: product?.SKU || "",
       };
       const response = await post(
         `/cart/add-product/${cart.cart_id}`,

@@ -43,6 +43,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { removeList, syncList } from "@/redux/reducer/favoriteReducer";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 const Header = () => {
   const [loading, setLoading] = useState(true);
@@ -69,6 +70,7 @@ const Header = () => {
     try {
       const response = await get("/cart");
       dispatch(syncCart(response.data));
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -77,7 +79,7 @@ const Header = () => {
   const getListFavorite = async () => {
     try {
       const response = await get("/favorites");
-      const list = response.data.list.products || [];
+      const list = response?.data?.list?.products || [];
       dispatch(syncList(list));
     } catch (error) {
       console.log(error);
@@ -242,17 +244,28 @@ const Header = () => {
                           </div>
 
                           <div className="flex flex-col gap-2 mt-4">
-                            <Button
-                              variant={"outline"}
-                              className="py-6"
-                              onClick={() => {
-                                router.push("/cart");
-                                setOpenPopoverCart(false);
-                              }}
-                            >
-                              View Cart
-                            </Button>
-                            <Button className="py-6">Checkout</Button>
+                            <PopoverClose asChild>
+                              <Button
+                                variant={"outline"}
+                                className="py-6"
+                                onClick={() => {
+                                  router.push("/cart");
+                                  setOpenPopoverCart(false);
+                                }}
+                              >
+                                View Cart
+                              </Button>
+                            </PopoverClose>
+                            <PopoverClose asChild>
+                              <Button
+                                className="py-6"
+                                onClick={() => {
+                                  router.push("/cart/checkout");
+                                }}
+                              >
+                                Checkout
+                              </Button>
+                            </PopoverClose>
                           </div>
                         </div>
                       </>
