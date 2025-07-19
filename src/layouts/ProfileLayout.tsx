@@ -14,7 +14,7 @@ import {
   Bell,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const tabs = [
@@ -60,6 +60,12 @@ const ProfileLayout = ({ children }: { children: any }) => {
   const router = useRouter();
   const pathName = usePathname();
   const auth = useSelector((state: RootState) => state.auth.auth);
+
+  useEffect(() => {
+    if (!auth.isLogin) {
+      router.replace("/");
+    }
+  }, [auth]);
 
   return (
     <div className="w-full">

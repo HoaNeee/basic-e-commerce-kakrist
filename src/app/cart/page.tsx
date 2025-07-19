@@ -20,9 +20,15 @@ const Cart = () => {
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
 
   const cart = useSelector((state: RootState) => state.cart.cart);
-
+  const auth = useSelector((state: RootState) => state.auth.auth);
   const router = useRouter();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!auth.isLogin) {
+      router.replace("/");
+    }
+  }, [auth]);
 
   useEffect(() => {
     if (rowSelection) {

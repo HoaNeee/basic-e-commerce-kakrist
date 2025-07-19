@@ -270,7 +270,20 @@ const Header = () => {
                         </div>
                       </>
                     ) : (
-                      <div className="px-4">not login</div>
+                      <div className="px-4 flex w-full h-40 items-center justify-center">
+                        <div className="text-muted-foreground text-base">
+                          Please{" "}
+                          <Link
+                            href={`/auth/login?next=${encodeURIComponent(
+                              "/cart"
+                            )}`}
+                            className="italic underline text-blue-400"
+                          >
+                            login
+                          </Link>{" "}
+                          to view your cart.
+                        </div>
+                      </div>
                     )}
                   </PopoverContent>
                 </Popover>
