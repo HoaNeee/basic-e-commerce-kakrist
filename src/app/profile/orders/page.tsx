@@ -76,7 +76,7 @@ const Order = () => {
       case "shipping":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-yellow-100/50 text-yellow-600">
+            <Badge className="rounded-xs bg-red-100/50 text-red-600">
               Shipping
             </Badge>
             <p className="text-sm tracking-wider">
@@ -111,7 +111,7 @@ const Order = () => {
       default:
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-orange-100/50 text-orange-600">
+            <Badge className="rounded-xs bg-yellow-100/40 text-yellow-500">
               Pending
             </Badge>
             <p className="text-sm tracking-wider">Your order is pending</p>
@@ -228,10 +228,10 @@ const Order = () => {
                     >
                       View Order
                     </Button>
-                    {order.status === "completed" ? (
+                    {order.status === "delivered" ? (
                       <Button className="py-5">Write A review</Button>
                     ) : (
-                      order.status !== "delivering" && (
+                      order.status !== "shipping" && (
                         <DialogConfirm
                           onConfirm={() => handleCancelOrder(order)}
                           description="Can you tell us why you want to cancel?"
