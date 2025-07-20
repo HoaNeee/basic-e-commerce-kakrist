@@ -8,6 +8,10 @@ export interface AuthState {
   isLogin: boolean;
   email: string;
   phone: string;
+  setting?: {
+    notification: boolean;
+    emailNotification: boolean;
+  };
 }
 
 const initialState: AuthState = {
@@ -29,6 +33,9 @@ const authReducer = createSlice({
     addAuth: (state, action) => {
       state.auth = action.payload;
     },
+    updateSetting: (state, action) => {
+      state.auth.setting = action.payload;
+    },
     removeAuth: (state) => {
       state.auth = initialState;
     },
@@ -38,6 +45,7 @@ const authReducer = createSlice({
   },
 });
 
-export const { addAuth, removeAuth, refreshToken } = authReducer.actions;
+export const { addAuth, removeAuth, refreshToken, updateSetting } =
+  authReducer.actions;
 
 export default authReducer.reducer;

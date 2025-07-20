@@ -42,6 +42,7 @@ import { del, patch } from "@/utils/requets";
 import lodash from "lodash";
 import { BiTransferAlt } from "react-icons/bi";
 import DialogChangeOption from "./dialog/DialogChangeOption";
+import Link from "next/link";
 
 interface Props {
   selection: any;
@@ -344,7 +345,13 @@ export function TableCart(props: Props) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      Cart is empty.{" "}
+                      <Link
+                        href={"/shop"}
+                        className="underline hover:text-blue-400"
+                      >
+                        Shop now
+                      </Link>
                     </TableCell>
                   </TableRow>
                 )}

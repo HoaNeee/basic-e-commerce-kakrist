@@ -63,7 +63,7 @@ const Header = () => {
       getCart();
       getListFavorite();
     }
-  }, [auth]);
+  }, [auth.isLogin]);
 
   const getCart = async () => {
     try {
@@ -273,6 +273,7 @@ const Header = () => {
                                 onClick={() => {
                                   router.push("/cart/checkout");
                                 }}
+                                disabled={cart.carts.length <= 0}
                               >
                                 Checkout
                               </Button>

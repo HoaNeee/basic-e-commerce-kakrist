@@ -99,6 +99,7 @@ const Cart = () => {
                         setOpenAlertDialog(true);
                       }
                     }}
+                    disabled={cart.carts.length <= 0}
                   >
                     Checkout
                   </Button>
