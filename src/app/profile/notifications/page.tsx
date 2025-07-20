@@ -1,7 +1,121 @@
-import React from "react";
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable jsx-a11y/alt-text */
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React, { useEffect, useState } from "react";
+import { formatDistanceStrict } from "date-fns";
+import { get, patch } from "@/utils/requets";
+import { NotificationModel } from "@/models/notificationModel";
+import Link from "next/link";
 
 const Notifications = () => {
-  return <div>Notifications</div>;
+  const [notifications, setNotifications] = useState<NotificationModel[]>([]);
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
+
+  const getNotifications = async () => {
+    try {
+      const api = `/notifications`;
+      const response = await get(api);
+      setNotifications(response.data.notifications);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRead = async (noti_id: string) => {
+    try {
+      const api = `/notifications/read/${noti_id}`;
+      await patch(api, undefined);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const renderItem = (item: NotificationModel) => {
+    return item.type === "profile" ? (
+      <div
+        key={item._id}
+        className="flex justify-between pb-5 border-b-2 border-muted items-center"
+      >
+        <div className="flex items-center gap-4">
+          <Avatar className="size-13">
+            <AvatarImage
+              src={
+                "https://mondialbrand.com/wp-content/uploads/2024/03/anh-anime-0258.jpg"
+              }
+            />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col gap-1">
+            <p className="font-bold">Profile Update</p>
+            <p className="text-sm text-gray-400 tracking-wider">
+              You just update profile
+            </p>
+          </div>
+        </div>
+        <p className="tracking-wider text-gray-400 text-sm">
+          {formatDistanceStrict(
+            new Date("2025-07-19T10:43:45.959+00:00"),
+            new Date(),
+            {
+              addSuffix: true,
+            }
+          )}
+        </p>
+      </div>
+    ) : (
+      <Link
+        href={`${item.ref_link}#${item.ref_id}`}
+        key={item._id}
+        className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative ${
+          item.isRead ? "hover:bg-gray-100/40" : "bg-gray-100"
+        }`}
+        onClick={() => {
+          handleRead(item._id);
+        }}
+      >
+        <div className="flex items-center gap-4">
+          <div
+            className={`size-13 rounded-full overflow-hidden flex items-center justify-center ${
+              item.isRead ? "bg-gray-100" : "bg-gray-300"
+            }`}
+          >
+            <div className="w-6 h-6">
+              <img src={item.image} className="w-full h-full object-cover" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="font-bold">{item.title}</p>
+            <p className="text-sm text-gray-400 tracking-wider">{item.body}</p>
+          </div>
+        </div>
+        <p className="tracking-wider text-gray-400 text-sm">
+          {formatDistanceStrict(new Date(item.createdAt), new Date(), {
+            addSuffix: true,
+          })}
+        </p>
+        {!item.isRead && (
+          <div className="absolute top-2 rounded-full right-2 w-1.5 h-1.5 bg-red-500" />
+        )}
+      </Link>
+    );
+  };
+
+  return (
+    <div className="w-full h-full xl:pr-10">
+      {notifications && notifications.length > 0 ? (
+        <div className="flex flex-col gap-1">
+          {notifications.map((item) => renderItem(item))}
+        </div>
+      ) : (
+        <div>No Data</div>
+      )}
+    </div>
+  );
 };
 
 export default Notifications;

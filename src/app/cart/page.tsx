@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const Cart = () => {
+  const [loaded, setLoaded] = useState(false);
   const [rowSelection, setRowSelection] = useState<any>({});
   const [dataSelected, setDataSelected] = useState<CartModel[]>([]);
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
@@ -25,7 +26,11 @@ const Cart = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!auth.isLogin) {
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!auth.isLogin && loaded) {
       router.replace("/");
     }
   }, [auth]);

@@ -4,6 +4,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RootState } from "@/redux/store";
+import { get } from "@/utils/requets";
 import {
   Settings,
   User,
@@ -14,7 +15,7 @@ import {
   Bell,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const tabs = [
@@ -57,15 +58,35 @@ const tabs = [
 ];
 
 const ProfileLayout = ({ children }: { children: any }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [isCheckRead, setIsCheckRead] = useState(false);
   const router = useRouter();
   const pathName = usePathname();
   const auth = useSelector((state: RootState) => state.auth.auth);
 
   useEffect(() => {
-    if (!auth.isLogin) {
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!auth.isLogin && loaded) {
       router.replace("/");
     }
   }, [auth]);
+
+  useEffect(() => {
+    checkRead();
+  }, [pathName]);
+
+  // FIX THEN
+  const checkRead = async () => {
+    try {
+      const response = await get("/notifications/check-read");
+      setIsCheckRead(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -102,7 +123,13 @@ const ProfileLayout = ({ children }: { children: any }) => {
               value={tab.value}
               className="justify-start rounded-none data-[state=active]:shadow-none data-[state=active]:bg-black data-[state=active]:text-white py-4 transition-all duration-300 tracking-wider cursor-pointer px-5"
             >
-              <tab.icon className="size-5 me-2" /> {tab.name}
+              <div className="relative">
+                <tab.icon className="size-5 me-2" />
+                {tab.value === "/notifications" && isCheckRead && (
+                  <div className="absolute -top-0.5 right-1.5 h-2 w-2 bg-red-500 rounded-full" />
+                )}
+              </div>
+              {tab.name}
             </TabsTrigger>
           ))}
         </TabsList>

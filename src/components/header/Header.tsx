@@ -88,7 +88,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white">
+      <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white drop-shadow-md">
         <div className="container w-full py-5 flex justify-between items-center bg-white xl:px-4 md:px-0 px-2">
           <div>
             <Link className="w-30 h-12 md:block hidden" href="/">
@@ -142,7 +142,11 @@ const Header = () => {
                           )}{" "}
                           items in your cart
                         </p>
-                        <ScrollArea className="h-80 w-full">
+                        <ScrollArea
+                          className={`${
+                            cart.carts && cart.carts.length > 0 ? "h-80" : ""
+                          } w-full`}
+                        >
                           <div className="mt-6 flex flex-col gap-4 px-4">
                             {cart && cart.carts.length > 0 ? (
                               cart.carts.map((item, index) => (
@@ -220,7 +224,15 @@ const Header = () => {
                                 </div>
                               ))
                             ) : (
-                              <div>Cart is empty!</div>
+                              <div className="">
+                                Cart is empty.{" "}
+                                <Link
+                                  href={"/shop"}
+                                  className="underline hover:text-blue-400"
+                                >
+                                  Shop now
+                                </Link>
+                              </div>
                             )}
                           </div>
                         </ScrollArea>

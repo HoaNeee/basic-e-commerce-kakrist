@@ -169,6 +169,7 @@ const Order = () => {
               style={{
                 opacity: order.status === "canceled" ? "0.7" : "1",
               }}
+              id={order.orderNo}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">

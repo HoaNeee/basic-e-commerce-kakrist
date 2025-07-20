@@ -1,7 +1,7 @@
 import HeadContent from "@/components/HeadContent";
 import ProfileLayout from "@/layouts/ProfileLayout";
 
-export default function Profile({
+export default async function Profile({
   children,
 }: Readonly<{
   children: React.ReactNode;
