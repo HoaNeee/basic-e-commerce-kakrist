@@ -68,21 +68,21 @@ export function MenuNav() {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link href={"/"} className="lg:text-[16px] text-sm">
+            <Link href={"/stories"} className="lg:text-[16px] text-sm">
               Our Story
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link href={"/"} className="lg:text-[16px] text-sm">
+            <Link href={"/blogs"} className="lg:text-[16px] text-sm">
               Blog
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link href={"/"} className="lg:text-[16px] text-sm">
+            <Link href={"/contact"} className="lg:text-[16px] text-sm">
               Contact Us
             </Link>
           </NavigationMenuLink>

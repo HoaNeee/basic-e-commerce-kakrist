@@ -24,6 +24,7 @@ import Image from "next/image";
 import IMAGENOTFOUND from "../../assets/imagenotfound.png";
 import { VND } from "@/utils/formatCurrency";
 import ButtonLoading from "../ButtonLoading";
+import { Skeleton } from "../ui/skeleton";
 
 interface Props {
   onOK?: (val?: SubProductDetail) => void;
@@ -44,6 +45,7 @@ const DialogChangeOption = (props: Props) => {
   const [thumbnail, setThumbnail] = useState<string>();
   const [optionsChoosed, setOptionsChoosed] = useState<OptionsInfo[]>([]);
   const [isChanging, setIsChanging] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   useEffect(() => {
     if (items) {
@@ -94,6 +96,7 @@ const DialogChangeOption = (props: Props) => {
 
   const getProductDetail = async (slug: string) => {
     try {
+      setIsLoading(true);
       const response = await get("/products/detail/" + slug);
 
       setProductDetail(response.data.product);
@@ -117,6 +120,8 @@ const DialogChangeOption = (props: Props) => {
     } catch (error: any) {
       console.log(error);
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -249,53 +254,71 @@ const DialogChangeOption = (props: Props) => {
               )}
             </div>
             <div className="mt-3">
-              <div className="h-20 w-20 bg-[#f1f1f3]">
-                <img
-                  src={productDetail?.thumbnail}
-                  alt=""
-                  className="w-full h-full"
-                />
-              </div>
+              {isLoading ? (
+                <div className="h-20 w-20">
+                  <Skeleton className="w-full h-full" />
+                </div>
+              ) : (
+                <div className="h-20 w-20 bg-[#f1f1f3]">
+                  <img
+                    src={productDetail?.thumbnail}
+                    alt=""
+                    className="w-full h-full"
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="w-full px-5 py-2 relative">
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3 my-1">
-                {productDetail?.productType === "simple" ? (
-                  <>
-                    {productDetail.discountedPrice !== undefined &&
-                    productDetail.discountedPrice !== null ? (
-                      <>
-                        <p>
-                          {VND.format(Number(productDetail.discountedPrice))}
-                        </p>
-                        <p className="line-through">
-                          {VND.format(Number(productDetail.price))}
-                        </p>
-                      </>
-                    ) : (
-                      <p>{VND.format(Number(productDetail.price))}</p>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {productDetail && subProductDetail ? (
-                      <p>{VND.format(Number(subProductDetail.price))}</p>
-                    ) : (
-                      productDetail && (
-                        <p>
-                          {VND.format(productDetail.rangePrice?.min || 0)} -{" "}
-                          {VND.format(productDetail.rangePrice?.max || 0)}
-                        </p>
-                      )
-                    )}
-                  </>
-                )}
-              </div>
-
-              <div className="mt-2 flex flex-col gap-5">
-                {renderSubproducts(variations || [])}
-              </div>
+              {isLoading ? (
+                <div className="my-1">
+                  <Skeleton className="h-5 w-30" />
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 my-1">
+                  Price:
+                  {productDetail?.productType === "simple" ? (
+                    <>
+                      {productDetail.discountedPrice !== undefined &&
+                      productDetail.discountedPrice !== null ? (
+                        <>
+                          <p>
+                            {VND.format(Number(productDetail.discountedPrice))}
+                          </p>
+                          <p className="line-through">
+                            {VND.format(Number(productDetail.price))}
+                          </p>
+                        </>
+                      ) : (
+                        <p>{VND.format(Number(productDetail.price))}</p>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {productDetail && subProductDetail ? (
+                        <p>{VND.format(Number(subProductDetail.price))}</p>
+                      ) : (
+                        productDetail && (
+                          <p>
+                            {VND.format(productDetail.rangePrice?.min || 0)} -{" "}
+                            {VND.format(productDetail.rangePrice?.max || 0)}
+                          </p>
+                        )
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+              {isLoading ? (
+                <div className="mt-2 flex flex-col gap-5">
+                  <Skeleton className="w-5/6 h-9" />
+                </div>
+              ) : (
+                <div className="mt-2 flex flex-col gap-5">
+                  {renderSubproducts(variations || [])}
+                </div>
+              )}
             </div>
           </div>
         </div>

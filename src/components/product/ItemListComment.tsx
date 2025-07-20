@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Rating, RatingButton } from "../ui/rating";
-import { StarIcon } from "lucide-react";
+import { StarIcon, User } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import ListComment from "./ListComment";
@@ -53,15 +53,11 @@ const ItemListComment = (props: Props) => {
   return (
     <div className="w-full">
       <div className={`flex gap-3 ${isComment ? "" : "items-center"}`}>
-        <Avatar>
-          <AvatarImage
-            src={
-              item.user?.avatar ??
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRadJ-YmNxJTg6v9iO22fzR_65KenYJHFB5zg&s"
-            }
-            alt="avatar"
-          />
-          <AvatarFallback>CN</AvatarFallback>
+        <Avatar className="bg-gray-100/50">
+          <AvatarImage src={item.user?.avatar} alt="avatar" />
+          <AvatarFallback>
+            <User size={22} />
+          </AvatarFallback>
         </Avatar>
         <div className="">
           {item.user?.firstName || item.user?.lastName ? (

@@ -30,7 +30,7 @@ async function getCategories() {
 
 const getPromotions = async () => {
   try {
-    const res = await get("/promotions");
+    const res = await get("/promotions?page=1&limit=5");
     return res.data;
   } catch (error) {
     console.log(error);

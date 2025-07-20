@@ -52,10 +52,12 @@ import {
   toggleProduct,
 } from "@/redux/reducer/favoriteReducer";
 import RelatedProduct from "@/components/product/RelatedProduct";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProductDetail = () => {
   const { slug } = useParams();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [productDetail, setProductDetail] = useState<ProductModel>();
   const [variations, setVariations] = useState<VariationModel[]>();
   const [subProducts, setSubProducts] = useState<SubProductModel[]>();
@@ -67,7 +69,7 @@ const ProductDetail = () => {
   const [tabSelected, setTabSelected] = useState<any>();
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
   const [pageReview, setPageReview] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadMoreReview, setIsLoadMoreReview] = useState(false);
   const [totalReviews, setTotalReviews] = useState(0);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
@@ -131,6 +133,7 @@ const ProductDetail = () => {
 
   const getProductDetail = async () => {
     try {
+      setIsLoading(true);
       const response = await get(`/products/detail/${slug}`);
 
       const product: ProductModel = response.data.product;
@@ -158,6 +161,8 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -175,7 +180,7 @@ const ProductDetail = () => {
 
   const showMoreReviews = async (product_id: string, page = 1) => {
     try {
-      setIsLoading(true);
+      setIsLoadMoreReview(true);
       const response = await get(
         `/reviews?product_id=${product_id}&limit=3&page=${page}`
       );
@@ -183,7 +188,7 @@ const ProductDetail = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadMoreReview(false);
     }
   };
 
@@ -372,6 +377,20 @@ const ProductDetail = () => {
     lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
   ).current;
 
+  const renderStock = (stock: number | string) => {
+    return (
+      <Badge
+        className={`rounded-sm ${
+          Number(stock) > 0
+            ? "text-green-600 bg-green-100/50"
+            : "text-red-600 bg-red-100/50"
+        }`}
+      >
+        {Number(stock) > 0 ? "In stock" : "Out of stock"}
+      </Badge>
+    );
+  };
+
   return (
     <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
       <div className="w-full my-6">
@@ -413,249 +432,243 @@ const ProductDetail = () => {
               />
             )}
           </div>
-          <div className="grid grid-cols-4 mt-3 flex-wrap gap-3">
-            {productDetail?.images?.map((img, idx) => {
-              return (
-                <div
-                  key={idx}
-                  className="w-full h-full bg-[#F1F1F3] cursor-pointer"
-                  onClick={() => {
-                    setThumbnail(img);
-                  }}
-                >
-                  <img
-                    src={img}
-                    alt=""
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-              );
-            })}
-          </div>
+          {isLoading && (
+            <div className="grid grid-cols-4 mt-3 flex-wrap gap-3">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={index} className="w-full lg:h-40 md:h-30 h-20" />
+              ))}
+            </div>
+          )}
+          {!isLoading && (
+            <div className="grid grid-cols-4 mt-3 flex-wrap gap-3">
+              {productDetail?.images?.map((img, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    className="w-full h-full bg-[#F1F1F3] cursor-pointer"
+                    onClick={() => {
+                      setThumbnail(img);
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt=""
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div className="w-full px-5 py-2 relative">
-          <div className="absolute top-0 right-0">
-            {productDetail?.productType === "simple" ? (
-              <>
-                <Badge
-                  className={`rounded-sm ${
-                    Number(productDetail.stock) > 0
-                      ? "text-green-600 bg-green-100/50"
-                      : "text-red-600 bg-red-100/50"
-                  }`}
-                >
-                  {Number(productDetail.stock) > 0
-                    ? "In stock"
-                    : "Out of stock"}
-                </Badge>
-              </>
-            ) : (
-              <>
-                {subProductDetail ? (
-                  <>
-                    <Badge
-                      className={`rounded-sm ${
-                        Number(subProductDetail.stock) > 0
-                          ? "text-green-600 bg-green-100/50"
-                          : "text-red-600 bg-red-100/50"
-                      }`}
-                    >
-                      {Number(subProductDetail?.stock) > 0
-                        ? "In stock"
-                        : "Out of stock"}
-                    </Badge>
-                  </>
-                ) : (
-                  productDetail && (
-                    <>
-                      <Badge
-                        className={`rounded-sm ${
-                          Number(productDetail.rangeStock) > 0
-                            ? "text-green-600 bg-green-100/50"
-                            : "text-red-600 bg-red-100/50"
-                        }`}
-                      >
-                        {Number(productDetail.rangeStock) > 0
-                          ? "In stock"
-                          : "Out of stock"}
-                      </Badge>
-                    </>
-                  )
-                )}
-              </>
-            )}
-          </div>
-          <div className="flex flex-col gap-4">
-            <p className="text-2xl font-black">{productDetail?.supplierName}</p>
-            <p className="font-medium">{productDetail?.title}</p>
-            <div className="flex items-center gap-2">
-              <Rating
-                className="mt-1"
-                readOnly
-                defaultValue={productDetail?.review?.average}
-              >
-                {Array.from({ length: 5 }).map((_, idx) => (
-                  <RatingButton
-                    key={idx}
-                    size={20}
-                    className={
-                      idx < (productDetail?.review?.average || 0)
-                        ? "text-yellow-500 fill-current"
-                        : "text-muted-foreground"
-                    }
-                    icon={
-                      <StarIcon
-                        strokeWidth={1}
-                        fill={
-                          idx < (productDetail?.review?.average || 0)
-                            ? ""
-                            : "white"
-                        }
-                      />
-                    }
-                    index={idx}
-                  />
-                ))}
-              </Rating>
-              <div className="mt-1 flex gap-2 items-center">
-                <p className="text-sm text-neutral-400">
-                  {productDetail?.review?.average || 0}.0
-                </p>
-                <p className="text-sm text-neutral-400">
-                  ({productDetail?.review?.numberPeople || 0} Reviews)
-                </p>
+          {isLoading && (
+            <div className="w-full h-full flex flex-col gap-4">
+              <Skeleton className="h-7 w-30" />
+              <Skeleton className="h-5 w-36" />
+              <Skeleton className="h-3 w-42 mt-1" />
+              <Skeleton className="h-5 w-36 my-1" />
+              <div className="space-y-1.5">
+                <Skeleton className="h-2.5 w-full" />
+                <Skeleton className="h-2.5 w-full" />
+                <Skeleton className="h-2.5 w-2/3" />
               </div>
+              <Skeleton className="h-7 w-1/2 my-1" />
+              <Skeleton className="h-7 w-1/2 my-1" />
+              <Skeleton className="h-11 w-2/3 my-1" />
             </div>
-            <div className="flex items-center gap-3 my-1">
+          )}
+          {!isLoading && (
+            <div className="absolute top-0 right-0">
               {productDetail?.productType === "simple" ? (
-                <>
-                  {productDetail.discountedPrice !== undefined &&
-                  productDetail.discountedPrice !== null ? (
-                    <>
-                      <p>{VND.format(Number(productDetail.discountedPrice))}</p>
-                      <p className="line-through">
-                        {VND.format(Number(productDetail.price))}
-                      </p>
-                    </>
-                  ) : (
-                    <p>{VND.format(Number(productDetail.price))}</p>
-                  )}
-                </>
+                renderStock(productDetail.stock || 0)
               ) : (
                 <>
-                  {productDetail && subProductDetail ? (
-                    <p>{VND.format(Number(subProductDetail.price))}</p>
-                  ) : (
-                    productDetail && (
-                      <p>
-                        {VND.format(productDetail.rangePrice?.min || 0)} -{" "}
-                        {VND.format(productDetail.rangePrice?.max || 0)}
-                      </p>
-                    )
-                  )}
+                  {subProductDetail
+                    ? renderStock(subProductDetail?.stock || 0)
+                    : productDetail &&
+                      renderStock(productDetail?.rangeStock || 0)}
                 </>
               )}
             </div>
-            <p className="text-sm tracking-wider">{productDetail?.content}</p>
+          )}
+          {!isLoading && (
+            <div className="flex flex-col gap-4">
+              <p className="text-2xl font-black">
+                {productDetail?.supplierName}
+              </p>
+              <p className="font-medium">{productDetail?.title}</p>
+              <div className="flex items-center gap-2">
+                <Rating
+                  className="mt-1"
+                  readOnly
+                  defaultValue={productDetail?.review?.average}
+                >
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <RatingButton
+                      key={idx}
+                      size={20}
+                      className={
+                        idx < (productDetail?.review?.average || 0)
+                          ? "text-yellow-500 fill-current"
+                          : "text-muted-foreground"
+                      }
+                      icon={
+                        <StarIcon
+                          strokeWidth={1}
+                          fill={
+                            idx < (productDetail?.review?.average || 0)
+                              ? ""
+                              : "white"
+                          }
+                        />
+                      }
+                      index={idx}
+                    />
+                  ))}
+                </Rating>
+                <div className="mt-1 flex gap-2 items-center">
+                  <p className="text-sm text-neutral-400">
+                    {productDetail?.review?.average || 0}.0
+                  </p>
+                  <p className="text-sm text-neutral-400">
+                    ({productDetail?.review?.numberPeople || 0} Reviews)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 my-1">
+                {productDetail?.productType === "simple" ? (
+                  <>
+                    {productDetail.discountedPrice !== undefined &&
+                    productDetail.discountedPrice !== null ? (
+                      <>
+                        <p>
+                          {VND.format(Number(productDetail.discountedPrice))}
+                        </p>
+                        <p className="line-through">
+                          {VND.format(Number(productDetail.price))}
+                        </p>
+                      </>
+                    ) : (
+                      <p>{VND.format(Number(productDetail.price))}</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {productDetail && subProductDetail ? (
+                      <p>{VND.format(Number(subProductDetail.price))}</p>
+                    ) : (
+                      productDetail && (
+                        <p>
+                          {VND.format(productDetail.rangePrice?.min || 0)} -{" "}
+                          {VND.format(productDetail.rangePrice?.max || 0)}
+                        </p>
+                      )
+                    )}
+                  </>
+                )}
+              </div>
+              <p className="text-sm tracking-wider">{productDetail?.content}</p>
 
-            <div className="mt-2 flex flex-col gap-5">
-              {renderSubproducts(variations || [])}
-            </div>
+              <div className="mt-2 flex flex-col gap-5">
+                {renderSubproducts(variations || [])}
+              </div>
 
-            <div className="flex items-center gap-3 mt-7">
-              <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg px-2">
-                <Button
-                  variant={"link"}
-                  className=""
-                  style={{
-                    padding: 0,
-                  }}
-                  disabled={count === 1}
-                  onClick={() => {
-                    if (productDetail?.productType === "variations") {
-                      if (subProductDetail) {
+              <div className="flex items-center gap-3 mt-7">
+                <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg px-2">
+                  <Button
+                    variant={"link"}
+                    className=""
+                    style={{
+                      padding: 0,
+                    }}
+                    disabled={count === 1}
+                    onClick={() => {
+                      if (productDetail?.productType === "variations") {
+                        if (subProductDetail) {
+                          if (count > 1) {
+                            setCount(count - 1);
+                          }
+                        }
+                      } else {
                         if (count > 1) {
                           setCount(count - 1);
                         }
                       }
-                    } else {
-                      if (count > 1) {
-                        setCount(count - 1);
-                      }
-                    }
-                  }}
-                >
-                  <AiOutlineMinus size={20} />
-                </Button>
-                <div className="w-5 text-center">{count}</div>
-                <Button
-                  variant={"link"}
-                  style={{
-                    padding: 0,
-                  }}
-                  onClick={() => {
-                    if (productDetail?.productType === "variations") {
-                      if (subProductDetail) {
+                    }}
+                  >
+                    <AiOutlineMinus size={20} />
+                  </Button>
+                  <div className="w-5 text-center">{count}</div>
+                  <Button
+                    variant={"link"}
+                    style={{
+                      padding: 0,
+                    }}
+                    onClick={() => {
+                      if (productDetail?.productType === "variations") {
+                        if (subProductDetail) {
+                          setCount(count + 1);
+                        }
+                      } else {
                         setCount(count + 1);
                       }
-                    } else {
-                      setCount(count + 1);
+                    }}
+                    disabled={
+                      productDetail?.productType === "simple"
+                        ? count === productDetail.stock
+                        : subProductDetail &&
+                          count >= Number(subProductDetail?.stock)
                     }
-                  }}
-                  disabled={
-                    productDetail?.productType === "simple"
-                      ? count === productDetail.stock
-                      : subProductDetail &&
-                        count >= Number(subProductDetail?.stock)
-                  }
-                >
-                  <GoPlus size={20} />
-                </Button>
-              </div>
-              <div className="w-3/6 px-2 h-full">
-                <Button
-                  className="w-full py-5.5"
-                  onClick={handleCart}
-                  disabled={
-                    productDetail?.productType === "variations"
-                      ? !subProductDetail
-                      : false
-                  }
-                >
-                  Add to cart
-                </Button>
-              </div>
+                  >
+                    <GoPlus size={20} />
+                  </Button>
+                </div>
+                <div className="w-3/6 px-2 h-full">
+                  <Button
+                    className="w-full py-5.5"
+                    onClick={handleCart}
+                    disabled={
+                      productDetail?.productType === "variations"
+                        ? !subProductDetail
+                        : false
+                    }
+                  >
+                    Add to cart
+                  </Button>
+                </div>
 
-              <Button
-                variant={"outline"}
-                className="h-[44px] w-[44px] relative"
-                onClick={async () => {
-                  await handleFavorite();
-                }}
-              >
-                <div
-                  className="transition-all duration-300 absolute w-full h-full flex items-center justify-center"
-                  style={{
-                    opacity: listFavorite.includes(productDetail?._id || "")
-                      ? "0"
-                      : "1",
+                <Button
+                  variant={"outline"}
+                  className="h-[44px] w-[44px] relative"
+                  onClick={async () => {
+                    await handleFavorite();
                   }}
                 >
-                  <FaRegHeart size={22} className="size-5" />
-                </div>
-                <div
-                  className="transition-all duration-300 w-full h-full flex items-center justify-center text-red-500"
-                  style={{
-                    opacity: !listFavorite.includes(productDetail?._id || "")
-                      ? "0"
-                      : "1",
-                  }}
-                >
-                  <FaHeart size={20} className="size-5" />
-                </div>
-              </Button>
+                  <div
+                    className="transition-all duration-300 absolute w-full h-full flex items-center justify-center"
+                    style={{
+                      opacity: listFavorite.includes(productDetail?._id || "")
+                        ? "0"
+                        : "1",
+                    }}
+                  >
+                    <FaRegHeart size={22} className="size-5" />
+                  </div>
+                  <div
+                    className="transition-all duration-300 w-full h-full flex items-center justify-center text-red-500"
+                    style={{
+                      opacity: !listFavorite.includes(productDetail?._id || "")
+                        ? "0"
+                        : "1",
+                    }}
+                  >
+                    <FaHeart size={20} className="size-5" />
+                  </div>
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div className="py-10">
@@ -744,7 +757,7 @@ const ProductDetail = () => {
                     setPageReview(pageReview + 1);
                   }
                 }}
-                loading={isLoading}
+                loading={isLoadMoreReview}
                 disabledShowMore={pageReview >= Math.ceil(totalReviews / 3)}
               />
             </TabsContent>
