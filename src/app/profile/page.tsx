@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { addAuth } from "@/redux/reducer/authReducer";
 import { RiImageEditLine } from "react-icons/ri";
+import Link from "next/link";
 
 const formSchema = z.object({
   firstName: z.any(),
@@ -61,7 +62,6 @@ const formSchema = z.object({
 });
 
 const Profile = () => {
-  // const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [addressDefault, setAddressDefault] = useState<AddressModel>();
   const [avatar, setAvatar] = useState<File>();
@@ -205,7 +205,7 @@ const Profile = () => {
                 }}
               />
               <Avatar className="w-17 h-17">
-                {
+                {(avatar || auth.avatar) && (
                   <AvatarImage
                     src={
                       avatar
@@ -216,7 +216,7 @@ const Profile = () => {
                     }
                     alt="avatar"
                   />
-                }
+                )}
                 <AvatarFallback>
                   <User />
                 </AvatarFallback>
@@ -392,10 +392,16 @@ const Profile = () => {
                 />
               </div>
             </div>
-          </div>{" "}
+          </div>
         </form>
       </Form>
-
+      <div className="mt-6">
+        <Link href={"/profile/change-password"}>
+          <Button variant={"outline"} onClick={() => {}}>
+            Change your Password
+          </Button>
+        </Link>
+      </div>
       <AlertDialog onOpenChange={setOpenDialogConfirm} open={openDialogConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>

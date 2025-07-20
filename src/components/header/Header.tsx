@@ -25,7 +25,6 @@ import { Badge } from "../ui/badge";
 
 import { GoTrash } from "react-icons/go";
 import { VND } from "@/utils/formatCurrency";
-// import * as Popover from "@radix-ui/react-popover";
 import { ScrollArea } from "../ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
@@ -319,7 +318,9 @@ const Header = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger className="focus:outline-none focus:ring-[2px] focus:ring-offset-2 focus:ring-primary rounded-full">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={auth.avatar} alt="avatar" />
+                      {auth.avatar && (
+                        <AvatarImage src={auth.avatar} alt="avatar" />
+                      )}
                       <AvatarFallback>
                         <User />
                       </AvatarFallback>

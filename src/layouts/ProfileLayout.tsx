@@ -13,12 +13,18 @@ import {
   MapPin,
   CreditCard,
   Bell,
+  Lock,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const tabs = [
+  {
+    name: "Change Password",
+    value: "/change-password",
+    icon: Lock,
+  },
   {
     name: "Personal Infomation",
     value: "/",
@@ -101,8 +107,8 @@ const ProfileLayout = ({ children }: { children: any }) => {
         <TabsList className="shrink-0 grid grid-cols-1 p-0 bg-background border-2 border-muted rounded-none h-full pb-6 w-60">
           <div className="py-6 px-4 border-b-2 border-muted">
             <div className="flex items-center gap-3 text-black">
-              <Avatar className="h-13 w-13">
-                <AvatarImage src={auth.avatar} alt="avatar" />
+              <Avatar className="h-13 w-13 bg-gray-100/40">
+                {auth.avatar && <AvatarImage src={auth.avatar} alt="avatar" />}
                 <AvatarFallback className="">
                   <User size={20} />
                 </AvatarFallback>
@@ -117,11 +123,16 @@ const ProfileLayout = ({ children }: { children: any }) => {
               </div>
             </div>
           </div>
-          {tabs.map((tab) => (
+          {tabs.slice(1).map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="justify-start rounded-none data-[state=active]:shadow-none data-[state=active]:bg-black data-[state=active]:text-white py-4 transition-all duration-300 tracking-wider cursor-pointer px-5"
+              className={`justify-start rounded-none data-[state=active]:shadow-none data-[state=active]:bg-black data-[state=active]:text-white py-4 transition-all duration-300 tracking-wider cursor-pointer px-5 ${
+                pathName === "/profile/change-password" && tab.value === "/"
+                  ? "bg-black text-white"
+                  : ""
+              }`}
+              title={tab.name}
             >
               <div className="relative">
                 <tab.icon className="size-5 me-2" />

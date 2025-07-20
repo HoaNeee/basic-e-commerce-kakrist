@@ -27,6 +27,7 @@ import { addAuth } from "@/redux/reducer/authReducer";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { FcGoogle } from "react-icons/fc";
 
 const formSchema = z.object({
   email: z
@@ -180,6 +181,11 @@ const Login = () => {
                 </p>
               }
             </Button>
+
+            {/* <Button variant={"outline"} onClick={() => {}} className="py-6">
+              <FcGoogle size={22} className="size-6" />
+              Login with Google
+            </Button> */}
 
             <div className="text-center mt-5">
               <p>

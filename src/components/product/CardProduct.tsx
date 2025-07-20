@@ -38,14 +38,14 @@ const CardProduct = ({
       className={
         control
           ? cn(
-              "xl:h-[430px] lg:h-[360px] md:h-[430px] h-[360px] rounded-sm overflow-hidden border-0 shadow-none py-0 ",
+              "xl:h-[430px] lg:h-[360px] md:h-[430px] h-[360px] rounded-sm overflow-hidden border-0 shadow-none py-0 group",
               className
             )
-          : "lg:w-[calc(100%/4-20px)] w-[calc(100%/2-18px)] xl:h-[430px] lg:h-[360px] md:h-[430px] h-[360px] rounded-sm overflow-hidden border-0 shadow-none py-0"
+          : "lg:w-[calc(100%/4-20px)] w-[calc(100%/2-18px)] xl:h-[430px] lg:h-[360px] md:h-[430px] h-[360px] rounded-sm overflow-hidden border-0 shadow-none py-0 group"
       }
     >
       <CardContent
-        className="px-0 relative w-full h-full bg-no-repeat bg-cover bg-center group"
+        className="px-0 relative w-full h-full bg-no-repeat bg-cover bg-center"
         style={{
           backgroundImage: `url(${
             item.thumbnail ? item.thumbnail : "../assets/imagenotfound.png"
