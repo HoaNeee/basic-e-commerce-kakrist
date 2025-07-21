@@ -52,7 +52,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GrAppsRounded } from "react-icons/gr";
 import { LuPlus } from "react-icons/lu";
 import { RiListCheck2 } from "react-icons/ri";
@@ -60,6 +60,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import lodash from "lodash";
 import CardSkeleton from "@/components/product/CardSkeleton";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { FiSearch } from "react-icons/fi";
+import { Input } from "@/components/ui/input";
+import { VariationModel } from "@/models/variationModel";
 
 const Shop = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -72,6 +83,8 @@ const Shop = () => {
   const [sortBy, setSortBy] = useState("createdAt-desc");
   const [suppliers, setSuppliers] = useState<Supplier[]>();
   const [isLoading, setIsLoading] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [variations, setVariations] = useState<VariationModel[]>([]);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -86,11 +99,13 @@ const Shop = () => {
   const max_price = searchParams.get("max_price");
   const sort = searchParams.get("sort");
   const supplier_id = searchParams.get("supplier_id");
+  const keySearch = searchParams.get("q");
 
   useEffect(() => {
     getCategories();
     getPrice();
     getSupplier();
+    getVariationOptions();
   }, []);
 
   useEffect(() => {
@@ -103,6 +118,9 @@ const Shop = () => {
 
     if (sort !== null) {
       setSortBy(sort);
+    }
+    if (keySearch) {
+      setKeyword(keySearch);
     }
   }, [searchParams]);
 
@@ -166,14 +184,24 @@ const Shop = () => {
     }
   };
 
-  const createQueryString = useCallback(
-    (name: string, value: string, query = searchParams) => {
-      const params = new URLSearchParams(query);
-      params.set(name, value);
-      return decodeURIComponent(params.toString());
-    },
-    [searchParams]
-  );
+  const getVariationOptions = async () => {
+    try {
+      const response = await get("/products/variations");
+      setVariations(response.data.variations);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createQueryString = (
+    name: string,
+    value: string,
+    query = searchParams
+  ) => {
+    const params = new URLSearchParams(query);
+    params.set(name, value);
+    return decodeURIComponent(params.toString());
+  };
 
   const deleteQueryString = (name: string, query = searchParams) => {
     const params = new URLSearchParams(query);
@@ -445,7 +473,7 @@ const Shop = () => {
                     );
 
                     if (newQuery.includes("page")) {
-                      newQuery = deleteQueryString("page");
+                      newQuery = deleteQueryString("page", newQuery);
                     }
 
                     router.push(`${pathName}?${newQuery}`);
@@ -560,6 +588,67 @@ const Shop = () => {
     );
   };
 
+  const renderVariations = () => {
+    return variations.map((item) => {
+      return (
+        <AccordionItem
+          key={item._id}
+          value={item._id}
+          className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+        >
+          <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
+            Filter By {item.title}
+          </AccordionTrigger>
+          <AccordionContent className="mt-4">
+            <div className="flex flex-col gap-6">
+              {item.options &&
+                item.options?.map((option) => {
+                  const variation = searchParams.get(item.key) || "";
+
+                  return (
+                    <div key={option._id} className="flex items-center gap-2">
+                      <Checkbox
+                        checked={
+                          (variation && option.key === variation) || false
+                        }
+                        id={option._id}
+                        onCheckedChange={(e) => {
+                          let newQuery: any;
+                          if (e) {
+                            if (searchParams.toString().includes("page")) {
+                              newQuery = deleteQueryString("page");
+                            }
+                            newQuery = createQueryString(
+                              item.key,
+                              option.key,
+                              newQuery
+                            );
+                          } else {
+                            if (variation) {
+                              if (searchParams.toString().includes("page")) {
+                                newQuery = deleteQueryString("page");
+                              }
+                              newQuery = createQueryString(
+                                item.key,
+                                "",
+                                newQuery
+                              );
+                            }
+                          }
+                          router.push(`${pathName}?${newQuery}`);
+                        }}
+                      />
+                      <Label htmlFor={option._id}>{option.title}</Label>
+                    </div>
+                  );
+                })}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      );
+    });
+  };
+
   const handleCart = async (product: ProductModel) => {
     if (!auth.isLogin) {
       const next = encodeURIComponent(
@@ -649,15 +738,30 @@ const Shop = () => {
 
   return (
     <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+      <div className="mb-9 flex items-center justify-between px-7">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={"/"}>Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Shop</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <div className="flex">
         <div className="w-1/5 px-6">
           <Accordion
             type="multiple"
             className="w-full space-y-3"
-            defaultValue={["item-1"]}
+            // defaultValue={["item-1"]}
           >
             <AccordionItem
-              value="item-1"
+              value="categories"
               className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
             >
               <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold">
@@ -669,7 +773,7 @@ const Shop = () => {
             </AccordionItem>
 
             <AccordionItem
-              value="item-2"
+              value="price"
               className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
             >
               <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
@@ -681,7 +785,7 @@ const Shop = () => {
             </AccordionItem>
 
             <AccordionItem
-              value="item-3"
+              value="supllier"
               className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
             >
               <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
@@ -691,25 +795,7 @@ const Shop = () => {
                 {renderFilterSupplier()}
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem
-              value="item-4"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                Filter By Color
-              </AccordionTrigger>
-              <AccordionContent className="mt-4">Color</AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem
-              value="item-5"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                Filter By Size
-              </AccordionTrigger>
-              <AccordionContent className="mt-4">Size</AccordionContent>
-            </AccordionItem>
+            {renderVariations()}
           </Accordion>
         </div>
         <div className="flex-1">
@@ -748,9 +834,41 @@ const Shop = () => {
                 )}
             </div>
 
-            <div className="relative">
+            <div className="relative flex gap-2 items-center">
+              <div className="transition-all duration-300 relative">
+                <Input
+                  placeholder="Enter keyword..."
+                  onChange={(e) => setKeyword(e.target.value)}
+                  value={keyword}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      let newQuery: any = createQueryString("q", keyword);
+                      if (newQuery.includes("page")) {
+                        newQuery = deleteQueryString("page", newQuery);
+                      }
+                      router.push(`${pathName}?${newQuery}`);
+                    }
+                  }}
+                  name="key-search"
+                  className="pr-10"
+                />
+                <FiSearch
+                  size={20}
+                  cursor={"pointer"}
+                  onClick={() => {
+                    let newQuery: any = createQueryString("q", keyword);
+                    if (newQuery.includes("page")) {
+                      newQuery = deleteQueryString("page", newQuery);
+                    }
+                    router.push(`${pathName}?${newQuery}`);
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  title="Search"
+                />
+              </div>
+
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild title="Sort result">
                   <Button variant={"ghost"}>
                     Sort by {sortKey(sortBy)}
                     <ChevronDown />

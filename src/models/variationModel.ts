@@ -1,24 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { OptionsInfo } from "./productModel";
-
 export interface VariationModel {
   _id: string;
   title: string;
   key: string;
   description: string;
+  deleted: boolean;
   createdAt: string;
   updatedAt: string;
-  options: OptionsInfo[];
-  __v: number;
+  options: Option[];
 }
 
-export interface VariationOptionModel {
+export interface Option {
   _id: string;
   title: string;
+  variation_id: string;
   key: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
 }
