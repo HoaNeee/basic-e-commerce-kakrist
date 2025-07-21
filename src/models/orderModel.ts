@@ -12,8 +12,11 @@ export interface OrderModel {
   deleted: boolean;
   estimatedDelivery: Date;
   delivered: Date;
-  resonCancel: string;
-  canceledBy: string;
+  cancel?: {
+    canceledBy: string;
+    canceledAt: Date;
+    reasonCancel: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

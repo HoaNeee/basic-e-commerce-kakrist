@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 const Order = () => {
   const [orders, setOrders] = useState<OrderModel[]>([]);
-  const [resonCancel, setResonCancel] = useState("");
+  const [reasonCancel, setReasonCancel] = useState("");
   const [isUpdating, setIsUpdating] = useState<{
     order_no: string;
     loading: boolean;
@@ -129,7 +129,7 @@ const Order = () => {
       await patch("/orders/change-status/" + order._id, {
         status: "canceled",
         canceledBy: "customer",
-        resonCancel: resonCancel,
+        reasonCancel: reasonCancel,
       });
 
       toast.success("This order has been canceled", {
@@ -144,6 +144,11 @@ const Order = () => {
       const index = items.findIndex((item) => item._id === order._id);
       if (index !== -1) {
         items[index].status = "canceled";
+        items[index].cancel = {
+          reasonCancel,
+          canceledBy: "customer",
+          canceledAt: new Date(),
+        };
       }
       setOrders(items);
     } catch (error: any) {
@@ -203,10 +208,13 @@ const Order = () => {
                       <>
                         <p className="text-sm tracking-wider">
                           Cancel By:{" "}
-                          {order.canceledBy === "admin" ? "Shop" : "You"}
+                          {order.cancel?.canceledBy === "admin"
+                            ? "Shop"
+                            : "You"}
                         </p>
                         <p className="text-sm tracking-wider">
-                          Reson: {order.resonCancel}
+                          Reason:{" "}
+                          {order.cancel?.reasonCancel || "Cancel by system"}
                         </p>
                       </>
                     )}
@@ -241,7 +249,7 @@ const Order = () => {
                                 placeholder="Write something to here..."
                                 className="min-h-30"
                                 onChange={(e) => {
-                                  setResonCancel(e.target.value);
+                                  setReasonCancel(e.target.value);
                                 }}
                               />
                             </div>

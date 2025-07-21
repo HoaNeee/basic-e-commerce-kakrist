@@ -98,7 +98,7 @@ const RatingTab = (props: Props) => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 3000);
+      }, 500);
     }
   };
 

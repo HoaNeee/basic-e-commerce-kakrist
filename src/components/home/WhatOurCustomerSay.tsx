@@ -43,7 +43,7 @@ const WhatOurCustomerSay = () => {
 
   const getTopReviews = async () => {
     try {
-      const response = await get("/reviews/top-reviews?page=1&limit=5");
+      const response = await get("/reviews/top-reviews?page=1&limit=3");
       setReviews(response.data.reviews);
     } catch (error) {
       console.log(error);
@@ -60,7 +60,7 @@ const WhatOurCustomerSay = () => {
         className="pl-1 sm:basis-1/2 lg:basis-1/3 flex justify-center"
       >
         <div className="p-1">
-          <Card className="xl:w-sm md:w-xs sm:w-58 w-xs gap-3">
+          <Card className="xl:w-md md:w-xs sm:w-58 w-xs gap-3">
             <CardHeader>
               {!item ? (
                 <div className="flex gap-2">

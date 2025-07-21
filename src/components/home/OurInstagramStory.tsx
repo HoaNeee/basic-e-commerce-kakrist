@@ -1,7 +1,10 @@
 import React from "react";
 import HeadContent from "../HeadContent";
 import Image from "next/image";
-import IMAGETEST from "../../assets/auth-register.png";
+import STORY1 from "../../assets/auth-register.png";
+import STORY2 from "../../assets/story1.webp";
+import STORY3 from "../../assets/story2.jpg";
+import STORY4 from "../../assets/story3.jpg";
 import { FaInstagram } from "react-icons/fa6";
 import { Button } from "../ui/button";
 
@@ -12,7 +15,7 @@ const OurInstagramStory = () => {
       <div className="grid md:grid-cols-4 grid-cols-2 gap-8">
         <div className="h-60 relative group">
           <Image
-            src={IMAGETEST}
+            src={STORY4}
             alt="this is image test"
             className="w-full h-full object-cover"
           />
@@ -24,7 +27,7 @@ const OurInstagramStory = () => {
         </div>
         <div className="h-60 relative group">
           <Image
-            src={IMAGETEST}
+            src={STORY2}
             alt="this is image test"
             className="w-full h-full object-cover"
           />
@@ -36,7 +39,7 @@ const OurInstagramStory = () => {
         </div>
         <div className="h-60 relative group">
           <Image
-            src={IMAGETEST}
+            src={STORY3}
             alt="this is image test"
             className="w-full h-full object-cover"
           />
@@ -48,7 +51,7 @@ const OurInstagramStory = () => {
         </div>
         <div className="h-60 relative group">
           <Image
-            src={IMAGETEST}
+            src={STORY1}
             alt="this is image test"
             className="w-full h-full object-cover"
           />

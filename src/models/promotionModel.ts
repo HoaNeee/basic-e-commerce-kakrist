@@ -13,5 +13,4 @@ export interface PromotionModel {
   createdAt: string;
   updatedAt: string;
   colorText: string;
-  __v: number;
 }
