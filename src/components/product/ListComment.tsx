@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import ItemListComment from "./ItemListComment";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { Skeleton } from "../ui/skeleton";
 
 interface Props {
   parent_id?: string;
@@ -22,6 +23,7 @@ const ListComment = (props: Props) => {
   const [idShowReply, setIdShowReply] = useState(""); //comment_id
   const [commentAddedChild, setcommentAddedChild] = useState<CommentModel>();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
 
@@ -37,12 +39,15 @@ const ListComment = (props: Props) => {
 
   const getComments = async (review_id: string, parent_id = "") => {
     try {
+      setIsLoading(true);
       const response = await get(
         `/reviews/comments/${review_id}?parent_id=${parent_id}`
       );
       setComments(response.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,7 +116,24 @@ const ListComment = (props: Props) => {
 
   return (
     <div>
-      {comments &&
+      {isLoading && (
+        <div className="ml-8 mt-3">
+          <div className="flex gap-3 items-center ">
+            <Skeleton className="size-7 rounded-full" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-2 w-30" />
+              <Skeleton className="h-3 w-25" />
+            </div>
+          </div>
+          <div className="mt-3 space-y-1">
+            <Skeleton className="h-2" />
+            <Skeleton className="h-2 w-2/3" />
+          </div>
+          <Skeleton className="mt-3 mb-1 lg:w-1/4 sm:w-1/3 w-full h-2" />
+        </div>
+      )}
+      {!isLoading &&
+        comments &&
         comments.map((item, index: number) => (
           <div key={index} className="ml-8 mt-3">
             <ItemListComment

@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Rating, RatingButton } from "./ui/rating";
 import { Textarea } from "./ui/textarea";
 import ButtonLoading from "./ButtonLoading";
 import { toast } from "sonner";
-import { del, post, postImageMulti } from "@/utils/requets";
+import { del, get, post, postImageMulti } from "@/utils/requets";
 import { ProductModel } from "@/models/productModel";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -27,27 +27,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
 
 interface Props {
   product?: ProductModel;
-  reviews: ReviewModel[];
-  onAddNewReview?: (val: ReviewModel) => void;
-  onDeleteReview?: (val: ReviewModel) => void;
-  onShowMore?: () => void;
-  loading?: boolean;
-  disabledShowMore?: boolean;
 }
 
 const RatingTab = (props: Props) => {
-  const {
-    product,
-    reviews,
-    onAddNewReview,
-    onDeleteReview,
-    onShowMore,
-    loading,
-    disabledShowMore,
-  } = props;
+  const { product } = props;
 
   const [rateScore, setRateScore] = useState(0);
   const [content, setContent] = useState("");
@@ -58,10 +45,62 @@ const RatingTab = (props: Props) => {
   const [commentAdded, setCommentAdded] = useState<CommentModel>();
   const [files, setFiles] = useState<File[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [reviews, setReviews] = useState<ReviewModel[]>([]);
+  const [pageReview, setPageReview] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [newReviews, setNewReviews] = useState<ReviewModel[]>([]);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const path = usePathname();
   const search = useSearchParams().toString();
+  const limit = 3;
+
+  useEffect(() => {
+    if (product) {
+      getReviews(product._id);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (pageReview !== 1 && product) {
+      showMoreReviews(product._id, pageReview);
+    }
+  }, [pageReview]);
+
+  useEffect(() => {
+    if (newReviews.length > 0 && !isLoading) {
+      setReviews([...reviews, ...newReviews]);
+    }
+  }, [newReviews, isLoading]);
+
+  const getReviews = async (product_id: string) => {
+    try {
+      const response = await get(
+        `/reviews?product_id=${product_id}&limit=${limit}&page=1`
+      );
+      setReviews(response.data.reviews);
+      setTotalReviews(response.data.totalRecord);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const showMoreReviews = async (product_id: string, page = 1) => {
+    try {
+      setIsLoading(true);
+      const response = await get(
+        `/reviews?product_id=${product_id}&limit=${limit}&page=${page}`
+      );
+      setNewReviews(response.data.reviews);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+    }
+  };
 
   const handleSubmitReview = async () => {
     setIsPosting(true);
@@ -79,16 +118,18 @@ const RatingTab = (props: Props) => {
 
       const response = await post("/reviews/create", payload);
 
-      if (onAddNewReview) {
-        onAddNewReview({
+      setReviews([
+        ...reviews,
+        {
           ...response.data,
           user: {
             firstName: auth.firstName,
             lastName: auth.lastName,
             avatar: auth.avatar,
           },
-        });
-      }
+        },
+      ]);
+
       toast.success(response.message, {
         description: "Posted reviews success",
         action: {
@@ -151,9 +192,7 @@ const RatingTab = (props: Props) => {
           onClick() {},
         },
       });
-      if (onDeleteReview) {
-        onDeleteReview(item);
-      }
+      setReviews(reviews.filter((rv) => rv._id !== item._id));
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -205,6 +244,27 @@ const RatingTab = (props: Props) => {
               />
             </div>
           ))}
+          {isLoading &&
+            Array.from({ length: limit }).map((_, index) => (
+              <div
+                key={index}
+                className="border-b-2 border-muted pb-2 transition-all duration-300"
+              >
+                <div className="flex gap-3 items-center ">
+                  <Skeleton className="size-7 rounded-full" />
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-2 w-30" />
+                    <Skeleton className="h-3 w-25" />
+                  </div>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <Skeleton className="h-3 lg:w-1/4 sm:w-1/3 my-2" />
+                  <Skeleton className="h-2" />
+                  <Skeleton className="h-2 w-2/3" />
+                </div>
+                <Skeleton className="mt-3 mb-1 lg:w-1/4 sm:w-1/3 w-full h-2" />
+              </div>
+            ))}
         </div>
       ) : (
         <div className="w-full text-center py-10 text-muted-foreground">
@@ -213,16 +273,19 @@ const RatingTab = (props: Props) => {
       )}
 
       {reviews && reviews.length > 0 && (
-        <div className="md:w-1/3 sm:w-1/2 w-full">
+        <div
+          className="md:w-1/3 sm:w-1/2 w-full transition-all duration-300"
+          style={{
+            opacity: !isLoading ? "1" : "0",
+          }}
+        >
           <ButtonLoading
-            loading={loading}
+            loading={isLoading}
             onClick={() => {
-              if (onShowMore) {
-                onShowMore();
-              }
+              setPageReview(pageReview + 1);
             }}
             className="px-10 w-full"
-            disabled={disabledShowMore}
+            disabled={pageReview >= Math.ceil(totalReviews / limit)}
           >
             Show More
           </ButtonLoading>

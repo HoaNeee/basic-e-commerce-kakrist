@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { AiOutlineMinus } from "react-icons/ai";
@@ -41,7 +42,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import RatingTab from "@/components/ReviewTab";
-import { ReviewModel } from "@/models/reviewModel";
 import { Rating, RatingButton } from "@/components/ui/rating";
 import { StarIcon } from "lucide-react";
 import { FaHeart } from "react-icons/fa";
@@ -63,14 +63,9 @@ const ProductDetail = () => {
   const [subProducts, setSubProducts] = useState<SubProductModel[]>();
   const [subProductDetail, setSubProductsDetail] = useState<SubProductDetail>();
   const [thumbnail, setThumbnail] = useState<string>();
-  const [relatedProducts, setRelatedProducts] = useState<ProductModel[]>([]);
   const [optionsChoosed, setOptionsChoosed] = useState<OptionsInfo[]>([]);
   const [count, setCount] = useState(1);
   const [tabSelected, setTabSelected] = useState<any>();
-  const [reviews, setReviews] = useState<ReviewModel[]>([]);
-  const [pageReview, setPageReview] = useState(1);
-  const [isLoadMoreReview, setIsLoadMoreReview] = useState(false);
-  const [totalReviews, setTotalReviews] = useState(0);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -118,19 +113,6 @@ const ProductDetail = () => {
     }
   }, [optionsChoosed]);
 
-  useEffect(() => {
-    if (productDetail) {
-      getReviews(productDetail._id);
-      getRelatedProducts();
-    }
-  }, [productDetail]);
-
-  useEffect(() => {
-    if (pageReview !== 1 && productDetail) {
-      showMoreReviews(productDetail._id, pageReview);
-    }
-  }, [pageReview]);
-
   const getProductDetail = async () => {
     try {
       setIsLoading(true);
@@ -163,43 +145,6 @@ const ProductDetail = () => {
       console.log(error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getReviews = async (product_id: string) => {
-    try {
-      const response = await get(
-        `/reviews?product_id=${product_id}&limit=3&page=1`
-      );
-      setReviews(response.data.reviews);
-      setTotalReviews(response.data.totalRecord);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const showMoreReviews = async (product_id: string, page = 1) => {
-    try {
-      setIsLoadMoreReview(true);
-      const response = await get(
-        `/reviews?product_id=${product_id}&limit=3&page=${page}`
-      );
-      setReviews([...reviews, ...response.data.reviews]);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoadMoreReview(false);
-    }
-  };
-
-  const getRelatedProducts = async () => {
-    try {
-      const response = await get(
-        `/products/related?product_id=${productDetail?._id}`
-      );
-      setRelatedProducts(response.data);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -362,6 +307,9 @@ const ProductDetail = () => {
   };
 
   const handleFavorite = async () => {
+    if (!auth.isLogin) {
+      return;
+    }
     try {
       if (productDetail?._id) {
         dispatch(toggleProduct(productDetail._id));
@@ -568,7 +516,12 @@ const ProductDetail = () => {
                   </>
                 )}
               </div>
-              <p className="text-sm tracking-wider">{productDetail?.content}</p>
+              <div
+                className="text-sm tracking-wider"
+                dangerouslySetInnerHTML={{
+                  __html: productDetail?.content || "",
+                }}
+              />
 
               <div className="mt-2 flex flex-col gap-5">
                 {renderSubproducts(variations || [])}
@@ -743,29 +696,13 @@ const ProductDetail = () => {
               )}
             </TabsContent>
             <TabsContent value="reviews">
-              <RatingTab
-                product={productDetail}
-                reviews={reviews}
-                onAddNewReview={(val) => {
-                  setReviews([...reviews, val]);
-                }}
-                onDeleteReview={(item) => {
-                  setReviews(reviews.filter((rv) => rv._id !== item._id));
-                }}
-                onShowMore={async () => {
-                  if (productDetail) {
-                    setPageReview(pageReview + 1);
-                  }
-                }}
-                loading={isLoadMoreReview}
-                disabledShowMore={pageReview >= Math.ceil(totalReviews / 3)}
-              />
+              <RatingTab product={productDetail} />
             </TabsContent>
           </div>
         </Tabs>
       </div>
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-        <RelatedProduct products={relatedProducts} />
+        <RelatedProduct product={productDetail} />
       </section>
       <section className="container xl:px-4 py-10 mx-auto px-2 md:px-0 w-full">
         <Shipping />

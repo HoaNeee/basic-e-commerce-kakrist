@@ -53,9 +53,9 @@ const ItemListComment = (props: Props) => {
   return (
     <div className="w-full">
       <div className={`flex gap-3 ${isComment ? "" : "items-center"}`}>
-        <Avatar className="bg-gray-100/50">
+        <Avatar className="bg-gray-200">
           <AvatarImage src={item.user?.avatar} alt="avatar" />
-          <AvatarFallback>
+          <AvatarFallback className="bg-gray-100/50">
             <User size={22} />
           </AvatarFallback>
         </Avatar>

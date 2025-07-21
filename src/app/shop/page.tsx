@@ -59,6 +59,7 @@ import { RiListCheck2 } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import lodash from "lodash";
+import CardSkeleton from "@/components/product/CardSkeleton";
 
 const Shop = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -70,6 +71,7 @@ const Shop = () => {
   const [maxPrice, setMaxPrice] = useState(0);
   const [sortBy, setSortBy] = useState("createdAt-desc");
   const [suppliers, setSuppliers] = useState<Supplier[]>();
+  const [isLoading, setIsLoading] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -106,6 +108,7 @@ const Shop = () => {
 
   const getProducts = async () => {
     try {
+      setIsLoading(true);
       const query = decodeURIComponent(searchParams.toString());
       const api = `${pathName.replace("shop", "products")}?${
         query
@@ -127,6 +130,8 @@ const Shop = () => {
       setTotalRecord(response.data.totalRecord);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -724,23 +729,23 @@ const Shop = () => {
                     )}{" "}
                     of {totalRecord} results
                   </p>
-                  {searchParams.toString() &&
-                    !searchParams.toString().includes("page") && (
-                      <Button
-                        variant={"outline"}
-                        size={"sm"}
-                        className="h-6 px-2"
-                        onClick={() => {
-                          router.push(pathName);
-                        }}
-                      >
-                        Clear filter
-                      </Button>
-                    )}
                 </div>
               ) : (
                 <p>Showing 0-0 of 0 results</p>
               )}
+              {searchParams.toString() &&
+                !searchParams.toString().includes("page") && (
+                  <Button
+                    variant={"outline"}
+                    size={"sm"}
+                    className="h-6 px-2"
+                    onClick={() => {
+                      router.push(pathName);
+                    }}
+                  >
+                    Clear filter
+                  </Button>
+                )}
             </div>
 
             <div className="relative">
@@ -784,27 +789,39 @@ const Shop = () => {
               </DropdownMenu>
             </div>
           </div>
-          <div className="mt-4">
-            {products.length > 0 ? (
+          {isLoading ? (
+            <div className="mt-4">
               <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                {products.map((item) => (
-                  <CardProduct
-                    key={item._id}
-                    item={item}
-                    control
-                    onAddToCart={(item) => {
-                      handleCart(item);
-                    }}
-                    onToggleFavorite={() => handleFavorite(item._id)}
-                    favorited={listFavorite.includes(item._id)}
-                  />
+                {Array.from({ length: 15 }).map((_, index) => (
+                  <CardSkeleton control key={index} />
                 ))}
               </div>
-            ) : (
-              <div>No data</div>
-            )}
-          </div>
-          <div className="w-full mt-6">{renderPagination()}</div>
+            </div>
+          ) : (
+            <div className="mt-4">
+              {products.length > 0 ? (
+                <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
+                  {products.map((item) => (
+                    <CardProduct
+                      key={item._id}
+                      item={item}
+                      control
+                      onAddToCart={(item) => {
+                        handleCart(item);
+                      }}
+                      onToggleFavorite={() => handleFavorite(item._id)}
+                      favorited={listFavorite.includes(item._id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div>No data</div>
+              )}
+            </div>
+          )}
+          {totalPage > 0 && (
+            <div className="w-full mt-6">{renderPagination()}</div>
+          )}
         </div>
       </div>
     </section>
