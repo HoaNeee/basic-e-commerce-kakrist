@@ -53,7 +53,7 @@ const ItemListComment = (props: Props) => {
   return (
     <div className="w-full">
       <div className={`flex gap-3 ${isComment ? "" : "items-center"}`}>
-        <Avatar className="bg-gray-200">
+        <Avatar className="bg-gray-200 dark:bg-gray-600">
           <AvatarImage src={item.user?.avatar} alt="avatar" />
           <AvatarFallback className="bg-gray-100/50">
             <User size={22} />
@@ -90,7 +90,7 @@ const ItemListComment = (props: Props) => {
         </div>
       </div>
       <div
-        className="space-y-1 my-1"
+        className="space-y-2 my-2"
         style={{
           marginTop: isComment ? "8px" : "",
           marginLeft: isComment ? "8px" : "",
@@ -124,7 +124,7 @@ const ItemListComment = (props: Props) => {
         >
           <p>
             Posted on{" "}
-            <span className="text-black font-medium">
+            <span className="text-black dark:text-white/80 font-medium">
               {new Date(item.createdAt).toLocaleDateString()}
             </span>
           </p>
@@ -132,7 +132,7 @@ const ItemListComment = (props: Props) => {
           <div className="h-full text-muted-foreground mx-1">|</div>
           <Button
             size={"sm"}
-            className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black"
+            className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black dark:hover:text-neutral-500"
             variant={"link"}
             onClick={onShowReply}
           >
@@ -184,7 +184,7 @@ const ItemListComment = (props: Props) => {
               {!idsShowComment?.includes(item._id) ? (
                 <Button
                   size={"sm"}
-                  className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black"
+                  className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black dark:hover:text-neutral-500"
                   variant={"link"}
                   onClick={onShowComment}
                 >
@@ -193,7 +193,7 @@ const ItemListComment = (props: Props) => {
               ) : (
                 <Button
                   size={"sm"}
-                  className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black"
+                  className="text-xs tracking-wider p-0 text-muted-foreground hover:text-black dark:hover:text-neutral-500"
                   variant={"link"}
                   onClick={onHideComment}
                 >
@@ -206,7 +206,7 @@ const ItemListComment = (props: Props) => {
           )}
         </div>
         {idShowReply === item._id && (
-          <div className="flex gap-2 flex-col">
+          <div className="flex gap-2 flex-col my-2">
             <Input
               id={"reply-" + item._id}
               className="w-1/2"

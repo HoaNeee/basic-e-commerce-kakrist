@@ -24,6 +24,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 const formSchema = z.object({
   firstName: z.any(),
@@ -52,6 +54,7 @@ const Register = () => {
 
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const setting = useSelector((state: RootState) => state.setting.setting);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -81,7 +84,7 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full h-screen flex gap-2">
+    <div className="w-full h-screen flex gap-2 dark:text-white/80">
       <div className="bg-[url(../assets/auth-register.png)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
         <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" />
       </div>
@@ -103,7 +106,11 @@ const Register = () => {
                   <FormItem {...field}>
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your First Name" className="py-5" />
+                      <Input
+                        placeholder="Your First Name"
+                        className={`py-5 ${setting.theme}`}
+                        name="firstName"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,7 +125,11 @@ const Register = () => {
                   <FormItem {...field}>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input className="py-5" placeholder="Your Last Name" />
+                      <Input
+                        className={`py-5 ${setting.theme}`}
+                        placeholder="Your Last Name"
+                        name="lastName"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -134,7 +145,7 @@ const Register = () => {
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input
-                        className="py-5"
+                        className={`py-5 ${setting.theme}`}
                         placeholder="Your Email Address"
                         name="email"
                         onChange={() => {
@@ -156,7 +167,7 @@ const Register = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        className="py-5"
+                        className={`py-5 ${setting.theme}`}
                         placeholder="Your Password"
                         name="password"
                         type="password"

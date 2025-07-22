@@ -102,7 +102,7 @@ const Address = () => {
                 <div className="flex flex-col gap-2">
                   <Button
                     variant={"ghost"}
-                    className="bg-[#f1f1f3] flex items-center hover:bg-neutral-200"
+                    className="bg-[#f1f1f3] flex items-center hover:bg-neutral-200 dark:bg-neutral-600/90 dark:hover:bg-neutral-700"
                     onClick={() => {
                       setAddressSelected(item);
                       setOpenDialogEditAddress(true);
@@ -119,7 +119,7 @@ const Address = () => {
                           This address is your default address, are you sure you
                           still want to delete it? Choose other your address
                           default or{" "}
-                          <span className="font-bold text-black">
+                          <span className="font-bold text-black dark:text-white">
                             {"'continue'"}
                           </span>{" "}
                           if you want system to resolve.
@@ -130,7 +130,7 @@ const Address = () => {
                     }
                   >
                     <Button
-                      className="bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700"
+                      className="bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700 dark:hover:bg-red-200"
                       variant={"ghost"}
                     >
                       <GoTrash />

@@ -71,12 +71,12 @@ const ChangePassword = () => {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href={"/profile"}>profile</Link>
+                <Link href={"/profile"}>Profile</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>change-password</BreadcrumbPage>
+              <BreadcrumbPage>Change Password</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

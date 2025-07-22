@@ -230,7 +230,7 @@ const DialogChangeOption = (props: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+      <DialogContent className="dark:text-white/80">
         <DialogHeader>
           <DialogTitle>Change other option</DialogTitle>
         </DialogHeader>

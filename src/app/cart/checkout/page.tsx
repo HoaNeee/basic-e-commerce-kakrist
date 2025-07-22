@@ -97,8 +97,8 @@ const Checkout = () => {
     return (
       <TableRow key={item.cartItem_id}>
         <TableCell>
-          <div className="flex items-center gap-3 py-2">
-            <div className="w-16 h-16 bg-[#f1f1f3]">
+          <div className="flex items-center gap-3 py-2 dark:text-white/80">
+            <div className="w-16 h-16 bg-[#f1f1f3] dark:bg-neutral-700">
               <img
                 src={item.thumbnail ? item.thumbnail : item.thumbnail_product}
                 alt={item.title}
@@ -231,7 +231,7 @@ const Checkout = () => {
 
   return (
     <>
-      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0 dark:text-white/80">
         <HeadContent title="Checkout" left={<></>} />
         <div className="w-full h-full flex gap-10 overflow-hidden">
           <div className="w-6/8 relative">
@@ -397,6 +397,7 @@ const Checkout = () => {
                     <Button
                       className="w-full py-6 mt-4"
                       onClick={() => setIsProceed(true)}
+                      disabled={cartCheckout.length <= 0}
                     >
                       Proceed to Checkout
                     </Button>

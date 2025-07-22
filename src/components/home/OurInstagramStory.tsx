@@ -32,7 +32,7 @@ const OurInstagramStory = () => {
             className="w-full h-full object-cover"
           />
           <div className="absolute top-0 opacity-0 transition-all duration-300 justify-center items-center w-full h-full group-hover:opacity-100 group-hover:backdrop-blur-xs flex">
-            <Button variant={"outline"}>
+            <Button variant={"outline"} className="">
               <FaInstagram />
             </Button>
           </div>

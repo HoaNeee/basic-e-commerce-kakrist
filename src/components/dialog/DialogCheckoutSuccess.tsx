@@ -24,7 +24,7 @@ const DialogCheckoutSuccess = (props: Props) => {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen} defaultOpen={false}>
-      <AlertDialogContent className="">
+      <AlertDialogContent className="dark:text-white/80">
         <AlertDialogHeader className="items-center justify-center max-w-sm mx-auto">
           <div className="text-white h-14 w-14 flex items-center justify-center rounded-full bg-[#131118] my-checkout-success my-5">
             <div className="w-full h-full absolute justify-center flex items-center bg-[#131118] rounded-full">

@@ -116,7 +116,7 @@ const ProfileLayout = ({ children }: { children: any }) => {
       >
         <TabsList className="shrink-0 grid grid-cols-1 p-0 bg-background border-2 border-muted rounded-none h-full pb-6 w-60 sticky top-30">
           <div className="py-6 px-4 border-b-2 border-muted">
-            <div className="flex items-center gap-3 text-black">
+            <div className="flex items-center gap-3 text-black dark:text-white/70">
               <Avatar className="h-13 w-13 bg-gray-100/40">
                 {auth.avatar && <AvatarImage src={auth.avatar} alt="avatar" />}
                 <AvatarFallback className="">
@@ -137,9 +137,9 @@ const ProfileLayout = ({ children }: { children: any }) => {
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className={`justify-start rounded-none data-[state=active]:shadow-none data-[state=active]:bg-black data-[state=active]:text-white py-4 transition-all duration-300 tracking-wider cursor-pointer px-5 ${
+              className={`justify-start rounded-none data-[state=active]:shadow-none data-[state=active]:bg-black dark:data-[state=active]:bg-white/90 data-[state=active]:text-white dark:data-[state=active]:text-black/80 py-4 transition-all duration-300 tracking-wider cursor-pointer px-5 ${
                 pathName === "/profile/change-password" && tab.value === "/"
-                  ? "bg-black text-white"
+                  ? "bg-black text-white dark:bg-white/90 dark:text-black"
                   : ""
               }`}
               title={tab.name}

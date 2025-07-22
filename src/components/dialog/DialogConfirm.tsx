@@ -24,9 +24,9 @@ const DialogConfirm = (props: Props) => {
   return (
     <AlertDialog defaultOpen={false}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="dark:text-white/80">
         <AlertDialogHeader>
-          <AlertDialogTitle>
+          <AlertDialogTitle className="">
             {title || "Are you absolutely sure?"}
           </AlertDialogTitle>
           <AlertDialogDescription>

@@ -550,7 +550,7 @@ const Shop = () => {
         </Breadcrumb>
       </div>
       <div className="flex">
-        <div className="w-1/5 px-6">
+        <div className="w-1/5 px-6 dark:text-white/80">
           <Accordion
             type="multiple"
             className="w-full space-y-3"
@@ -595,7 +595,7 @@ const Shop = () => {
           </Accordion>
         </div>
         <div className="flex-1">
-          <div className="flex tracking-wider text-sm justify-between items-center">
+          <div className="flex tracking-wider text-sm justify-between items-center dark:text-white/80">
             <div className="flex items-center gap-3">
               <GrAppsRounded size={21} />
               <RiListCheck2 size={21} />

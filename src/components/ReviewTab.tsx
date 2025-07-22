@@ -310,25 +310,27 @@ const RatingTab = (props: Props) => {
           </div>
         ) : (
           <>
-            <div className="mt-4">
+            <div className="mt-4 md:w-1/2 w-full">
               <p className="text-sm">Your Rating</p>
-              <Rating
-                className="mt-1"
-                onValueChange={(e) => {
-                  setRateScore(e);
-                }}
-                value={rateScore}
-              >
-                {Array.from({ length: 5 }).map((_, idx) => (
-                  <RatingButton
-                    key={idx}
-                    size={25}
-                    className="text-yellow-500"
-                    icon={<StarIcon strokeWidth={1} />}
-                    index={idx}
-                  />
-                ))}
-              </Rating>
+              <div className="text-center">
+                <Rating
+                  className="mt-3"
+                  onValueChange={(e) => {
+                    setRateScore(e);
+                  }}
+                  value={rateScore}
+                >
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <RatingButton
+                      key={idx}
+                      size={40}
+                      className="text-yellow-500"
+                      icon={<StarIcon strokeWidth={1} />}
+                      index={idx}
+                    />
+                  ))}
+                </Rating>
+              </div>
             </div>
 
             <div className="mt-4 md:w-1/2 w-full">

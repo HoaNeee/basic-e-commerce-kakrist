@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import lodash from "lodash";
 import { updateSetting } from "@/redux/reducer/authReducer";
+import { changeTheme } from "@/redux/reducer/settingReducer";
 
 const Settings = () => {
   const [settingNotify, setSettingNotify] = useState<{
@@ -26,6 +27,7 @@ const Settings = () => {
   });
 
   const auth = useSelector((state: RootState) => state.auth.auth);
+  const setting = useSelector((state: RootState) => state.setting.setting);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -71,11 +73,24 @@ const Settings = () => {
     )
   ).current;
 
+  const handleToggleTheme = (theme: string) => {
+    const html = document.documentElement;
+    if (html.classList.contains("dark")) {
+      html.classList.remove("dark");
+      html.classList.add("light"); // optional
+    } else {
+      html.classList.remove("light"); // optional
+      html.classList.add("dark");
+    }
+    localStorage.setItem("theme", theme);
+    dispatch(changeTheme(theme));
+  };
+
   return (
     <div className="w-full h-full xl:pr-10">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 dark:text-white/70">
         <div
-          className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative `}
+          className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative`}
           onClick={() => {}}
         >
           <div className="flex items-center gap-4">
@@ -87,7 +102,10 @@ const Settings = () => {
             </div>
           </div>
           <div className="tracking-wider text-sm">
-            <Select defaultValue={"light"}>
+            <Select
+              value={setting.theme}
+              onValueChange={(e) => handleToggleTheme(e)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Appearance" />
               </SelectTrigger>

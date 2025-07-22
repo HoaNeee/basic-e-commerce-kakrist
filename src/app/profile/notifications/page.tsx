@@ -41,7 +41,9 @@ const Notifications = () => {
         href={"/profile"}
         key={item._id}
         className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative ${
-          item.isRead ? "hover:bg-gray-100/40" : "bg-gray-100"
+          item.isRead
+            ? "hover:bg-gray-100/40 dark:hover:bg-neutral-800"
+            : "bg-gray-100 dark:bg-neutral-800/90"
         }`}
         onClick={() => handleRead(item._id)}
       >
@@ -69,7 +71,9 @@ const Notifications = () => {
         href={`${item.ref_link}#${item.ref_id}`}
         key={item._id}
         className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative ${
-          item.isRead ? "hover:bg-gray-100/40" : "bg-gray-100"
+          item.isRead
+            ? "hover:bg-gray-100/40 dark:hover:bg-neutral-800"
+            : "bg-gray-100 dark:bg-neutral-800/90"
         }`}
         onClick={() => {
           handleRead(item._id);
@@ -78,7 +82,7 @@ const Notifications = () => {
         <div className="flex items-center gap-4">
           <div
             className={`size-13 rounded-full overflow-hidden flex items-center justify-center ${
-              item.isRead ? "bg-gray-100" : "bg-gray-300"
+              item.isRead ? "bg-gray-100 " : "bg-gray-300"
             }`}
           >
             <div className="w-6 h-6">

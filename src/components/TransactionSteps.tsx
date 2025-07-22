@@ -265,9 +265,11 @@ const Dialog = ({
 }) => {
   return (
     <AlertDialog onOpenChange={setOpen} open={open}>
-      <AlertDialogContent>
+      <AlertDialogContent className="dark:text-white/80">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle className="">
+            Are you absolutely sure?
+          </AlertDialogTitle>
           <AlertDialogDescription>
             {
               "This action cannot be undone. Your change won't be save and you can't return current step."

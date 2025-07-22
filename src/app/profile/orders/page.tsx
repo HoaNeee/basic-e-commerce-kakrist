@@ -140,7 +140,7 @@ const Order = () => {
       case "delivered":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-green-100/50 text-green-600">
+            <Badge className="rounded-xs bg-green-100/50 text-green-600 dark:bg-green-50/20 dark:text-green-500">
               Delivered
             </Badge>
             <p className="text-sm tracking-wider">
@@ -151,7 +151,7 @@ const Order = () => {
       case "shipping":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-red-100/50 text-red-600">
+            <Badge className="rounded-xs bg-red-100/50 text-red-600 dark:bg-red-50/20 dark:text-red-500">
               Shipping
             </Badge>
             <p className="text-sm tracking-wider">
@@ -162,7 +162,7 @@ const Order = () => {
       case "canceled":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-gray-100/50 text-gray-600">
+            <Badge className="rounded-xs bg-gray-100/50 text-gray-600 dark:text-white/80 dark:bg-neutral-50/20">
               Canceled
             </Badge>
             <p className="text-sm tracking-wider">
@@ -174,7 +174,7 @@ const Order = () => {
       case "confirmed":
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-blue-100/50 text-blue-600">
+            <Badge className="rounded-xs bg-blue-100/50 text-blue-600 dark:bg-blue-50/20 dark:text-blue-500">
               Confirmed
             </Badge>
             <p className="text-sm tracking-wider">
@@ -186,7 +186,7 @@ const Order = () => {
       default:
         return (
           <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-yellow-100/40 text-yellow-500">
+            <Badge className="rounded-xs bg-yellow-100/40 text-yellow-500 dark:bg-yellow-50/20">
               Pending
             </Badge>
             <p className="text-sm tracking-wider">Your order is pending</p>

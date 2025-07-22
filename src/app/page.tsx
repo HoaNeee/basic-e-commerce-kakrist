@@ -51,7 +51,7 @@ export default async function Home() {
   const bestSellerProduct = await getBestSeller();
 
   return (
-    <main className="w-full bg-white">
+    <main className="w-full bg-white dark:bg-black dark:text-white/80">
       <section className="w-full">
         <CarouselPromotion promotions={promotions} />
       </section>
@@ -66,7 +66,7 @@ export default async function Home() {
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
         <DealOfTheMonth />
       </section>
-      <section className="w-full bg-[#FAFAFB]">
+      <section className="w-full bg-[#FAFAFB] dark:text-white/80 dark:bg-neutral-600">
         <div className="container xl:px-4 py-10 mx-auto px-2 md:px-0 w-full">
           <WhatOurCustomerSay />
         </div>

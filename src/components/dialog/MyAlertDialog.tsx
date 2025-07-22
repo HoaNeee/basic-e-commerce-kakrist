@@ -39,7 +39,7 @@ const MyAlertDialog = (props: Props) => {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen} defaultOpen={false}>
-      <AlertDialogContent className="">
+      <AlertDialogContent className="dark:text-white/80">
         <AlertDialogHeader className="">
           <AlertDialogTitle>
             <div className="flex gap-2 items-center">

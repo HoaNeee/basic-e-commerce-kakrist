@@ -338,8 +338,8 @@ const ProductDetail = () => {
       <Badge
         className={`rounded-sm ${
           Number(stock) > 0
-            ? "text-green-600 bg-green-100/50"
-            : "text-red-600 bg-red-100/50"
+            ? "text-green-600 bg-green-100/50 dark:bg-neutral-800"
+            : "text-red-600 bg-red-100/50 dark:bg-neutral-800"
         }`}
       >
         {Number(stock) > 0 ? "In stock" : "Out of stock"}
@@ -349,7 +349,7 @@ const ProductDetail = () => {
 
   if (!loaded) {
     return (
-      <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
+      <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto ">
         <div className="w-full my-12 grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
           <div className="w-full p-1 mb-2">
             <div className="w-full bg-[#F1F1F3] lg:h-[500px] h-[400px]">
@@ -386,7 +386,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
+    <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto dark:text-white/80">
       <div className="w-full my-6">
         <Breadcrumb>
           <BreadcrumbList className="">
@@ -410,7 +410,7 @@ const ProductDetail = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
         <div className="w-full p-1">
-          <div className="w-full bg-[#F1F1F3] lg:h-[500px] h-[400px]">
+          <div className="w-full bg-[#F1F1F3] dark:bg-neutral-600 lg:h-[500px] h-[400px]">
             {productDetail?.thumbnail ? (
               <img
                 src={thumbnail}
@@ -439,7 +439,7 @@ const ProductDetail = () => {
                 return (
                   <div
                     key={idx}
-                    className="w-full h-full bg-[#F1F1F3] cursor-pointer"
+                    className="w-full h-full bg-[#F1F1F3] dark:bg-neutral-600 cursor-pointer"
                     onClick={() => {
                       setThumbnail(img);
                     }}
@@ -574,7 +574,7 @@ const ProductDetail = () => {
               </div>
 
               <div className="flex items-center gap-3 mt-7">
-                <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg px-2">
+                <div className="flex items-center gap-2 border-2 border-black/60 justify-between rounded-lg px-2 dark:border-white/60">
                   <Button
                     variant={"link"}
                     className=""
@@ -678,7 +678,7 @@ const ProductDetail = () => {
             style={{}}
           >
             <div
-              className="absolute h-[3px] bg-gray-300 -bottom-[2.5px] transition-all duration-300"
+              className="absolute h-[3px] bg-[#131118] dark:bg-gray-300 -bottom-[2.5px] transition-all duration-300"
               style={{
                 width: tabSelected
                   ? tabSelected.offsetWidth
@@ -690,7 +690,7 @@ const ProductDetail = () => {
                   : tabInitRef.current
                   ? tabInitRef.current.offsetLeft
                   : "",
-                backgroundColor: "#131118",
+                // backgroundColor: "#131118",
               }}
             ></div>
             <TabsTrigger
@@ -726,9 +726,12 @@ const ProductDetail = () => {
           </TabsList>
           <div className="min-h-25">
             <TabsContent value="description">
-              <div className="w-full h-full py-5 text-sm tracking-wider">
-                {productDetail ? productDetail.content : "No description"}
-              </div>
+              <div
+                className="w-full h-full py-5 text-sm tracking-wider"
+                dangerouslySetInnerHTML={{
+                  __html: productDetail?.content || "No description",
+                }}
+              />
             </TabsContent>
             <TabsContent value="additional-information">
               {productDetail?.productType === "variations" ? (

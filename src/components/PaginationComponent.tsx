@@ -34,7 +34,7 @@ const PaginationComponent = (props: Props) => {
   const renderPagination = () => {
     const page = Number(searchParams.get("page")) || 1;
     return (
-      <Pagination className="justify-end">
+      <Pagination className="justify-end dark:text-white/80">
         <PaginationContent>
           <PaginationItem>
             <Button variant={"ghost"} className="p-0" disabled={page === 1}>

@@ -123,7 +123,7 @@ export function TableCart(props: Props) {
 
         return (
           <div className="flex items-center gap-3 py-2">
-            <div className="w-16 h-16 bg-[#f1f1f3]">
+            <div className="w-16 h-16 bg-[#f1f1f3] dark:bg-neutral-600">
               <img
                 src={product.thumbnail}
                 alt={product.title}
@@ -172,7 +172,7 @@ export function TableCart(props: Props) {
         const item = row.original;
         return (
           <div className="font-medium">
-            <div className="inline-flex items-center gap-2 border-2 border-black/60  rounded-lg px-2">
+            <div className="inline-flex items-center gap-2 border-2 border-black/60  rounded-lg px-2 dark:border-white/60">
               <Button
                 variant={"link"}
                 className=""
@@ -300,9 +300,9 @@ export function TableCart(props: Props) {
           </div>
         </div>
         <div className="">
-          <TableContainer className="max-h-109 overflow-y-auto">
+          <TableContainer className="min-h-100 max-h-109 overflow-y-auto">
             <Table className="relative">
-              <TableHeader className="sticky top-0 left-0 bg-white z-20">
+              <TableHeader className="sticky top-0 left-0 bg-white z-20 dark:bg-neutral-800">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

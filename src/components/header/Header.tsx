@@ -44,6 +44,7 @@ import {
 import { removeList, syncList } from "@/redux/reducer/favoriteReducer";
 import { PopoverClose } from "@radix-ui/react-popover";
 import useSWR from "swr";
+import LOGOWHITE from "../../assets/logo-white.png";
 
 const Header = () => {
   const [openPopoverCart, setOpenPopoverCart] = useState(false);
@@ -53,6 +54,7 @@ const Header = () => {
   const pathName = usePathname();
   const dispatch = useDispatch();
   const router = useRouter();
+  const setting = useSelector((state: RootState) => state.setting.setting);
 
   const { data, isLoading } = useSWR("/auth/profile", fetcher, {
     revalidateOnMount: true,
@@ -106,23 +108,30 @@ const Header = () => {
   };
 
   if (isLoading) {
+    if (pathName.startsWith("/auth")) {
+      return <></>;
+    }
     return (
-      <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white drop-shadow-md h-22">
-        <div className="container w-full py-5 flex justify-between items-center bg-white xl:px-4 md:px-0 px-2"></div>
+      <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white drop-shadow-md h-22 dark:bg-black">
+        <div className="container w-full py-5 flex justify-between items-center bg-white xl:px-4 md:px-0 px-2 dark:bg-black"></div>
       </div>
     );
   }
-
+  // if (document) {
+  //   if (document.documentElement.classList.contains("dark")) {
+  //     setThemeState("dark");
+  //   } else setThemeState("light");
+  // }
   return (
     !pathName.startsWith("/auth") && (
       <>
-        <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white drop-shadow-md">
-          <div className="container w-full py-5 flex justify-between items-center bg-white xl:px-4 md:px-0 px-2">
+        <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white dark:bg-black dark:text-white/80 drop-shadow-md">
+          <div className="container w-full py-5 flex justify-between items-center bg-white dark:bg-black dark:text-white/80 xl:px-4 md:px-0 px-2">
             <div>
               <Link className="w-30 h-12 md:block hidden" href="/">
                 <Image
                   alt="LOGO"
-                  src={LOGOAPP}
+                  src={setting.theme === "dark" ? LOGOWHITE : LOGOAPP}
                   priority
                   className="w-full h-full"
                 />
@@ -158,7 +167,7 @@ const Header = () => {
 
                     <PopoverContent
                       sideOffset={10}
-                      className="bg-white sm:w-[340px] w-[280px] p-0 py-3 absolute sm:-left-64 -left-48 min-h-40 text-sm shadow-2xl z-41"
+                      className="bg-white dark:bg-black dark:text-white/80 sm:w-[340px]  w-[280px] p-0 py-3 absolute sm:-left-64 -left-48 min-h-40 text-sm shadow-2xl z-41"
                     >
                       {auth.isLogin ? (
                         <>

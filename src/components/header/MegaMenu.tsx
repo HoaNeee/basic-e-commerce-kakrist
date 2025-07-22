@@ -18,7 +18,7 @@ const MegaMenu = (props: Props) => {
         className="inline-flex flex-col gap-1 text-sm leading-none font-medium h-max"
       >
         <NavigationMenuLink
-          className={`hover:bg-gray-100 p-1.5 cursor-pointer rounded-lg block`}
+          className={`hover:bg-gray-100 dark:hover:bg-neutral-600 p-1.5 cursor-pointer rounded-lg block`}
           style={{
             fontWeight:
               item.children && item.children.length > 0 ? 700 : undefined,

@@ -49,7 +49,7 @@ const Cart = () => {
 
   return (
     <>
-      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0 dark:text-white/80">
         <div className="w-full h-full">
           <HeadContent
             left={<></>}

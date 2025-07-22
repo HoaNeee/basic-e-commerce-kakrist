@@ -22,12 +22,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { post } from "@/utils/requets";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addAuth } from "@/redux/reducer/authReducer";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { FcGoogle } from "react-icons/fc";
+import { RootState } from "@/redux/store";
 
 const formSchema = z.object({
   email: z
@@ -44,7 +45,7 @@ const formSchema = z.object({
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // const auth = useSelector((state: RootState) => state.auth.auth);
+  const setting = useSelector((state: RootState) => state.setting.setting);
   const dispatch = useDispatch();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,7 +79,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full h-screen flex gap-2">
+    <div className="w-full h-screen flex gap-2 dark:text-white/80">
       <div className="bg-[url(../assets/auth-login.jpg)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
         <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
       </div>
@@ -101,7 +102,7 @@ const Login = () => {
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input
-                        className="py-5"
+                        className={`py-5 ${setting.theme}`}
                         placeholder="Your Email Address"
                         name="email"
                       />
@@ -120,7 +121,7 @@ const Login = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        className="py-5"
+                        className={`py-5 ${setting.theme}`}
                         placeholder="Your Password"
                         name="password"
                         type="password"

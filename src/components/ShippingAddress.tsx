@@ -125,7 +125,7 @@ const ShippingAddress = (props: Props) => {
                   key={item._id}
                   className="inline-block cursor-pointer w-full"
                 >
-                  <Card className="gap-3 border-0 bg-[#FAFAFB]">
+                  <Card className="gap-3 border-0 bg-[#FAFAFB] dark:bg-neutral-800">
                     <CardHeader>
                       <CardTitle className="text-lg">
                         {item.name || "No Name"}
@@ -151,7 +151,7 @@ const ShippingAddress = (props: Props) => {
                     <CardFooter className="items-center gap-4 px-8 w-full grid grid-cols-2">
                       <Button
                         variant={"ghost"}
-                        className="bg-[#f1f1f3] flex items-center hover:bg-neutral-200"
+                        className="bg-[#f1f1f3] flex items-center hover:bg-neutral-200 dark:bg-neutral-600/90 dark:hover:bg-neutral-700"
                         onClick={() => {
                           setAddressSelected(item);
                           setOpenDialogEditAddress(true);
@@ -181,7 +181,7 @@ const ShippingAddress = (props: Props) => {
                         }
                       >
                         <Button
-                          className="bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700"
+                          className="bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700 dark:hover:bg-red-200"
                           variant={"ghost"}
                         >
                           <GoTrash />

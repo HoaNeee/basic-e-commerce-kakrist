@@ -27,7 +27,7 @@ export function CarouselPromotion(props: Props) {
             promotions.map((item, index) => (
               <CarouselItem key={index}>
                 <section
-                  className="container relative w-full mx-auto bg-no-repeat h-[290px] sm:h-[492px] lg:h-[602px] sm:bg-contain bg-cover bg-[#f3f3f3] sm:bg-top bg-center xl:px-4"
+                  className="container relative w-full mx-auto bg-no-repeat h-[290px] sm:h-[492px] lg:h-[602px] sm:bg-contain bg-cover bg-[#f3f3f3] dark:bg-neutral-600 sm:bg-top bg-center xl:px-4"
                   style={{
                     backgroundImage: `url(${item.thumbnail})`,
                   }}
