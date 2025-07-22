@@ -104,7 +104,7 @@ const ProfileLayout = ({ children }: { children: any }) => {
           router.push(`/profile/${value}`);
         }}
       >
-        <TabsList className="shrink-0 grid grid-cols-1 p-0 bg-background border-2 border-muted rounded-none h-full pb-6 w-60">
+        <TabsList className="shrink-0 grid grid-cols-1 p-0 bg-background border-2 border-muted rounded-none h-full pb-6 w-60 sticky top-30">
           <div className="py-6 px-4 border-b-2 border-muted">
             <div className="flex items-center gap-3 text-black">
               <Avatar className="h-13 w-13 bg-gray-100/40">

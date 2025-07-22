@@ -13,11 +13,11 @@ const OurInstagramStory = () => {
     <div className="w-full h-full">
       <HeadContent title="Our Instagram Stories" />
       <div className="grid md:grid-cols-4 grid-cols-2 gap-8">
-        <div className="h-60 relative group">
+        <div className="xl:h-80 md:h-60 sm:h-80 h-40 relative group">
           <Image
             src={STORY4}
             alt="this is image test"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute top-0 opacity-0 transition-all duration-300 justify-center items-center w-full h-full group-hover:opacity-100 group-hover:backdrop-blur-xs flex">
             <Button variant={"outline"}>
@@ -25,7 +25,7 @@ const OurInstagramStory = () => {
             </Button>
           </div>
         </div>
-        <div className="h-60 relative group">
+        <div className="xl:h-80 md:h-60 sm:h-80 h-40 relative group">
           <Image
             src={STORY2}
             alt="this is image test"
@@ -37,11 +37,11 @@ const OurInstagramStory = () => {
             </Button>
           </div>
         </div>
-        <div className="h-60 relative group">
+        <div className="xl:h-80 md:h-60 sm:h-80 h-40 relative group">
           <Image
             src={STORY3}
             alt="this is image test"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute top-0 opacity-0 transition-all duration-300 justify-center items-center w-full h-full group-hover:opacity-100 group-hover:backdrop-blur-xs flex">
             <Button variant={"outline"}>
@@ -49,11 +49,11 @@ const OurInstagramStory = () => {
             </Button>
           </div>
         </div>
-        <div className="h-60 relative group">
+        <div className="xl:h-80 md:h-60 sm:h-80 h-40 relative group">
           <Image
             src={STORY1}
             alt="this is image test"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute top-0 opacity-0 transition-all duration-300 justify-center items-center w-full h-full group-hover:opacity-100 group-hover:backdrop-blur-xs flex">
             <Button variant={"outline"}>

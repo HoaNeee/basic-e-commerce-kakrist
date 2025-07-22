@@ -12,8 +12,10 @@ import { OrderModel } from "@/models/orderModel";
 import { VND } from "@/utils/formatCurrency";
 import { get, patch } from "@/utils/requets";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import lodash from "lodash";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Order = () => {
   const [orders, setOrders] = useState<OrderModel[]>([]);
@@ -22,25 +24,98 @@ const Order = () => {
     order_no: string;
     loading: boolean;
   }>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
+  const listRef = useRef<any>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const order_no = searchParams.get("order_no");
+  const limit = 5;
 
   useEffect(() => {
-    getOrders();
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getOrders();
+        setOrders(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const getOrders = async () => {
+  useEffect(() => {
+    if (page !== 1) {
+      handleShowMore(page);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    if (listRef.current) {
+      window.addEventListener("scroll", scrollToBottom);
+    }
+
+    return () => window.removeEventListener("scroll", scrollToBottom);
+  }, [isLoading]);
+
+  const handleShowMore = async (page: number) => {
     try {
-      const response = await get("/orders");
-      setOrders(response.data.orders);
+      setIsLoading(true);
+      const data = await getOrders(page);
+      setOrders([...orders, ...data]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
+      setShowSkeleton(false);
     }
   };
 
-  const totalOrderItem = (order: OrderModel) => {
+  const scrollToBottom = () => {
+    if (
+      window.scrollY + window.innerHeight - 150 >=
+      listRef.current?.clientHeight
+    ) {
+      if (page < totalPage) {
+        if (!showSkeleton) {
+          setShowSkeleton(true);
+        }
+        debounce(page, totalPage);
+      }
+    }
+  };
+
+  const handleSetPage = (page: number, totalPage: number) => {
+    console.log("call");
+    if (page < totalPage) {
+      setPage(page + 1);
+    } else if (showSkeleton) {
+      setShowSkeleton(false);
+    }
+  };
+
+  const debounce = useRef(
+    lodash.debounce((page: number, totalPage: number) => {
+      handleSetPage(page, totalPage);
+    }, 1000)
+  ).current;
+
+  const getOrders = async (page = 1) => {
+    const api = `/orders?page=${page}&limit=${limit}`;
+    const response = await get(api);
+    const data = response.data.orders;
+    setTotalPage(response.data.totalPage);
+    return data;
+  };
+
+  const totalPriceOrderItem = (order: OrderModel) => {
     const promotion = order.promotion;
 
     const total = order.products.reduce(
@@ -140,7 +215,7 @@ const Order = () => {
         position: "top-center",
       });
 
-      const items = [...orders];
+      const items = [...(orders || [])];
       const index = items.findIndex((item) => item._id === order._id);
       if (index !== -1) {
         items[index].status = "canceled";
@@ -161,13 +236,41 @@ const Order = () => {
     }
   };
 
+  const renderSkeleton = (key: number) => {
+    return (
+      <div key={key} className="w-full pb-4 border-b-2 border-muted">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Skeleton className="w-18 h-18 bg-muted" />
+            <div className="text-sm flex flex-col gap-3">
+              <Skeleton className="h-3 w-40" />
+              <Skeleton className="h-2.5 w-15" />
+              <Skeleton className="h-2.5 w-20" />
+            </div>
+          </div>
+          <div className="">
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="space-y-1">
+            <Skeleton className="h-9 w-30" />
+            <Skeleton className="h-9 w-30" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 mt-4">
+          <Skeleton className="h-5 w-18" />
+          <Skeleton className="h-3 w-38" />
+        </div>
+      </div>
+    );
+  };
+
   return order_no ? (
     <OrderDetail order_no={order_no} />
   ) : (
     <div className="w-full h-full">
-      <div className="flex flex-col gap-5">
-        {orders && orders.length > 0 ? (
-          orders.map((order) => (
+      {orders && orders.length > 0 ? (
+        <div className="flex flex-col gap-5" ref={listRef}>
+          {orders.map((order) => (
             <div
               key={order._id}
               className="w-full pb-4 border-b-2 border-muted"
@@ -221,7 +324,7 @@ const Order = () => {
                   </div>
                 </div>
                 <div className="font-bold">
-                  {VND.format(totalOrderItem(order))}
+                  {VND.format(totalPriceOrderItem(order))}
                 </div>
                 {order.status !== "canceled" && (
                   <div className="flex flex-col gap-2">
@@ -274,11 +377,16 @@ const Order = () => {
               </div>
               {orderStatus(order)}
             </div>
-          ))
-        ) : (
-          <div> No data</div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div> No data</div>
+      )}
+      {showSkeleton && (
+        <div className="flex flex-col gap-5 w-full mt-5">
+          {Array.from({ length: 3 }).map((_, index) => renderSkeleton(index))}
+        </div>
+      )}
     </div>
   );
 };

@@ -24,12 +24,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-} from "@/components/ui/pagination";
 import { Slider } from "@/components/ui/slider";
 import { CartModel } from "@/models/cartModel";
 import { CategoryModel } from "@/models/categoryModel";
@@ -44,12 +38,7 @@ import {
 import { RootState } from "@/redux/store";
 import { createTree } from "@/utils/createTree";
 import { get, post } from "@/utils/requets";
-import {
-  ChevronDown,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  X,
-} from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -71,6 +60,7 @@ import {
 import { FiSearch } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { VariationModel } from "@/models/variationModel";
+import PaginationComponent from "@/components/PaginationComponent";
 
 const Shop = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -207,222 +197,6 @@ const Shop = () => {
     const params = new URLSearchParams(query);
     params.delete(name);
     return decodeURIComponent(params.toString());
-  };
-
-  const renderPagination = () => {
-    const page = Number(searchParams.get("page")) || 1;
-    return (
-      <Pagination className="justify-end">
-        <PaginationContent>
-          <PaginationItem>
-            <Button variant={"ghost"} className="p-0" disabled={page === 1}>
-              <Link
-                href={`${pathName}?${createQueryString(
-                  "page",
-                  (page - 1).toString()
-                )}`}
-                aria-label="Go to previous page"
-                className={
-                  "gap-1 px-2.5 py-2 rounded-md sm:pl-2.5 flex items-center text-sm"
-                }
-              >
-                <ChevronLeftIcon size={15} />
-                <span className="hidden sm:block">Previous</span>
-              </Link>
-            </Button>
-          </PaginationItem>
-          {totalPage < 10 ? (
-            Array.from({ length: totalPage }).map((_, index) => {
-              return (
-                <PaginationItem key={index}>
-                  <Link
-                    href={`${pathName}?${createQueryString(
-                      "page",
-                      (index + 1).toString()
-                    )}`}
-                    className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${
-                      index === page - 1 ? "border border-gray-200" : ""
-                    }`}
-                  >
-                    {index + 1}
-                  </Link>
-                </PaginationItem>
-              );
-            })
-          ) : (
-            <>
-              {page > 2 && (
-                <>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString("page", "1")}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center`}
-                    >
-                      1
-                    </Link>
-                  </PaginationItem>
-                  {page > 3 && (
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  )}
-                </>
-              )}
-
-              {page === 1 ? (
-                <>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString("page", "1")}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${
-                        page === 1 ? "border border-gray-200" : ""
-                      }`}
-                    >
-                      1
-                    </Link>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString("page", "2")}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center `}
-                    >
-                      2
-                    </Link>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString("page", "3")}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center`}
-                    >
-                      3
-                    </Link>
-                  </PaginationItem>
-                </>
-              ) : page < totalPage - 2 ? (
-                <>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString(
-                        "page",
-                        (page - 1).toString()
-                      )}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center`}
-                    >
-                      {page - 1}
-                    </Link>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString(
-                        "page",
-                        page.toString()
-                      )}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${"border border-gray-200"}`}
-                    >
-                      {page}
-                    </Link>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString(
-                        "page",
-                        (page + 1).toString()
-                      )}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center`}
-                    >
-                      {page + 1}
-                    </Link>
-                  </PaginationItem>
-                </>
-              ) : (
-                <>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString(
-                        "page",
-                        (totalPage - 3).toString()
-                      )}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${
-                        page === totalPage - 3 ? "border border-gray-200" : ""
-                      }`}
-                    >
-                      {totalPage - 3}
-                    </Link>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString(
-                        "page",
-                        (totalPage - 2).toString()
-                      )}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${
-                        page === totalPage - 2 ? "border border-gray-200" : ""
-                      }`}
-                    >
-                      {totalPage - 2}
-                    </Link>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <Link
-                      href={`${pathName}?${createQueryString(
-                        "page",
-                        (totalPage - 1).toString()
-                      )}`}
-                      className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${
-                        page === totalPage - 1 ? "border border-gray-200" : ""
-                      }`}
-                    >
-                      {totalPage - 1}
-                    </Link>
-                  </PaginationItem>
-                </>
-              )}
-
-              {page < totalPage - 2 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-              <PaginationItem>
-                <Link
-                  href={`${pathName}?${createQueryString(
-                    "page",
-                    totalPage.toString()
-                  )}`}
-                  className={`h-9 w-9 hover:bg-muted rounded-md flex items-center justify-center ${
-                    page === totalPage ? "border border-gray-200" : ""
-                  }`}
-                >
-                  {totalPage}
-                </Link>
-              </PaginationItem>
-            </>
-          )}
-
-          <PaginationItem>
-            <Button
-              variant={"ghost"}
-              className="p-0"
-              disabled={page === totalPage}
-            >
-              <Link
-                href={`${pathName}?${createQueryString(
-                  "page",
-                  (page + 1).toString()
-                )}`}
-                aria-label="Go to previous page"
-                className={
-                  "gap-1 py-2 px-2.5 sm:pr-2.5 rounded-md sm:pl-2.5 flex items-center text-sm hover:bg-muted"
-                }
-              >
-                <span className="hidden sm:block">Next</span>
-                <ChevronRightIcon size={15} />
-              </Link>
-            </Button>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-    );
   };
 
   const renderCategoriesFilter = (categories: CategoryModel[]) => {
@@ -938,7 +712,9 @@ const Shop = () => {
             </div>
           )}
           {totalPage > 0 && (
-            <div className="w-full mt-6">{renderPagination()}</div>
+            <div className="w-full mt-6">
+              <PaginationComponent totalPage={totalPage} />
+            </div>
           )}
         </div>
       </div>

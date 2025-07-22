@@ -1,25 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import PaginationComponent from "@/components/PaginationComponent";
 import CardProduct from "@/components/product/CardProduct";
+import CardSkeleton from "@/components/product/CardSkeleton";
 import { ProductModel } from "@/models/productModel";
 import { del, get } from "@/utils/requets";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const WishLists = () => {
   const [listFavoriteInfo, setListFavoriteInfo] = useState<ProductModel[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalPage, setTotalPage] = useState(1);
+
+  const limit = 9;
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page") || "";
 
   useEffect(() => {
     getList();
-  }, []);
+  }, [searchParams]);
 
   const getList = async () => {
     try {
-      const response = await get("/favorites/info");
+      setIsLoading(true);
+      const api = `/favorites/info?page=${page || 1}&limit=${limit}`;
+      const response = await get(api);
+      setTotalPage(response.data.totalPage);
       setListFavoriteInfo(response.data.products);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,23 +58,36 @@ const WishLists = () => {
 
   return (
     <div className="w-full h-full">
-      {listFavoriteInfo.length > 0 ? (
+      {isLoading && (
         <div className="grid grid-cols-3 gap-5">
-          {listFavoriteInfo.map((item) => (
-            <CardProduct
-              key={item._id}
-              control
-              item={item}
-              onAddToCart={() => {}}
-              className="xl:h-120"
-              isListFavorite
-              onToggleFavorite={() => handleRemoveProduct(item._id)}
-            />
+          {Array.from({ length: limit }).map((_, index) => (
+            <CardSkeleton key={index} control className="xl:h-120" />
           ))}
         </div>
-      ) : (
-        <div>No data</div>
       )}
+
+      {!isLoading && (
+        <>
+          {listFavoriteInfo.length > 0 ? (
+            <div className="grid grid-cols-3 gap-5">
+              {listFavoriteInfo.map((item) => (
+                <CardProduct
+                  key={item._id}
+                  control
+                  item={item}
+                  onAddToCart={() => {}}
+                  className="xl:h-120"
+                  isListFavorite
+                  onToggleFavorite={() => handleRemoveProduct(item._id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div>No data</div>
+          )}
+        </>
+      )}
+      <PaginationComponent totalPage={totalPage} />
     </div>
   );
 };
