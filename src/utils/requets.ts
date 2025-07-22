@@ -5,6 +5,11 @@ import FileResizer from "react-image-file-resizer";
 export const BASE_URL = `http://localhost:3001`;
 const API_URL = `${BASE_URL}`;
 
+export const fetcher = (url: string) =>
+  fetch(`${API_URL}${url}`, { credentials: "include" }).then((res) =>
+    res.json()
+  );
+
 export const get = async (path: string, token?: string) => {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");

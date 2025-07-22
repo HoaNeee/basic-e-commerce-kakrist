@@ -66,6 +66,7 @@ const ProductDetail = () => {
   const [optionsChoosed, setOptionsChoosed] = useState<OptionsInfo[]>([]);
   const [count, setCount] = useState(1);
   const [tabSelected, setTabSelected] = useState<any>();
+  const [loaded, setLoaded] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -77,9 +78,16 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (!loaded) {
+      setLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (slug) {
       getProductDetail();
     }
+    console.log(loaded);
   }, [slug]);
 
   useEffect(() => {
@@ -338,6 +346,44 @@ const ProductDetail = () => {
       </Badge>
     );
   };
+
+  if (!loaded) {
+    return (
+      <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">
+        <div className="w-full my-12 grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
+          <div className="w-full p-1 mb-2">
+            <div className="w-full bg-[#F1F1F3] lg:h-[500px] h-[400px]">
+              <Image
+                alt="product detail"
+                src={IMAGENOTFOUND}
+                className="w-full h-full object-contain"
+                priority
+              />
+            </div>
+            <div className="grid grid-cols-4 mt-3 flex-wrap gap-3">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={index} className="w-full lg:h-40 md:h-30 h-20" />
+              ))}
+            </div>
+          </div>
+          <div className="w-full h-full flex flex-col gap-4">
+            <Skeleton className="h-7 w-30" />
+            <Skeleton className="h-5 w-36" />
+            <Skeleton className="h-3 w-42 mt-1" />
+            <Skeleton className="h-5 w-36 my-1" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-2.5 w-full" />
+              <Skeleton className="h-2.5 w-full" />
+              <Skeleton className="h-2.5 w-2/3" />
+            </div>
+            <Skeleton className="h-7 w-1/2 my-1" />
+            <Skeleton className="h-7 w-1/2 my-1" />
+            <Skeleton className="h-11 w-2/3 my-1" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto">

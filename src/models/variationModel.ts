@@ -13,5 +13,6 @@ export interface Option {
   _id: string;
   title: string;
   variation_id: string;
+  value: string;
   key: string;
 }

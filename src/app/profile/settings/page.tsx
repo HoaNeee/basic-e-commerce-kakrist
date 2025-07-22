@@ -87,7 +87,7 @@ const Settings = () => {
             </div>
           </div>
           <div className="tracking-wider text-sm">
-            <Select defaultValue={"light"} disabled>
+            <Select defaultValue={"light"}>
               <SelectTrigger>
                 <SelectValue placeholder="Appearance" />
               </SelectTrigger>

@@ -2,6 +2,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RootState } from "@/redux/store";
 import { get } from "@/utils/requets";
@@ -93,6 +94,15 @@ const ProfileLayout = ({ children }: { children: any }) => {
       console.log(error);
     }
   };
+
+  if (!loaded) {
+    return (
+      <div className="w-full flex items-start gap-8 justify-center flex-row h-130">
+        <Skeleton className="w-60 h-full" />
+        <Skeleton className="flex-1 h-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

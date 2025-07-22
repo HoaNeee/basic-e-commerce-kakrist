@@ -64,7 +64,7 @@ import PaginationComponent from "@/components/PaginationComponent";
 
 const Shop = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
-  const [limit] = useState(15);
+
   const [totalPage, setTotalPage] = useState(0);
   const [totalRecord, setTotalRecord] = useState(0);
   const [categories, setCategories] = useState<CategoryModel[]>([]);
@@ -75,6 +75,7 @@ const Shop = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [variations, setVariations] = useState<VariationModel[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -90,12 +91,14 @@ const Shop = () => {
   const sort = searchParams.get("sort");
   const supplier_id = searchParams.get("supplier_id");
   const keySearch = searchParams.get("q");
+  const limit = 15;
 
   useEffect(() => {
     getCategories();
     getPrice();
     getSupplier();
     getVariationOptions();
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -509,6 +512,25 @@ const Shop = () => {
   const debounceToggleFavorite = React.useRef(
     lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
   ).current;
+
+  if (!loaded) {
+    return (
+      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+        <div className="flex my-13">
+          <div className="w-1/5 px-6"></div>
+          <div className="flex-1">
+            <div className="mt-6">
+              <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
+                {Array.from({ length: limit }).map((_, index) => (
+                  <CardSkeleton control key={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
