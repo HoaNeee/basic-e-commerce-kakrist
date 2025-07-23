@@ -26,7 +26,6 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
         className="dark:text-white/80"
         theme={setting.theme === "dark" ? "dark" : "light"}
       />
-
       <Header />
       {children}
       <FooterComponent />

@@ -20,7 +20,7 @@ export function CarouselPromotion(props: Props) {
           loop: true,
         }}
         isBanner
-        // autoPlay
+        autoPlay
       >
         <CarouselContent className="relative">
           {promotions && promotions.length > 0 ? (

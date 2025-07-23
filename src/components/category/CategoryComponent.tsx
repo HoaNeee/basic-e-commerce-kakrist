@@ -48,6 +48,7 @@ const CategoryComponent = (props: Props) => {
           slidesToScroll: 2,
         }}
         headTitle="Shop by Categories"
+        autoPlay
       >
         <CarouselContent className="-ml-1">
           {categories &&

@@ -84,12 +84,14 @@ const CardProduct = ({
                   <FaStar />
                 </div>
               </Button>
-              <Button
-                variant={"outline"}
-                className="rounded-full h-8 w-8 duration-300 absolute sm:group-hover:right-2 -right-full top-14 flex flex-col gap-1.5 invisible sm:group-hover:visible z-20 transition-all"
-              >
-                <TbSwitchHorizontal />
-              </Button>
+              <Link href={`/shop`}>
+                <Button
+                  variant={"outline"}
+                  className="rounded-full h-8 w-8 duration-300 absolute sm:group-hover:right-2 -right-full top-14 flex flex-col gap-1.5 invisible sm:group-hover:visible z-20 transition-all"
+                >
+                  <TbSwitchHorizontal />
+                </Button>
+              </Link>
             </>
           ) : (
             <Button

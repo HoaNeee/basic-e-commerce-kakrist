@@ -56,13 +56,17 @@ const Header = () => {
   const router = useRouter();
   const setting = useSelector((state: RootState) => state.setting.setting);
 
-  const { data, isLoading } = useSWR("/auth/profile", fetcher, {
+  const { data, isLoading, error } = useSWR("/auth/profile", fetcher, {
     revalidateOnMount: true,
-    revalidateOnReconnect: true,
+    revalidateOnReconnect: false,
     revalidateOnFocus: false,
   });
 
   useEffect(() => {
+    if (error) {
+      return () => {};
+    }
+
     if (data && data.code === 200) {
       console.log(data);
       dispatch(
@@ -117,11 +121,7 @@ const Header = () => {
       </div>
     );
   }
-  // if (document) {
-  //   if (document.documentElement.classList.contains("dark")) {
-  //     setThemeState("dark");
-  //   } else setThemeState("light");
-  // }
+
   return (
     !pathName.startsWith("/auth") && (
       <>
@@ -181,11 +181,11 @@ const Header = () => {
                           </p>
                           <ScrollArea
                             className={`${
-                              cart.carts && cart.carts.length > 0 ? "h-80" : ""
+                              cart.carts && cart.carts?.length > 0 ? "h-80" : ""
                             } w-full`}
                           >
                             <div className="mt-6 flex flex-col gap-4 px-4">
-                              {cart && cart.carts.length > 0 ? (
+                              {cart && cart.carts?.length > 0 ? (
                                 cart.carts.map((item, index) => (
                                   <div
                                     key={index}

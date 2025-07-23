@@ -2,7 +2,7 @@
 
 import FileResizer from "react-image-file-resizer";
 
-export const BASE_URL = `http://localhost:3001`;
+// export const BASE_URL = `http://localhost:3001`;
 const NEW_BASE_URL = `https://api.kakrist.site`;
 const API_URL = `${NEW_BASE_URL}`;
 
@@ -137,7 +137,6 @@ export const postImageMulti = async (
   token?: string
 ) => {
   const myHeaders = new Headers();
-  // myHeaders.append("Content-Type", "multipart/form-data");
   if (token) {
     myHeaders.append("Authorization", `Bearer ${token}`);
   }
