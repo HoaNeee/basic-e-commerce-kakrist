@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -84,165 +84,169 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full h-screen flex gap-2 dark:text-white/80">
-      <div className="bg-[url(../assets/auth-register.png)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
-        <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" />
-      </div>
-      <div className="flex-1 flex flex-col justify-center px-6">
-        <div className="mb-8">
-          <h3 className="text-3xl font-bold">Create New Account</h3>
-          <p className="text-neutral-400 text-sm">Please enter details</p>
+    <Suspense fallback={<></>}>
+      <div className="w-full h-screen flex gap-2 dark:text-white/80">
+        <div className="bg-[url(../assets/auth-register.png)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
+          <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" />
         </div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Your First Name"
-                        className={`py-5 ${setting.theme}`}
-                        name="firstName"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={`py-5 ${setting.theme}`}
-                        placeholder="Your Last Name"
-                        name="lastName"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={`py-5 ${setting.theme}`}
-                        placeholder="Your Email Address"
-                        name="email"
-                        onChange={() => {
-                          setErrorMessage("");
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={`py-5 ${setting.theme}`}
-                        placeholder="Your Password"
-                        name="password"
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="term"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field} className="my-3">
-                    <FormControl>
-                      <div className="flex items-center gap-2">
-                        <Checkbox id="terms" />
-                        <Label htmlFor="terms">
-                          I agree to the
-                          <span className="font-bold">Terms & Conditions</span>
-                        </Label>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            {errorMessage && (
-              <span className="text-red-600 text-sm">{errorMessage}</span>
-            )}
-            <Button
-              disabled={isLoading}
-              type="submit"
-              className="py-6 transition-all duration-400 flex items-center justify-center relative"
+        <div className="flex-1 flex flex-col justify-center px-6">
+          <div className="mb-8">
+            <h3 className="text-3xl font-bold">Create New Account</h3>
+            <p className="text-neutral-400 text-sm">Please enter details</p>
+          </div>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
             >
-              <div
-                className="opacity-0 transition-all duration-300 invisible"
-                style={{
-                  opacity: isLoading ? "1" : undefined,
-                  visibility: isLoading ? "visible" : undefined,
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Your First Name"
+                          className={`py-5 ${setting.theme}`}
+                          name="firstName"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
                 }}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={`py-5 ${setting.theme}`}
+                          placeholder="Your Last Name"
+                          name="lastName"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={`py-5 ${setting.theme}`}
+                          placeholder="Your Email Address"
+                          name="email"
+                          onChange={() => {
+                            setErrorMessage("");
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={`py-5 ${setting.theme}`}
+                          placeholder="Your Password"
+                          name="password"
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="term"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field} className="my-3">
+                      <FormControl>
+                        <div className="flex items-center gap-2">
+                          <Checkbox id="terms" />
+                          <Label htmlFor="terms">
+                            I agree to the
+                            <span className="font-bold">
+                              Terms & Conditions
+                            </span>
+                          </Label>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              {errorMessage && (
+                <span className="text-red-600 text-sm">{errorMessage}</span>
+              )}
+              <Button
+                disabled={isLoading}
+                type="submit"
+                className="py-6 transition-all duration-400 flex items-center justify-center relative"
               >
-                <Spinner size={40} />
-              </div>
-              {
-                <p
-                  className="transition-all duration-300 absolute flex items-center justify-center"
+                <div
+                  className="opacity-0 transition-all duration-300 invisible"
                   style={{
-                    marginLeft: isLoading ? "86px" : undefined,
+                    opacity: isLoading ? "1" : undefined,
+                    visibility: isLoading ? "visible" : undefined,
                   }}
                 >
-                  Signup
+                  <Spinner size={40} />
+                </div>
+                {
+                  <p
+                    className="transition-all duration-300 absolute flex items-center justify-center"
+                    style={{
+                      marginLeft: isLoading ? "86px" : undefined,
+                    }}
+                  >
+                    Signup
+                  </p>
+                }
+              </Button>
+              <div className="text-center mt-5">
+                <p>
+                  {"Already an account? "}{" "}
+                  <Link
+                    href={`/auth/login${
+                      next ? `?next=${encodeURIComponent(next)}` : ""
+                    }`}
+                    className="text-blue-600 italic"
+                  >
+                    login
+                  </Link>
                 </p>
-              }
-            </Button>
-            <div className="text-center mt-5">
-              <p>
-                {"Already an account? "}{" "}
-                <Link
-                  href={`/auth/login${
-                    next ? `?next=${encodeURIComponent(next)}` : ""
-                  }`}
-                  className="text-blue-600 italic"
-                >
-                  login
-                </Link>
-              </p>
-            </div>
-          </form>
-        </Form>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 };
 

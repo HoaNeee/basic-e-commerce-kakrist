@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -79,132 +79,134 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full h-screen flex gap-2 dark:text-white/80">
-      <div className="bg-[url(../assets/auth-login.jpg)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
-        <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
-      </div>
-      <div className="flex-1 flex flex-col justify-center px-6">
-        <div className="mb-8">
-          <h3 className="text-3xl font-bold">Welcome 👋</h3>
-          <p className="text-neutral-400 text-sm">Please login here</p>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="w-full h-screen flex gap-2 dark:text-white/80">
+        <div className="bg-[url(../assets/auth-login.jpg)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
+          <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
         </div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={`py-5 ${setting.theme}`}
-                        placeholder="Your Email Address"
-                        name="email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        className={`py-5 ${setting.theme}`}
-                        placeholder="Your Password"
-                        name="password"
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="isRemmember"
-              render={({ field }) => {
-                return (
-                  <FormItem {...field}>
-                    <FormControl>
-                      <div className="flex justify-between items-center my-3">
-                        <div className="flex gap-2 items-center">
-                          <Checkbox id="remember" />
-                          <Label htmlFor="remember">Remember me</Label>
-                        </div>
-                        <Link
-                          href={"/auth/forgot-password"}
-                          className="text-sm font-medium italic"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                );
-              }}
-            />
-
-            <Button
-              disabled={isLoading}
-              type="submit"
-              className="py-6 transition-all duration-400 flex items-center justify-center relative"
+        <div className="flex-1 flex flex-col justify-center px-6">
+          <div className="mb-8">
+            <h3 className="text-3xl font-bold">Welcome 👋</h3>
+            <p className="text-neutral-400 text-sm">Please login here</p>
+          </div>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
             >
-              <div
-                className="opacity-0 transition-all duration-300 invisible"
-                style={{
-                  opacity: isLoading ? "1" : undefined,
-                  visibility: isLoading ? "visible" : undefined,
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={`py-5 ${setting.theme}`}
+                          placeholder="Your Email Address"
+                          name="email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
                 }}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          className={`py-5 ${setting.theme}`}
+                          placeholder="Your Password"
+                          name="password"
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="isRemmember"
+                render={({ field }) => {
+                  return (
+                    <FormItem {...field}>
+                      <FormControl>
+                        <div className="flex justify-between items-center my-3">
+                          <div className="flex gap-2 items-center">
+                            <Checkbox id="remember" />
+                            <Label htmlFor="remember">Remember me</Label>
+                          </div>
+                          <Link
+                            href={"/auth/forgot-password"}
+                            className="text-sm font-medium italic"
+                          >
+                            Forgot password?
+                          </Link>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <Button
+                disabled={isLoading}
+                type="submit"
+                className="py-6 transition-all duration-400 flex items-center justify-center relative"
               >
-                <Spinner size={40} />
-              </div>
-              {
-                <p
-                  className="transition-all duration-300 absolute flex items-center justify-center"
+                <div
+                  className="opacity-0 transition-all duration-300 invisible"
                   style={{
-                    marginLeft: isLoading ? "86px" : undefined,
+                    opacity: isLoading ? "1" : undefined,
+                    visibility: isLoading ? "visible" : undefined,
                   }}
                 >
-                  Login
-                </p>
-              }
-            </Button>
+                  <Spinner size={40} />
+                </div>
+                {
+                  <p
+                    className="transition-all duration-300 absolute flex items-center justify-center"
+                    style={{
+                      marginLeft: isLoading ? "86px" : undefined,
+                    }}
+                  >
+                    Login
+                  </p>
+                }
+              </Button>
 
-            {/* <Button variant={"outline"} onClick={() => {}} className="py-6">
+              {/* <Button variant={"outline"} onClick={() => {}} className="py-6">
               <FcGoogle size={22} className="size-6" />
               Login with Google
             </Button> */}
 
-            <div className="text-center mt-5">
-              <p>
-                {"Don't have an account? "}{" "}
-                <Link
-                  href={`/auth/register${
-                    next ? `?next=${encodeURIComponent(next)}` : ""
-                  }`}
-                  className="text-blue-600 italic"
-                >
-                  register
-                </Link>
-              </p>
-            </div>
-          </form>
-        </Form>
+              <div className="text-center mt-5">
+                <p>
+                  {"Don't have an account? "}{" "}
+                  <Link
+                    href={`/auth/register${
+                      next ? `?next=${encodeURIComponent(next)}` : ""
+                    }`}
+                    className="text-blue-600 italic"
+                  >
+                    register
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 };
 

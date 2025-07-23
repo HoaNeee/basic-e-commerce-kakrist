@@ -6,7 +6,6 @@ import OurBestSeller from "@/components/product/OurBestSeller";
 import WhatOurCustomerSay from "@/components/home/WhatOurCustomerSay";
 import OurInstagramStory from "@/components/home/OurInstagramStory";
 import Shipping from "@/components/home/Shipping";
-import { Suspense } from "react";
 import { get } from "@/utils/requets";
 import { CategoryModel } from "@/models/categoryModel";
 import DealOfTheMonth from "@/components/home/DealOfTheMonth";
@@ -56,9 +55,7 @@ export default async function Home() {
         <CarouselPromotion promotions={promotions} />
       </section>
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-        <Suspense fallback={<div className="w-full">Loading...</div>}>
-          <CategoryComponent categories={categories} />
-        </Suspense>
+        <CategoryComponent categories={categories} />
       </section>
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
         <OurBestSeller products={bestSellerProduct} />

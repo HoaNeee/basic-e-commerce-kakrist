@@ -41,7 +41,7 @@ import { get, post } from "@/utils/requets";
 import { ChevronDown, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { GrAppsRounded } from "react-icons/gr";
 import { LuPlus } from "react-icons/lu";
 import { RiListCheck2 } from "react-icons/ri";
@@ -513,7 +513,7 @@ const Shop = () => {
     lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
   ).current;
 
-  if (!loaded) {
+  const renderSkeleton = () => {
     return (
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
         <div className="flex my-13">
@@ -530,217 +530,224 @@ const Shop = () => {
         </div>
       </section>
     );
+  };
+
+  if (!loaded) {
+    return renderSkeleton();
   }
 
   return (
-    <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-      <div className="mb-9 flex items-center justify-between px-7">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href={"/"}>Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Shop</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-      <div className="flex">
-        <div className="w-1/5 px-6 dark:text-white/80">
-          <Accordion
-            type="multiple"
-            className="w-full space-y-3"
-            // defaultValue={["item-1"]}
-          >
-            <AccordionItem
-              value="categories"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold">
-                Products Categories
-              </AccordionTrigger>
-              <AccordionContent className="mt-4 ">
-                {renderCategoriesFilter(categories)}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem
-              value="price"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                Filter By Price
-              </AccordionTrigger>
-              <AccordionContent className="mt-4">
-                {renderFilterPrice()}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem
-              value="supllier"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                Supplier
-              </AccordionTrigger>
-              <AccordionContent className="mt-4">
-                {renderFilterSupplier()}
-              </AccordionContent>
-            </AccordionItem>
-            {renderVariations()}
-          </Accordion>
+    <Suspense fallback={renderSkeleton()}>
+      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+        <div className="mb-9 flex items-center justify-between px-7">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href={"/"}>Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Shop</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
-        <div className="flex-1">
-          <div className="flex tracking-wider text-sm justify-between items-center dark:text-white/80">
-            <div className="flex items-center gap-3">
-              <GrAppsRounded size={21} />
-              <RiListCheck2 size={21} />
-              {products.length > 0 ? (
-                <div className="flex items-center gap-2">
-                  <p>
-                    Showing{" "}
-                    {((Number(searchParams.get("page")) || 1) - 1) * limit + 1}{" "}
-                    -{" "}
-                    {Math.min(
-                      (Number(searchParams.get("page")) || 1) * limit,
-                      totalRecord
-                    )}{" "}
-                    of {totalRecord} results
-                  </p>
-                </div>
-              ) : (
-                <p>Showing 0-0 of 0 results</p>
-              )}
-              {searchParams.toString() &&
-                !searchParams.toString().includes("page") && (
-                  <Button
-                    variant={"outline"}
-                    size={"sm"}
-                    className="h-6 px-2"
-                    onClick={() => {
-                      router.push(pathName);
-                    }}
-                  >
-                    Clear filter
-                  </Button>
-                )}
-            </div>
+        <div className="flex">
+          <div className="w-1/5 px-6 dark:text-white/80">
+            <Accordion
+              type="multiple"
+              className="w-full space-y-3"
+              // defaultValue={["item-1"]}
+            >
+              <AccordionItem
+                value="categories"
+                className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+              >
+                <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold">
+                  Products Categories
+                </AccordionTrigger>
+                <AccordionContent className="mt-4 ">
+                  {renderCategoriesFilter(categories)}
+                </AccordionContent>
+              </AccordionItem>
 
-            <div className="relative flex gap-2 items-center">
-              <div className="transition-all duration-300 relative">
-                <Input
-                  placeholder="Enter keyword..."
-                  onChange={(e) => setKeyword(e.target.value)}
-                  value={keyword}
-                  onKeyUp={(e) => {
-                    if (e.key === "Enter") {
+              <AccordionItem
+                value="price"
+                className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+              >
+                <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
+                  Filter By Price
+                </AccordionTrigger>
+                <AccordionContent className="mt-4">
+                  {renderFilterPrice()}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem
+                value="supllier"
+                className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+              >
+                <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
+                  Supplier
+                </AccordionTrigger>
+                <AccordionContent className="mt-4">
+                  {renderFilterSupplier()}
+                </AccordionContent>
+              </AccordionItem>
+              {renderVariations()}
+            </Accordion>
+          </div>
+          <div className="flex-1">
+            <div className="flex tracking-wider text-sm justify-between items-center dark:text-white/80">
+              <div className="flex items-center gap-3">
+                <GrAppsRounded size={21} />
+                <RiListCheck2 size={21} />
+                {products.length > 0 ? (
+                  <div className="flex items-center gap-2">
+                    <p>
+                      Showing{" "}
+                      {((Number(searchParams.get("page")) || 1) - 1) * limit +
+                        1}{" "}
+                      -{" "}
+                      {Math.min(
+                        (Number(searchParams.get("page")) || 1) * limit,
+                        totalRecord
+                      )}{" "}
+                      of {totalRecord} results
+                    </p>
+                  </div>
+                ) : (
+                  <p>Showing 0-0 of 0 results</p>
+                )}
+                {searchParams.toString() &&
+                  !searchParams.toString().includes("page") && (
+                    <Button
+                      variant={"outline"}
+                      size={"sm"}
+                      className="h-6 px-2"
+                      onClick={() => {
+                        router.push(pathName);
+                      }}
+                    >
+                      Clear filter
+                    </Button>
+                  )}
+              </div>
+
+              <div className="relative flex gap-2 items-center">
+                <div className="transition-all duration-300 relative">
+                  <Input
+                    placeholder="Enter keyword..."
+                    onChange={(e) => setKeyword(e.target.value)}
+                    value={keyword}
+                    onKeyUp={(e) => {
+                      if (e.key === "Enter") {
+                        let newQuery: any = createQueryString("q", keyword);
+                        if (newQuery.includes("page")) {
+                          newQuery = deleteQueryString("page", newQuery);
+                        }
+                        router.push(`${pathName}?${newQuery}`);
+                      }
+                    }}
+                    name="key-search"
+                    className="pr-10"
+                  />
+                  <FiSearch
+                    size={20}
+                    cursor={"pointer"}
+                    onClick={() => {
                       let newQuery: any = createQueryString("q", keyword);
                       if (newQuery.includes("page")) {
                         newQuery = deleteQueryString("page", newQuery);
                       }
                       router.push(`${pathName}?${newQuery}`);
-                    }
-                  }}
-                  name="key-search"
-                  className="pr-10"
-                />
-                <FiSearch
-                  size={20}
-                  cursor={"pointer"}
-                  onClick={() => {
-                    let newQuery: any = createQueryString("q", keyword);
-                    if (newQuery.includes("page")) {
-                      newQuery = deleteQueryString("page", newQuery);
-                    }
-                    router.push(`${pathName}?${newQuery}`);
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  title="Search"
-                />
-              </div>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild title="Sort result">
-                  <Button variant={"ghost"}>
-                    Sort by {sortKey(sortBy)}
-                    <ChevronDown />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="min-w-48 absolute top-0 -right-15">
-                  <DropdownMenuLabel className="flex items-center justify-between gap-2">
-                    Lists
-                    <Button size="icon" variant="ghost" className="h-5 w-5">
-                      <X />
-                    </Button>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup
-                    value={sortBy}
-                    onValueChange={(value) => {
-                      const query = createQueryString("sort", value);
-                      router.push(`${pathName}?${query}`);
-                      setSortBy(value);
                     }}
-                  >
-                    <DropdownMenuRadioItem value="createdAt-desc">
-                      Sort by latest
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="createdAt-asc">
-                      Sort by oldest
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="price-asc">
-                      Sort by lowest price
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="price-desc">
-                      Sort by highest price
-                    </DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-          {isLoading ? (
-            <div className="mt-4">
-              <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                {Array.from({ length: 15 }).map((_, index) => (
-                  <CardSkeleton control key={index} />
-                ))}
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    title="Search"
+                  />
+                </div>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild title="Sort result">
+                    <Button variant={"ghost"}>
+                      Sort by {sortKey(sortBy)}
+                      <ChevronDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-48 absolute top-0 -right-15">
+                    <DropdownMenuLabel className="flex items-center justify-between gap-2">
+                      Lists
+                      <Button size="icon" variant="ghost" className="h-5 w-5">
+                        <X />
+                      </Button>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup
+                      value={sortBy}
+                      onValueChange={(value) => {
+                        const query = createQueryString("sort", value);
+                        router.push(`${pathName}?${query}`);
+                        setSortBy(value);
+                      }}
+                    >
+                      <DropdownMenuRadioItem value="createdAt-desc">
+                        Sort by latest
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="createdAt-asc">
+                        Sort by oldest
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="price-asc">
+                        Sort by lowest price
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="price-desc">
+                        Sort by highest price
+                      </DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
-          ) : (
-            <div className="mt-4">
-              {products.length > 0 ? (
+            {isLoading ? (
+              <div className="mt-4">
                 <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                  {products.map((item) => (
-                    <CardProduct
-                      key={item._id}
-                      item={item}
-                      control
-                      onAddToCart={(item) => {
-                        handleCart(item);
-                      }}
-                      onToggleFavorite={() => handleFavorite(item._id)}
-                      favorited={listFavorite.includes(item._id)}
-                    />
+                  {Array.from({ length: 15 }).map((_, index) => (
+                    <CardSkeleton control key={index} />
                   ))}
                 </div>
-              ) : (
-                <div>No data</div>
-              )}
-            </div>
-          )}
-          {totalPage > 0 && (
-            <div className="w-full mt-6">
-              <PaginationComponent totalPage={totalPage} />
-            </div>
-          )}
+              </div>
+            ) : (
+              <div className="mt-4">
+                {products.length > 0 ? (
+                  <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
+                    {products.map((item) => (
+                      <CardProduct
+                        key={item._id}
+                        item={item}
+                        control
+                        onAddToCart={(item) => {
+                          handleCart(item);
+                        }}
+                        onToggleFavorite={() => handleFavorite(item._id)}
+                        favorited={listFavorite.includes(item._id)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div>No data</div>
+                )}
+              </div>
+            )}
+            {totalPage > 0 && (
+              <div className="w-full mt-6">
+                <PaginationComponent totalPage={totalPage} />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </Suspense>
   );
 };
 
