@@ -62,20 +62,28 @@ import { Input } from "@/components/ui/input";
 import { VariationModel } from "@/models/variationModel";
 import PaginationComponent from "@/components/PaginationComponent";
 
-const Shop = () => {
+const limit = 15;
+
+const LayoutShopWithSuspense = ({
+  categories,
+  suppliers,
+  variations,
+  maxPrice,
+}: {
+  categories: CategoryModel[];
+  suppliers: Supplier[];
+  variations: VariationModel[];
+  maxPrice: number;
+}) => {
   const [products, setProducts] = useState<ProductModel[]>([]);
 
   const [totalPage, setTotalPage] = useState(0);
   const [totalRecord, setTotalRecord] = useState(0);
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [rangePrice, setRangePrice] = useState<number[]>([0, 0]);
-  const [maxPrice, setMaxPrice] = useState(0);
+
   const [sortBy, setSortBy] = useState("createdAt-desc");
-  const [suppliers, setSuppliers] = useState<Supplier[]>();
   const [isLoading, setIsLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
-  const [variations, setVariations] = useState<VariationModel[]>([]);
-  const [loaded, setLoaded] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -91,15 +99,6 @@ const Shop = () => {
   const sort = searchParams.get("sort");
   const supplier_id = searchParams.get("supplier_id");
   const keySearch = searchParams.get("q");
-  const limit = 15;
-
-  useEffect(() => {
-    getCategories();
-    getPrice();
-    getSupplier();
-    getVariationOptions();
-    setLoaded(true);
-  }, []);
 
   useEffect(() => {
     getProducts();
@@ -143,46 +142,6 @@ const Shop = () => {
       console.log(error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getCategories = async () => {
-    try {
-      const response = await get("/categories");
-      const data = createTree(response.data, "", "_id");
-      setCategories(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getPrice = async () => {
-    try {
-      const response = await get("/products/get-price");
-      setMaxPrice(response.data.max);
-      if (max_price === null && min_price == null) {
-        setRangePrice([0, response.data.max]);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getSupplier = async () => {
-    try {
-      const response = await get("/suppliers");
-      setSuppliers(response.data.suppliers);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getVariationOptions = async () => {
-    try {
-      const response = await get("/products/variations");
-      setVariations(response.data.variations);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -513,6 +472,270 @@ const Shop = () => {
     lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
   ).current;
 
+  return (
+    <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+      <div className="mb-9 flex items-center justify-between px-7">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={"/"}>Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Shop</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      <div className="flex">
+        <div className="w-1/5 px-6 dark:text-white/80">
+          <Accordion
+            type="multiple"
+            className="w-full space-y-3"
+            // defaultValue={["item-1"]}
+          >
+            <AccordionItem
+              value="categories"
+              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+            >
+              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold">
+                Products Categories
+              </AccordionTrigger>
+              <AccordionContent className="mt-4 ">
+                {renderCategoriesFilter(categories)}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="price"
+              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+            >
+              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
+                Filter By Price
+              </AccordionTrigger>
+              <AccordionContent className="mt-4">
+                {renderFilterPrice()}
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="supllier"
+              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+            >
+              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
+                Supplier
+              </AccordionTrigger>
+              <AccordionContent className="mt-4">
+                {renderFilterSupplier()}
+              </AccordionContent>
+            </AccordionItem>
+            {renderVariations()}
+          </Accordion>
+        </div>
+        <div className="flex-1">
+          <div className="flex tracking-wider text-sm justify-between items-center dark:text-white/80">
+            <div className="flex items-center gap-3">
+              <GrAppsRounded size={21} />
+              <RiListCheck2 size={21} />
+              {products.length > 0 ? (
+                <div className="flex items-center gap-2">
+                  <p>
+                    Showing{" "}
+                    {((Number(searchParams.get("page")) || 1) - 1) * limit + 1}{" "}
+                    -{" "}
+                    {Math.min(
+                      (Number(searchParams.get("page")) || 1) * limit,
+                      totalRecord
+                    )}{" "}
+                    of {totalRecord} results
+                  </p>
+                </div>
+              ) : (
+                <p>Showing 0-0 of 0 results</p>
+              )}
+              {searchParams.toString() &&
+                !searchParams.toString().includes("page") && (
+                  <Button
+                    variant={"outline"}
+                    size={"sm"}
+                    className="h-6 px-2"
+                    onClick={() => {
+                      router.push(pathName);
+                    }}
+                  >
+                    Clear filter
+                  </Button>
+                )}
+            </div>
+
+            <div className="relative flex gap-2 items-center">
+              <div className="transition-all duration-300 relative">
+                <Input
+                  placeholder="Enter keyword..."
+                  onChange={(e) => setKeyword(e.target.value)}
+                  value={keyword}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      let newQuery: any = createQueryString("q", keyword);
+                      if (newQuery.includes("page")) {
+                        newQuery = deleteQueryString("page", newQuery);
+                      }
+                      router.push(`${pathName}?${newQuery}`);
+                    }
+                  }}
+                  name="key-search"
+                  className="pr-10"
+                />
+                <FiSearch
+                  size={20}
+                  cursor={"pointer"}
+                  onClick={() => {
+                    let newQuery: any = createQueryString("q", keyword);
+                    if (newQuery.includes("page")) {
+                      newQuery = deleteQueryString("page", newQuery);
+                    }
+                    router.push(`${pathName}?${newQuery}`);
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  title="Search"
+                />
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild title="Sort result">
+                  <Button variant={"ghost"}>
+                    Sort by {sortKey(sortBy)}
+                    <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-48 absolute top-0 -right-15">
+                  <DropdownMenuLabel className="flex items-center justify-between gap-2">
+                    Lists
+                    <Button size="icon" variant="ghost" className="h-5 w-5">
+                      <X />
+                    </Button>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuRadioGroup
+                    value={sortBy}
+                    onValueChange={(value) => {
+                      const query = createQueryString("sort", value);
+                      router.push(`${pathName}?${query}`);
+                      setSortBy(value);
+                    }}
+                  >
+                    <DropdownMenuRadioItem value="createdAt-desc">
+                      Sort by latest
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="createdAt-asc">
+                      Sort by oldest
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="price-asc">
+                      Sort by lowest price
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="price-desc">
+                      Sort by highest price
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+          {isLoading ? (
+            <div className="mt-4">
+              <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
+                {Array.from({ length: 15 }).map((_, index) => (
+                  <CardSkeleton control key={index} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4">
+              {products.length > 0 ? (
+                <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
+                  {products.map((item) => (
+                    <CardProduct
+                      key={item._id}
+                      item={item}
+                      control
+                      onAddToCart={(item) => {
+                        handleCart(item);
+                      }}
+                      onToggleFavorite={() => handleFavorite(item._id)}
+                      favorited={listFavorite.includes(item._id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div>No data</div>
+              )}
+            </div>
+          )}
+          {totalPage > 0 && (
+            <div className="w-full mt-6">
+              <PaginationComponent totalPage={totalPage} />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Shop = () => {
+  const [loaded, setLoaded] = useState(false);
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
+  const [variations, setVariations] = useState<VariationModel[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [maxPrice, setMaxPrice] = useState(0);
+
+  useEffect(() => {
+    getCategories();
+    getPrice();
+    getSupplier();
+    getVariationOptions();
+    setLoaded(true);
+  }, []);
+
+  const getCategories = async () => {
+    try {
+      const response = await get("/categories");
+      const data = createTree(response.data, "", "_id");
+      setCategories(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getPrice = async () => {
+    try {
+      const response = await get("/products/get-price");
+      setMaxPrice(response.data.max);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSupplier = async () => {
+    try {
+      const response = await get("/suppliers");
+      setSuppliers(response.data.suppliers);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getVariationOptions = async () => {
+    try {
+      const response = await get("/products/variations");
+      setVariations(response.data.variations);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderSkeleton = () => {
     return (
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
@@ -538,215 +761,12 @@ const Shop = () => {
 
   return (
     <Suspense fallback={renderSkeleton()}>
-      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-        <div className="mb-9 flex items-center justify-between px-7">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href={"/"}>Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Shop</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <div className="flex">
-          <div className="w-1/5 px-6 dark:text-white/80">
-            <Accordion
-              type="multiple"
-              className="w-full space-y-3"
-              // defaultValue={["item-1"]}
-            >
-              <AccordionItem
-                value="categories"
-                className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-              >
-                <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold">
-                  Products Categories
-                </AccordionTrigger>
-                <AccordionContent className="mt-4 ">
-                  {renderCategoriesFilter(categories)}
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem
-                value="price"
-                className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-              >
-                <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                  Filter By Price
-                </AccordionTrigger>
-                <AccordionContent className="mt-4">
-                  {renderFilterPrice()}
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem
-                value="supllier"
-                className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-              >
-                <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                  Supplier
-                </AccordionTrigger>
-                <AccordionContent className="mt-4">
-                  {renderFilterSupplier()}
-                </AccordionContent>
-              </AccordionItem>
-              {renderVariations()}
-            </Accordion>
-          </div>
-          <div className="flex-1">
-            <div className="flex tracking-wider text-sm justify-between items-center dark:text-white/80">
-              <div className="flex items-center gap-3">
-                <GrAppsRounded size={21} />
-                <RiListCheck2 size={21} />
-                {products.length > 0 ? (
-                  <div className="flex items-center gap-2">
-                    <p>
-                      Showing{" "}
-                      {((Number(searchParams.get("page")) || 1) - 1) * limit +
-                        1}{" "}
-                      -{" "}
-                      {Math.min(
-                        (Number(searchParams.get("page")) || 1) * limit,
-                        totalRecord
-                      )}{" "}
-                      of {totalRecord} results
-                    </p>
-                  </div>
-                ) : (
-                  <p>Showing 0-0 of 0 results</p>
-                )}
-                {searchParams.toString() &&
-                  !searchParams.toString().includes("page") && (
-                    <Button
-                      variant={"outline"}
-                      size={"sm"}
-                      className="h-6 px-2"
-                      onClick={() => {
-                        router.push(pathName);
-                      }}
-                    >
-                      Clear filter
-                    </Button>
-                  )}
-              </div>
-
-              <div className="relative flex gap-2 items-center">
-                <div className="transition-all duration-300 relative">
-                  <Input
-                    placeholder="Enter keyword..."
-                    onChange={(e) => setKeyword(e.target.value)}
-                    value={keyword}
-                    onKeyUp={(e) => {
-                      if (e.key === "Enter") {
-                        let newQuery: any = createQueryString("q", keyword);
-                        if (newQuery.includes("page")) {
-                          newQuery = deleteQueryString("page", newQuery);
-                        }
-                        router.push(`${pathName}?${newQuery}`);
-                      }
-                    }}
-                    name="key-search"
-                    className="pr-10"
-                  />
-                  <FiSearch
-                    size={20}
-                    cursor={"pointer"}
-                    onClick={() => {
-                      let newQuery: any = createQueryString("q", keyword);
-                      if (newQuery.includes("page")) {
-                        newQuery = deleteQueryString("page", newQuery);
-                      }
-                      router.push(`${pathName}?${newQuery}`);
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                    title="Search"
-                  />
-                </div>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild title="Sort result">
-                    <Button variant={"ghost"}>
-                      Sort by {sortKey(sortBy)}
-                      <ChevronDown />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="min-w-48 absolute top-0 -right-15">
-                    <DropdownMenuLabel className="flex items-center justify-between gap-2">
-                      Lists
-                      <Button size="icon" variant="ghost" className="h-5 w-5">
-                        <X />
-                      </Button>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup
-                      value={sortBy}
-                      onValueChange={(value) => {
-                        const query = createQueryString("sort", value);
-                        router.push(`${pathName}?${query}`);
-                        setSortBy(value);
-                      }}
-                    >
-                      <DropdownMenuRadioItem value="createdAt-desc">
-                        Sort by latest
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="createdAt-asc">
-                        Sort by oldest
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="price-asc">
-                        Sort by lowest price
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="price-desc">
-                        Sort by highest price
-                      </DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-            {isLoading ? (
-              <div className="mt-4">
-                <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                  {Array.from({ length: 15 }).map((_, index) => (
-                    <CardSkeleton control key={index} />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4">
-                {products.length > 0 ? (
-                  <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                    {products.map((item) => (
-                      <CardProduct
-                        key={item._id}
-                        item={item}
-                        control
-                        onAddToCart={(item) => {
-                          handleCart(item);
-                        }}
-                        onToggleFavorite={() => handleFavorite(item._id)}
-                        favorited={listFavorite.includes(item._id)}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div>No data</div>
-                )}
-              </div>
-            )}
-            {totalPage > 0 && (
-              <div className="w-full mt-6">
-                <PaginationComponent totalPage={totalPage} />
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+      <LayoutShopWithSuspense
+        categories={categories}
+        suppliers={suppliers}
+        variations={variations}
+        maxPrice={maxPrice}
+      />
     </Suspense>
   );
 };
