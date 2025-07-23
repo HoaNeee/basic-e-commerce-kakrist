@@ -67,8 +67,10 @@ const LayoutLoginWithSuspense = () => {
       toast.success(response.message, {
         description: "Login successfully, Welcome!",
       });
-      dispatch(addAuth(response.data));
+      console.log(response);
       router.replace(next ? next : "/");
+      dispatch(addAuth(response.data));
+      console.log(next);
     } catch (error: any) {
       toast.error(error.message, {
         description: "Login failed!",

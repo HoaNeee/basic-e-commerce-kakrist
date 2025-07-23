@@ -17,6 +17,7 @@ import { BsTwitterX } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const payment = [AMEX, GOOGLE, PAYPAL, MASTER, VISA];
 
@@ -44,20 +45,21 @@ const FooterComponent = () => {
             </div>
             <div className="flex flex-col gap-3">
               <p className="font-bold">Information</p>
-              <p className="">My Account</p>
-              <p>Login</p>
-              <p>My Cart</p>
-              <p>My Wishlist</p>
-              <p>Checkout</p>
+              <Link href={"/profile"} className="">
+                My Account
+              </Link>
+              <Link href={"/auth/login"}>Login</Link>
+              <Link href={"/cart"}>My Cart</Link>
+              <Link href={"/wishlists"}>My Wishlist</Link>
+              <Link href={"/cart/checkout"}>Checkout</Link>
             </div>
             <div className="flex flex-col gap-3">
               <p className="font-bold">Service</p>
-              <p>About Us</p>
-              <p>Careers</p>
-              <p>My Cart</p>
-              <p>Delivery Infomation</p>
-              <p>Privacy Policy</p>
-              <p>Terms & Conditions</p>
+              <Link href={"/"}>About Us</Link>
+              <Link href={"/"}>Careers</Link>
+              <Link href={"/"}>Delivery Infomation</Link>
+              <Link href={"/"}>Privacy Policy</Link>
+              <Link href={"/"}>Terms & Conditions</Link>
             </div>
             <div className="flex flex-col gap-5">
               <p className="font-bold">Subscribe</p>
@@ -66,7 +68,7 @@ const FooterComponent = () => {
                 collections and product launches.
               </p>
               <div>
-                <form action={"/"}>
+                <form action={"/"} method="post">
                   <div className="px-2 h-13 border-2 border-white rounded-md flex items-center pl-4">
                     <MdOutlineMailOutline size={30} />
                     <input

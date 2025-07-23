@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
@@ -45,6 +46,15 @@ import { removeList, syncList } from "@/redux/reducer/favoriteReducer";
 import { PopoverClose } from "@radix-ui/react-popover";
 import useSWR from "swr";
 import LOGOWHITE from "../../assets/logo-white.png";
+import { socket } from "@/socket/socket";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 
 const Header = () => {
   const [openPopoverCart, setOpenPopoverCart] = useState(false);
@@ -61,6 +71,14 @@ const Header = () => {
     revalidateOnReconnect: false,
     revalidateOnFocus: false,
   });
+
+  useEffect(() => {
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -88,8 +106,44 @@ const Header = () => {
     if (auth.isLogin) {
       getCart();
       getListFavorite();
+
+      socket.on("SERVER_RETURN_CHANGE_STATUS_ORDER", (data: any) => {
+        if (data.user_id === auth.user_id) {
+          toast(renderNotify(data), {
+            duration: 5000,
+          });
+        }
+      });
     }
+
+    return () => {
+      socket.off("SERVER_RETURN_CHANGE_STATUS_ORDER");
+    };
   }, [auth.isLogin]);
+
+  const renderNotify = (data: any) => {
+    return (
+      <Link
+        href={`${data.ref_link}?order_no=${data.ref_id}`}
+        className="flex items-center gap-4 w-full h-full"
+      >
+        <div
+          className={`size-13 rounded-full overflow-hidden flex items-center justify-center bg-gray-100`}
+        >
+          <div className="w-6 h-6">
+            <img src={data.image} className="w-full h-full object-cover" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <p className="font-semibold text-base">Notification</p>
+          <p className="text-sm text-neutral-600 tracking-wider">
+            {data.title}
+          </p>
+          <span className="text-xs text-neutral-400">Click to check!</span>
+        </div>
+      </Link>
+    );
+  };
 
   const getCart = async () => {
     try {
@@ -137,14 +191,38 @@ const Header = () => {
                 />
               </Link>
               <div className="md:hidden block">
-                <FaBars size={20} />
+                <Sheet>
+                  <SheetTrigger>
+                    <FaBars size={20} />
+                  </SheetTrigger>
+                  <SheetContent
+                    side="left"
+                    className="w-2/3 bg-white dark:bg-black text-black dark:text-white/80"
+                  >
+                    <SheetHeader>
+                      <SheetTitle asChild>
+                        <Link className="w-20 h-9 block" href="/">
+                          <Image
+                            alt="LOGO"
+                            src={setting.theme === "dark" ? LOGOWHITE : LOGOAPP}
+                            priority
+                            className="w-full h-full"
+                          />
+                        </Link>
+                      </SheetTitle>
+                      <SheetDescription />
+                    </SheetHeader>
+
+                    <div>content</div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
             <div className="hidden md:block">
               <MenuNav />
             </div>
             <div className="flex gap-4 items-center">
-              <LuSearch className="lg:text-2xl text-xl" />
+              <LuSearch className="lg:text-2xl text-xl" onClick={() => {}} />
               <IoIosHeartEmpty
                 className="lg:text-2xl text-xl cursor-pointer"
                 onClick={() => {
@@ -278,7 +356,7 @@ const Header = () => {
                               <p>Subtotal</p>
                               <p>
                                 {VND.format(
-                                  cart.carts.reduce(
+                                  cart?.carts.reduce(
                                     (val, item) =>
                                       val +
                                       item.quantity *
@@ -343,7 +421,7 @@ const Header = () => {
                     title="open mini cart"
                   />
                 )}
-                {cart && cart.carts.length > 0 && (
+                {cart && cart?.carts?.length > 0 && (
                   <Badge
                     className="absolute lg:-top-1.5 text-[10px] p-0 px-1 lg:-right-1 -right-1.5 -top-2"
                     variant={"destructive"}
