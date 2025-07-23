@@ -1,8 +1,8 @@
-import DialogConfirm from "@/components/dialog/DialogConfirm";
+// import DialogConfirm from "@/components/dialog/DialogConfirm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import React from "react";
-import { GoTrash } from "react-icons/go";
+// import { GoTrash } from "react-icons/go";
 
 const CreditCard = () => {
   return (

@@ -27,7 +27,7 @@ import { addAuth } from "@/redux/reducer/authReducer";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { FcGoogle } from "react-icons/fc";
+// import { FcGoogle } from "react-icons/fc";
 import { RootState } from "@/redux/store";
 
 const formSchema = z.object({
