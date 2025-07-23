@@ -16,6 +16,25 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import lodash from "lodash";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { VscSettings } from "react-icons/vsc";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Order = () => {
   const [orders, setOrders] = useState<OrderModel[]>([]);
@@ -28,6 +47,8 @@ const Order = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [showSkeleton, setShowSkeleton] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const listRef = useRef<any>(null);
   const router = useRouter();
@@ -38,13 +59,13 @@ const Order = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true);
+        setShowSkeleton(true);
         const data = await getOrders();
         setOrders(data);
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false);
+        setShowSkeleton(false);
       }
     };
 
@@ -63,20 +84,7 @@ const Order = () => {
     }
 
     return () => window.removeEventListener("scroll", scrollToBottom);
-  }, [isLoading]);
-
-  const handleShowMore = async (page: number) => {
-    try {
-      setIsLoading(true);
-      const data = await getOrders(page);
-      setOrders([...orders, ...data]);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setShowSkeleton(false);
-    }
-  };
+  }, [showSkeleton, isLoading]);
 
   const scrollToBottom = () => {
     if (
@@ -89,6 +97,17 @@ const Order = () => {
         }
         debounce(page, totalPage);
       }
+    }
+  };
+
+  const handleShowMore = async (page: number) => {
+    try {
+      const data = await getOrders(page, keyword, statusFilter);
+      setOrders([...orders, ...data]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setShowSkeleton(false);
     }
   };
 
@@ -107,8 +126,15 @@ const Order = () => {
     }, 1000)
   ).current;
 
-  const getOrders = async (page = 1) => {
-    const api = `/orders?page=${page}&limit=${limit}`;
+  const debounceSearch = useRef(
+    lodash.debounce(async (keyword: string, status = "") => {
+      await handleSearchAndFilter(keyword, status);
+    }, 1000)
+  ).current;
+
+  const getOrders = async (page = 1, keyword = "", status = "") => {
+    const api = `/orders?page=${page}&limit=${limit}&keyword=${keyword}&status=${status}`;
+    console.log(api);
     const response = await get(api);
     const data = response.data.orders;
     setTotalPage(response.data.totalPage);
@@ -264,11 +290,103 @@ const Order = () => {
     );
   };
 
+  const handleSearchAndFilter = async (keyword = "", status = "") => {
+    try {
+      setIsLoading(true);
+
+      if (page !== 1) {
+        setPage(1);
+      }
+
+      const data = await getOrders(1, keyword, status);
+      setOrders(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return order_no ? (
     <OrderDetail order_no={order_no} />
   ) : (
     <div className="w-full h-full">
-      {orders && orders.length > 0 ? (
+      <div className="flex items-center gap-3 justify-end mb-6">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2" />
+          <Input
+            className="pl-10 py-6"
+            placeholder="Search..."
+            name="key-search-order"
+            value={keyword}
+            onChange={(e) => {
+              setKeyword(e.target.value);
+              debounceSearch(e.target.value, statusFilter);
+            }}
+          />
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="w-25">
+              <Button className="py-6 w-full">
+                Filter
+                <VscSettings />
+              </Button>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <h3 className="mb-4 font-semibold">Filter</h3>
+            <div className="flex items-center gap-4">
+              <Label htmlFor="select-status">Status: </Label>
+              <Select
+                value={statusFilter}
+                onValueChange={(e) => {
+                  setStatusFilter(e);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent id="select-status" className="w-full">
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="confirmed">Confirmed</SelectItem>
+                    <SelectItem value="shipping">Shipping</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="canceled">Canceled</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end items-center gap-3 mt-6">
+              <Button
+                variant={"outline"}
+                onClick={async () => {
+                  if (statusFilter) {
+                    setStatusFilter("");
+                    await handleSearchAndFilter(keyword, "");
+                  }
+                }}
+              >
+                Clear
+              </Button>
+              <Button
+                onClick={async () => {
+                  handleSearchAndFilter(keyword, statusFilter);
+                }}
+              >
+                Done
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+      {isLoading ? (
+        <div className="flex flex-col gap-5 w-full mt-5">
+          {Array.from({ length: 3 }).map((_, index) => renderSkeleton(index))}
+        </div>
+      ) : orders && orders.length > 0 ? (
         <div className="flex flex-col gap-5" ref={listRef}>
           {orders.map((order) => (
             <div
@@ -380,9 +498,9 @@ const Order = () => {
           ))}
         </div>
       ) : (
-        <div> No data</div>
+        !showSkeleton && <div> No data</div>
       )}
-      {showSkeleton && (
+      {showSkeleton && !isLoading && (
         <div className="flex flex-col gap-5 w-full mt-5">
           {Array.from({ length: 3 }).map((_, index) => renderSkeleton(index))}
         </div>

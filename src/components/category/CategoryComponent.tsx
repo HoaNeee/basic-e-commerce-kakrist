@@ -54,7 +54,7 @@ const CategoryComponent = (props: Props) => {
             categories.map((item, index) => (
               <CarouselItem
                 key={index}
-                className="pl-1 md:basis-1/3 sm:basis-1/2 lg:basis-1/4 flex justify-center bg-[##F0F0F2] "
+                className="pl-1 md:basis-1/3 sm:basis-1/2 lg:basis-1/4 flex justify-center bg-[##F0F0F2]"
               >
                 <div className="p-1 w-full max-w-xs">
                   <Card className="relative rounded-md ">
@@ -67,14 +67,14 @@ const CategoryComponent = (props: Props) => {
                       <div className="w-full">
                         <Button
                           variant={
-                            setting.theme === "dark " ? "outline" : undefined
+                            setting.theme !== "dark" ? "outline" : undefined
                           }
-                          className="w-full shadow bg-white"
+                          className="w-full shadow dark:bg-white"
                           asChild
                         >
                           <Link
                             href={`/shop?filter_cats=${item._id}`}
-                            className="font-medium h-full w-full inline-block py-3.5 tracking-wider bg-white"
+                            className="font-medium h-full w-full inline-block py-3.5 tracking-wider dark:bg-white"
                           >
                             {item.title}
                           </Link>

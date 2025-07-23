@@ -56,16 +56,18 @@ const WishLists = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-3 gap-5">
+        {Array.from({ length: limit }).map((_, index) => (
+          <CardSkeleton key={index} control className="xl:h-120" />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full">
-      {isLoading && (
-        <div className="grid grid-cols-3 gap-5">
-          {Array.from({ length: limit }).map((_, index) => (
-            <CardSkeleton key={index} control className="xl:h-120" />
-          ))}
-        </div>
-      )}
-
       {!isLoading && (
         <>
           {listFavoriteInfo.length > 0 ? (

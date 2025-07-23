@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Orders",
-  description: "This is profile page",
+  title: "Blogs",
+  description: "This is blogs page",
 };
 
-export default function OrderLayout({
+export default function BlogLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

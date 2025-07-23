@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -60,6 +59,13 @@ export function MenuNav() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link href={"/blogs"} className="lg:text-[16px] text-sm">
+              Blog
+            </Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             <Link href="/docs" className="lg:text-[16px] text-sm">
               Docs
@@ -73,13 +79,7 @@ export function MenuNav() {
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href={"/blogs"} className="lg:text-[16px] text-sm">
-              Blog
-            </Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
+
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link href={"/contact"} className="lg:text-[16px] text-sm">

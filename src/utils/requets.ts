@@ -3,7 +3,8 @@
 import FileResizer from "react-image-file-resizer";
 
 export const BASE_URL = `http://localhost:3001`;
-const API_URL = `${BASE_URL}`;
+const NEW_BASE_URL = `https://be-kkirst.onrender.com`;
+const API_URL = `${NEW_BASE_URL}`;
 
 export const fetcher = (url: string) =>
   fetch(`${API_URL}${url}`, { credentials: "include" }).then((res) =>

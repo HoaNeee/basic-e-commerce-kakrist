@@ -1,7 +1,13 @@
 import HeadContent from "@/components/HeadContent";
 import ProfileLayout from "@/layouts/ProfileLayout";
+import { Metadata } from "next";
 
-export default async function Profile({
+export const metadata: Metadata = {
+  title: "My Profile",
+  description: "This is profile page",
+};
+
+export default function Profile({
   children,
 }: Readonly<{
   children: React.ReactNode;
