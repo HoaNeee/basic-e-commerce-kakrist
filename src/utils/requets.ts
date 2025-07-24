@@ -3,7 +3,7 @@
 import FileResizer from "react-image-file-resizer";
 
 // export const BASE_URL = `http://localhost:3001`;
-const BASE_URL = `https://api.kakrist.site`;
+export const BASE_URL = `https://api.kakrist.site`;
 const API_URL = `${BASE_URL}`;
 
 export const fetcher = (url: string) =>

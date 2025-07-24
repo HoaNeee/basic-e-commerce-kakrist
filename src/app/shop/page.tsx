@@ -494,59 +494,71 @@ const LayoutShopWithSuspense = ({
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar */}
           <div className="lg:w-1/4 w-full">
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-6 sticky top-30 lg:pb-10">
-              <div className="flex items-center justify-between mb-4 lg:hidden">
-                <h2 className="font-semibold text-gray-900 dark:text-gray-300">
-                  Filters
-                </h2>
-                <Button variant="ghost" size="sm">
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+            <Collapsible
+              defaultOpen
+              className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm px-6 py-4 sticky top-30 lg:data-[state=open]:pb-10 group/collapsible"
+            >
+              <CollapsibleTrigger asChild className="">
+                <div className="flex items-center justify-between group-data-[state=open]/collapsible:mb-4">
+                  <h2 className="font-semibold text-gray-900 dark:text-gray-300">
+                    Filters
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="px-0 rounded-full w-6 h-6"
+                    style={{ padding: 0 }}
+                  >
+                    <X className="w-4 h-4 group-data-[state=open]/collapsible:rotate-180 transition-transform duration-300" />
+                  </Button>
+                </div>
+              </CollapsibleTrigger>
 
-              <Accordion
-                type="multiple"
-                className="w-full space-y-3"
-                defaultValue={[]}
-              >
-                <AccordionItem
-                  value="categories"
-                  className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+              <CollapsibleContent>
+                <Accordion
+                  type="multiple"
+                  className="w-full space-y-3"
+                  defaultValue={[]}
                 >
-                  <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
-                    Product Categories
-                  </AccordionTrigger>
-                  <AccordionContent className="mt-4">
-                    {renderCategoriesFilter(categories)}
-                  </AccordionContent>
-                </AccordionItem>
+                  <AccordionItem
+                    value="categories"
+                    className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+                  >
+                    <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
+                      Product Categories
+                    </AccordionTrigger>
+                    <AccordionContent className="mt-4">
+                      {renderCategoriesFilter(categories)}
+                    </AccordionContent>
+                  </AccordionItem>
 
-                <AccordionItem
-                  value="price"
-                  className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
-                >
-                  <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
-                    Price Range
-                  </AccordionTrigger>
-                  <AccordionContent className="mt-4">
-                    {renderFilterPrice()}
-                  </AccordionContent>
-                </AccordionItem>
+                  <AccordionItem
+                    value="price"
+                    className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+                  >
+                    <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
+                      Price Range
+                    </AccordionTrigger>
+                    <AccordionContent className="mt-4">
+                      {renderFilterPrice()}
+                    </AccordionContent>
+                  </AccordionItem>
 
-                <AccordionItem
-                  value="supplier"
-                  className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
-                >
-                  <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
-                    Suppliers
-                  </AccordionTrigger>
-                  <AccordionContent className="mt-4">
-                    {renderFilterSupplier()}
-                  </AccordionContent>
-                </AccordionItem>
-                {renderVariations()}
-              </Accordion>
-            </div>
+                  <AccordionItem
+                    value="supplier"
+                    className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+                  >
+                    <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
+                      Suppliers
+                    </AccordionTrigger>
+                    <AccordionContent className="mt-4">
+                      {renderFilterSupplier()}
+                    </AccordionContent>
+                  </AccordionItem>
+                  {renderVariations()}
+                </Accordion>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
 
           {/* Main Content */}
@@ -825,7 +837,7 @@ const Shop = () => {
     return (
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
         <div className="flex my-13">
-          <div className="w-1/5 px-6"></div>
+          <div className="md:w-1/5 md:block hidden px-6"></div>
           <div className="flex-1">
             <div className="mt-6">
               <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
