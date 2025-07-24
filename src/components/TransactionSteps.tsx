@@ -60,15 +60,18 @@ export function TransactionSteps(props: Props) {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [prevStep, setPrevStep] = useState<any>();
-  const [clientWidth, setClientWidth] = useState(window.innerWidth);
+  const [clientWidth, setClientWidth] = useState(1280);
 
   useEffect(() => {
-    window.addEventListener("resize", onWidthChange);
+    if (window) {
+      setClientWidth(window.innerWidth);
+      window.addEventListener("resize", onWidthChange);
+    }
 
     return () => {
       window.removeEventListener("resize", onWidthChange);
     };
-  }, []);
+  }, [window.innerWidth]);
 
   const onWidthChange = () => {
     setClientWidth(window.innerWidth);
