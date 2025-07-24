@@ -511,7 +511,7 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
           />
 
           {!address && !isModal ? (
-            <div className="w-1/3">
+            <div className="sm:w-1/3 w-1/2">
               <Button
                 disabled={false}
                 type="submit"

@@ -25,7 +25,7 @@ const ReviewOrder = (props: Props) => {
 
   const estimatedDelivery = new Date().getTime() + 1000 * 60 * 60 * 24 * 3;
 
-  const renderTotal = (order: OrderModel) => {
+  const renderOrderSummary = (order: OrderModel) => {
     const subTotal = order.products.reduce(
       (val, item) => val + item.price * item.quantity,
       0
@@ -43,14 +43,14 @@ const ReviewOrder = (props: Props) => {
     return (
       <Card className="py-0 gap-0 transition-all duration-300">
         <CardHeader className="">
-          <div className="flex py-4 justify-between items-center font-bold border-b-2 border-muted w-full">
-            <p>Subtotal</p>
+          <div className="flex py-4 justify-between text-lg text-muted-foreground items-center font-bold border-b-2 border-muted w-full">
+            <p className="">Subtotal</p>
             <p>{VND.format(subTotal)}</p>
           </div>
         </CardHeader>
         <CardContent className="transition-all duration-300">
           <div className="border-b-2 border-muted py-4">
-            <div className="space-y-2 flex items-center gap-2">
+            <div className="space-y-2 flex items-center gap-2 text-muted-foreground">
               Promotion:{" "}
               {order.promotion ? (
                 <Badge className="bg-red-100/50 text-red-500 rounded-sm">
@@ -63,7 +63,7 @@ const ReviewOrder = (props: Props) => {
           </div>
         </CardContent>
         <CardFooter className="py-4 flex flex-col transition-all duration-500 relative">
-          <div className="flex justify-between items-center font-bold w-full">
+          <div className="flex justify-between items-center font-bold w-full text-lg">
             <p>Grand Total</p>
             <p>{VND.format(granTotal)}</p>
           </div>
@@ -96,7 +96,7 @@ const ReviewOrder = (props: Props) => {
               {cartsCheckout.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 pb-5 border-b-2 border-muted"
+                  className="flex items-center gap-3 pb-5 border-b-2 border-muted dark:border-white/70"
                 >
                   <div className="w-19 h-19 bg-muted">
                     <img
@@ -136,7 +136,7 @@ const ReviewOrder = (props: Props) => {
               {order.products.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 pb-5 border-b-2 border-muted"
+                  className="flex items-center gap-3 pb-5 border-b-2 border-muted dark:border-white/70"
                 >
                   <div className="w-19 h-19 bg-muted">
                     <img
@@ -170,7 +170,7 @@ const ReviewOrder = (props: Props) => {
           )}
         </li>
 
-        <li className="py-5 border-b-2 border-muted order-4">
+        <li className="py-5 border-b-2 border-muted order-4 dark:border-white/70">
           <h3 className="font-bold text-lg">Shipping Address</h3>
           {shippingAddress ? (
             <div className="flex items-center justify-between">
@@ -209,7 +209,7 @@ const ReviewOrder = (props: Props) => {
             )
           )}
         </li>
-        <li className="py-5 border-b-2 border-muted order-5">
+        <li className="py-5 border-b-2 border-muted order-5 dark:border-white/70">
           <>
             <h3 className="font-bold text-lg">Payment Method</h3>
             {paymentMethod ? (
@@ -255,7 +255,7 @@ const ReviewOrder = (props: Props) => {
             )}
           </>
         </li>
-        {order && <li className="mb-6 order-6">{renderTotal(order)}</li>}
+        {order && <li className="mb-6 order-6">{renderOrderSummary(order)}</li>}
       </ol>
     </div>
   );

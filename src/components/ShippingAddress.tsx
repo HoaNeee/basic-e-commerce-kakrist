@@ -57,16 +57,6 @@ const ShippingAddress = (props: Props) => {
     }
   }, [addressList, addressCheckedProp]);
 
-  // const getAddress = async () => {
-  //   try {
-  //     const response = await get("/address");
-  //     setAddress(response.data.address);
-  //
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const handleDeleteAddress = async (item: AddressModel) => {
     try {
       const response = await del("/address/delete", item._id);
@@ -117,7 +107,7 @@ const ShippingAddress = (props: Props) => {
           </p>
         </div>
         <div className="py-4 border-b-2 border-muted">
-          <div className=" grid grid-cols-3 gap-10">
+          <div className=" grid lg:grid-cols-3 sm:grid-cols-2 py-6 grid-cols-1 gap-10">
             {addressList &&
               addressList?.length > 0 &&
               addressList.map((item) => (
@@ -170,7 +160,7 @@ const ShippingAddress = (props: Props) => {
                               This address is your default address, are you sure
                               you still want to delete it? Choose other your
                               address default or{" "}
-                              <span className="font-bold text-black">
+                              <span className="font-bold text-black dark:text-white">
                                 {"'continue'"}
                               </span>{" "}
                               if you want system to resolve.

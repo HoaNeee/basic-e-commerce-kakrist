@@ -9,7 +9,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import MegaMenu from "./MegaMenu";
 import { get } from "@/utils/requets";
@@ -65,13 +64,7 @@ export function MenuNav() {
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/docs" className="lg:text-[16px] text-sm">
-              Docs
-            </Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
+
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link href={"/stories"} className="lg:text-[16px] text-sm">

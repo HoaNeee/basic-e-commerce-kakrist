@@ -165,7 +165,7 @@ const LayoutShopWithSuspense = ({
     const valuesChecked = filter_cats ? filter_cats.split(",") : [];
 
     return (
-      <div className="flex flex-col w-full gap-5">
+      <div className="flex flex-col w-full gap-5 dark:text-white/80">
         {categories.map((item) => (
           <Collapsible
             key={item._id}
@@ -245,7 +245,7 @@ const LayoutShopWithSuspense = ({
 
   const renderFilterPrice = () => {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 dark:text-white/80">
         <div className="flex justify-between items-center">
           <p>Price: 0 - {maxPrice}</p>
           <Button
@@ -330,7 +330,7 @@ const LayoutShopWithSuspense = ({
         <AccordionItem
           key={item._id}
           value={item._id}
-          className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
+          className="p-0 border-b-1 border-gray-200 dark:text-gray-200 data-[state=closed]:pb-5 data-[state=open]:pb-4"
         >
           <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
             Filter By {item.title}
@@ -438,16 +438,15 @@ const LayoutShopWithSuspense = ({
   const sortKey = (key: string) => {
     switch (key) {
       case "createdAt-desc":
-        return "latest";
+        return "Newest First";
       case "createdAt-asc":
-        return "oldest";
+        return "Oldest First";
       case "price-desc":
-        return "highest price";
+        return "Price: High to Low";
       case "price-asc":
-        return "lowest price";
-
+        return "Price: Low to High";
       default:
-        return "";
+        return "Sort By";
     }
   };
 
@@ -473,211 +472,297 @@ const LayoutShopWithSuspense = ({
   ).current;
 
   return (
-    <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-      <div className="mb-9 flex items-center justify-between px-7">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href={"/"}>Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Shop</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-      <div className="flex">
-        <div className="w-1/5 px-6 dark:text-white/80">
-          <Accordion
-            type="multiple"
-            className="w-full space-y-3"
-            // defaultValue={["item-1"]}
-          >
-            <AccordionItem
-              value="categories"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold">
-                Products Categories
-              </AccordionTrigger>
-              <AccordionContent className="mt-4 ">
-                {renderCategoriesFilter(categories)}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem
-              value="price"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                Filter By Price
-              </AccordionTrigger>
-              <AccordionContent className="mt-4">
-                {renderFilterPrice()}
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem
-              value="supllier"
-              className="p-0 border-b-2 border-muted data-[state=closed]:pb-5 data-[state=open]:pb-4"
-            >
-              <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-bold mt-1">
-                Supplier
-              </AccordionTrigger>
-              <AccordionContent className="mt-4">
-                {renderFilterSupplier()}
-              </AccordionContent>
-            </AccordionItem>
-            {renderVariations()}
-          </Accordion>
+    <section className="min-h-screen bg-gray-50 dark:bg-black/90">
+      <div className="container w-full xl:px-4 py-8 mx-auto px-2 md:px-0">
+        {/* Breadcrumb */}
+        <div className="mb-6">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href={"/"}>Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Shop</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
-        <div className="flex-1">
-          <div className="flex tracking-wider text-sm justify-between items-center dark:text-white/80">
-            <div className="flex items-center gap-3">
-              <GrAppsRounded size={21} />
-              <RiListCheck2 size={21} />
-              {products.length > 0 ? (
-                <div className="flex items-center gap-2">
-                  <p>
-                    Showing{" "}
-                    {((Number(searchParams.get("page")) || 1) - 1) * limit + 1}{" "}
-                    -{" "}
-                    {Math.min(
-                      (Number(searchParams.get("page")) || 1) * limit,
-                      totalRecord
-                    )}{" "}
-                    of {totalRecord} results
-                  </p>
-                </div>
-              ) : (
-                <p>Showing 0-0 of 0 results</p>
-              )}
-              {searchParams.toString() &&
-                !searchParams.toString().includes("page") && (
-                  <Button
-                    variant={"outline"}
-                    size={"sm"}
-                    className="h-6 px-2"
-                    onClick={() => {
-                      router.push(pathName);
-                    }}
-                  >
-                    Clear filter
-                  </Button>
-                )}
-            </div>
 
-            <div className="relative flex gap-2 items-center">
-              <div className="transition-all duration-300 relative">
-                <Input
-                  placeholder="Enter keyword..."
-                  onChange={(e) => setKeyword(e.target.value)}
-                  value={keyword}
-                  onKeyUp={(e) => {
-                    if (e.key === "Enter") {
-                      let newQuery: any = createQueryString("q", keyword);
-                      if (newQuery.includes("page")) {
-                        newQuery = deleteQueryString("page", newQuery);
-                      }
-                      router.push(`${pathName}?${newQuery}`);
-                    }
-                  }}
-                  name="key-search"
-                  className="pr-10"
-                />
-                <FiSearch
-                  size={20}
-                  cursor={"pointer"}
-                  onClick={() => {
-                    let newQuery: any = createQueryString("q", keyword);
-                    if (newQuery.includes("page")) {
-                      newQuery = deleteQueryString("page", newQuery);
-                    }
-                    router.push(`${pathName}?${newQuery}`);
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  title="Search"
-                />
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar */}
+          <div className="lg:w-1/4 w-full">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-6 sticky top-30 lg:pb-10">
+              <div className="flex items-center justify-between mb-4 lg:hidden">
+                <h2 className="font-semibold text-gray-900 dark:text-gray-300">
+                  Filters
+                </h2>
+                <Button variant="ghost" size="sm">
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild title="Sort result">
-                  <Button variant={"ghost"}>
-                    Sort by {sortKey(sortBy)}
-                    <ChevronDown />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="min-w-48 absolute top-0 -right-15">
-                  <DropdownMenuLabel className="flex items-center justify-between gap-2">
-                    Lists
-                    <Button size="icon" variant="ghost" className="h-5 w-5">
-                      <X />
-                    </Button>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup
-                    value={sortBy}
-                    onValueChange={(value) => {
-                      const query = createQueryString("sort", value);
-                      router.push(`${pathName}?${query}`);
-                      setSortBy(value);
-                    }}
-                  >
-                    <DropdownMenuRadioItem value="createdAt-desc">
-                      Sort by latest
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="createdAt-asc">
-                      Sort by oldest
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="price-asc">
-                      Sort by lowest price
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="price-desc">
-                      Sort by highest price
-                    </DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Accordion
+                type="multiple"
+                className="w-full space-y-3"
+                defaultValue={[]}
+              >
+                <AccordionItem
+                  value="categories"
+                  className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+                >
+                  <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
+                    Product Categories
+                  </AccordionTrigger>
+                  <AccordionContent className="mt-4">
+                    {renderCategoriesFilter(categories)}
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="price"
+                  className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+                >
+                  <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
+                    Price Range
+                  </AccordionTrigger>
+                  <AccordionContent className="mt-4">
+                    {renderFilterPrice()}
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="supplier"
+                  className="p-0 border-b border-gray-200 data-[state=closed]:pb-4 data-[state=open]:pb-4"
+                >
+                  <AccordionTrigger className="text-base p-0 items-center hover:no-underline font-semibold text-gray-900 dark:text-gray-200">
+                    Suppliers
+                  </AccordionTrigger>
+                  <AccordionContent className="mt-4">
+                    {renderFilterSupplier()}
+                  </AccordionContent>
+                </AccordionItem>
+                {renderVariations()}
+              </Accordion>
             </div>
           </div>
-          {isLoading ? (
-            <div className="mt-4">
-              <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                {Array.from({ length: 15 }).map((_, index) => (
+
+          {/* Main Content */}
+          <div className="flex-1">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 mb-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {/* Results Info */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 data-[active=true]:bg-white dark:data-[active=true]:bg-neutral-600 dark:data-[active=true]:text-white/80 data-[active=true]:shadow-sm"
+                      data-active="true"
+                    >
+                      <GrAppsRounded size={16} />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="p-2">
+                      <RiListCheck2 size={16} />
+                    </Button>
+                  </div>
+
+                  {products.length > 0 ? (
+                    <div className="text-sm text-gray-600 dark:text-gray-200">
+                      Showing{" "}
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {((Number(searchParams.get("page")) || 1) - 1) * limit +
+                          1}
+                      </span>{" "}
+                      -{" "}
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {Math.min(
+                          (Number(searchParams.get("page")) || 1) * limit,
+                          totalRecord
+                        )}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {totalRecord}
+                      </span>{" "}
+                      products
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-300">
+                      No products found
+                    </p>
+                  )}
+
+                  {(filter_cats ||
+                    max_price ||
+                    min_price ||
+                    supplier_id ||
+                    keySearch) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setKeyword("");
+                        router.push(pathName);
+                      }}
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      Clear All Filter
+                    </Button>
+                  )}
+                </div>
+
+                {/* Search & Sort */}
+                <div className="flex lg:items-center gap-3 lg:flex-row flex-col">
+                  <div className="relative">
+                    <Input
+                      placeholder="Search products..."
+                      onChange={(e) => setKeyword(e.target.value)}
+                      value={keyword}
+                      onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                          let newQuery: any = createQueryString("q", keyword);
+                          if (newQuery.includes("page")) {
+                            newQuery = deleteQueryString("page", newQuery);
+                          }
+                          router.push(`${pathName}?${newQuery}`);
+                        }
+                      }}
+                      className="pr-10 lg:w-64 w-full dark:text-white"
+                    />
+                    <FiSearch
+                      size={18}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600 dark:hover:text-gray-200 dark:text-gray-100"
+                      onClick={() => {
+                        let newQuery: any = createQueryString("q", keyword);
+                        if (newQuery.includes("page")) {
+                          newQuery = deleteQueryString("page", newQuery);
+                        }
+                        router.push(`${pathName}?${newQuery}`);
+                      }}
+                    />
+                  </div>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="lg:min-w-[140px] w-48 dark:text-white/80"
+                      >
+                        {sortKey(sortBy)}
+                        <ChevronDown className="w-4 h-4 ml-2" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel>Sort Options</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={sortBy}
+                        onValueChange={(value) => {
+                          const query = createQueryString("sort", value);
+                          router.push(`${pathName}?${query}`);
+                          setSortBy(value);
+                        }}
+                      >
+                        <DropdownMenuRadioItem value="createdAt-desc">
+                          Newest First
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="createdAt-asc">
+                          Oldest First
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="price-asc">
+                          Price: Low to High
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="price-desc">
+                          Price: High to Low
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </div>
+
+            {/* Products Grid */}
+            {isLoading ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: limit }).map((_, index) => (
                   <CardSkeleton control key={index} />
                 ))}
               </div>
-            </div>
-          ) : (
-            <div className="mt-4">
-              {products.length > 0 ? (
-                <div className="grid lg:grid-cols-3 grid-cols-2 w-full gap-8">
-                  {products.map((item) => (
-                    <CardProduct
-                      key={item._id}
-                      item={item}
-                      control
-                      onAddToCart={(item) => {
-                        handleCart(item);
-                      }}
-                      onToggleFavorite={() => handleFavorite(item._id)}
-                      favorited={listFavorite.includes(item._id)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div>No data</div>
-              )}
-            </div>
-          )}
-          {totalPage > 0 && (
-            <div className="w-full mt-6">
-              <PaginationComponent totalPage={totalPage} />
-            </div>
-          )}
+            ) : (
+              <div>
+                {products.length > 0 ? (
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((item) => (
+                      <CardProduct
+                        key={item._id}
+                        item={item}
+                        control
+                        onAddToCart={(item) => {
+                          handleCart(item);
+                        }}
+                        onToggleFavorite={() => handleFavorite(item._id)}
+                        favorited={listFavorite.includes(item._id)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  // No products found
+                  <div className="text-center py-16">
+                    <div className="max-w-md mx-auto">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg
+                          className="w-12 h-12 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2m0 0V9a2 2 0 012-2h2m0 0V6a2 2 0 012-2h2.586a1 1 0 01.707.293L16 5v2m0 0v.01"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2 dark:text-white/80">
+                        No Products Found
+                      </h3>
+                      <p className="text-gray-600 mb-6 dark:text-gray-300">
+                        We couldn&apos;t find any products matching your
+                        criteria. Try adjusting your filters or search terms.
+                      </p>
+                      <div className="space-y-3">
+                        <Button
+                          onClick={() => router.push(pathName)}
+                          className="w-full"
+                        >
+                          Clear All Filters
+                        </Button>
+                        <Button
+                          variant={"outline"}
+                          onClick={() => router.push("/")}
+                          className="w-full dark:text-white/80"
+                        >
+                          Back to Home
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPage > 0 && (
+              <div className="mt-8 flex justify-center">
+                <PaginationComponent totalPage={totalPage} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>

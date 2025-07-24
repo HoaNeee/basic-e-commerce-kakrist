@@ -39,7 +39,7 @@ const OurBestSeller = (props: Props) => {
   };
 
   const debounceToggleFavorite = React.useRef(
-    lodash.debounce((list: string[]) => handleToggleFavorite(list), 1000)
+    lodash.debounce((list: string[]) => handleToggleFavorite(list), 500)
   ).current;
 
   return (

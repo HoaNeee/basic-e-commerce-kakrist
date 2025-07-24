@@ -79,12 +79,14 @@ const Order = () => {
   }, [page]);
 
   useEffect(() => {
-    if (listRef.current) {
-      window.addEventListener("scroll", scrollToBottom);
+    if (!order_no) {
+      if (listRef.current) {
+        window.addEventListener("scroll", scrollToBottom);
+      }
     }
 
     return () => window.removeEventListener("scroll", scrollToBottom);
-  }, [showSkeleton, isLoading]);
+  }, [showSkeleton, isLoading, order_no]);
 
   const scrollToBottom = () => {
     if (

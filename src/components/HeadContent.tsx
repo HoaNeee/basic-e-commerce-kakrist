@@ -11,13 +11,13 @@ const HeadContent = (props: Props) => {
   const { title, left, styles } = props;
   return (
     <div
-      className={`w-full flex items-center mb-8 `}
+      className={`w-full flex items-center mb-10`}
       style={{
         justifyContent: left ? "space-between" : "center",
         ...styles,
       }}
     >
-      <h3 className="md:text-2xl lg:text-3xl text-xl font-medium">
+      <h3 className="xl:text-3xl lg:text-2xl leading-tight text-xl font-bold text-gray-800 dark:text-white">
         {title || "Head Title"}
       </h3>
       {left || undefined}

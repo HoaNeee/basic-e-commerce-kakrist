@@ -55,6 +55,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import MenuNavMobile from "./MenuNavMobile";
 
 const Header = () => {
   const [openPopoverCart, setOpenPopoverCart] = useState(false);
@@ -190,7 +191,7 @@ const Header = () => {
                   className="w-full h-full"
                 />
               </Link>
-              <div className="md:hidden block">
+              <div className="md:hidden">
                 <Sheet>
                   <SheetTrigger>
                     <FaBars size={20} />
@@ -213,7 +214,7 @@ const Header = () => {
                       <SheetDescription />
                     </SheetHeader>
 
-                    <div>content</div>
+                    <MenuNavMobile />
                   </SheetContent>
                 </Sheet>
               </div>

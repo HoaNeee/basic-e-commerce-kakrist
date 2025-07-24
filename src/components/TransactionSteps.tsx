@@ -27,7 +27,6 @@ import { CartModel } from "@/models/cartModel";
 
 const {
   StepperProvider,
-
   StepperNavigation,
   StepperPanel,
   StepperStep,
@@ -61,11 +60,27 @@ export function TransactionSteps(props: Props) {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [prevStep, setPrevStep] = useState<any>();
+  const [clientWidth, setClientWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    window.addEventListener("resize", onWidthChange);
+
+    return () => {
+      window.removeEventListener("resize", onWidthChange);
+    };
+  }, []);
+
+  const onWidthChange = () => {
+    setClientWidth(window.innerWidth);
+  };
 
   return (
     isProceed && (
       <>
-        <StepperProvider className="space-y-4 relative" variant="horizontal">
+        <StepperProvider
+          className="space-y-4 relative dark:text-white/80"
+          variant={clientWidth < 640 ? "vertical" : "horizontal"}
+        >
           {({ methods }) => (
             <>
               <StepperNavigation>

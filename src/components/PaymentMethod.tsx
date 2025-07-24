@@ -128,27 +128,25 @@ const PaymentMethod = (props: Props) => {
       }
       <div className="">
         <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-          <div className="flex gap-5 items-center border-b-2 border-muted pb-4">
+          <div className="flex gap-5 items-center border-b-2 border-muted pb-4 dark:border-b-white">
             <RadioGroupItem
               value="cod"
               id="cod"
-              classNameChildren="size-2.5 left-[calc(50%-0.5px)] -translate-x-[calc(50%-0.5px)] -translate-y-[calc(50%-0.5px)]"
-              className="size-5 data-[state=checked]:border-2 data-[state=checked]:border-black"
+              className="h-5 w-5 [&_svg]:h-3.5 [&_svg]:w-3.5 data-[state=checked]:border-2 data-[state=checked]:border-black "
             />
             <Label htmlFor="cod" className="text-lg font-bold">
               Cash on Delivery
             </Label>
           </div>
 
-          <div className="border-b-2 border-muted pb-4">
-            <Collapsible>
+          <div className="border-b-2 border-muted pb-4 dark:border-b-white">
+            <Collapsible className="">
               <CollapsibleTrigger asChild>
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-5 ">
                   <RadioGroupItem
                     value="credit"
                     id="credit"
-                    className="size-5 data-[state=checked]:border-2 data-[state=checked]:border-black"
-                    classNameChildren="size-2.5 left-[calc(50%-0.5px)] -translate-x-[calc(50%-0.5px)] -translate-y-[calc(50%-0.5px)]"
+                    className="h-5 w-5 [&_svg]:h-3.5 [&_svg]:w-3.5 data-[state=checked]:border-2 data-[state=checked]:border-black"
                   />
                   <CollapsibleTrigger asChild>
                     <Label htmlFor="credit" className="text-lg font-bold">
@@ -158,7 +156,7 @@ const PaymentMethod = (props: Props) => {
                 </div>
               </CollapsibleTrigger>
               {paymentMethod !== "cod" && (
-                <CollapsibleContent className="mt-3">
+                <CollapsibleContent className="mt-3 ">
                   <AddPaymentMethod
                     onAddNew={(val) => {
                       setPayments([...payments, val]);

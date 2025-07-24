@@ -293,12 +293,6 @@ export function TableCart(props: Props) {
   return (
     <>
       <div className="w-full">
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-muted-foreground flex-1 text-sm">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-        </div>
         <div className="">
           <TableContainer className="min-h-100 max-h-109 overflow-y-auto">
             <Table className="relative">
@@ -330,7 +324,7 @@ export function TableCart(props: Props) {
                       className="hover:bg-muted"
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="">
+                        <TableCell key={cell.id} className="dark:text-white/80">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

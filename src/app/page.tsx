@@ -57,10 +57,13 @@ export default async function Home() {
       <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
         <CategoryComponent categories={categories} />
       </section>
-      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
-        <OurBestSeller products={bestSellerProduct} />
+
+      <section className="bg-gray-50 py-15">
+        <section className="container w-full xl:px-4 mx-auto px-2 md:px-0  dark:bg-gray-900 dark:text-white/80">
+          <OurBestSeller products={bestSellerProduct} />
+        </section>
       </section>
-      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0">
+      <section className="container w-full xl:px-4 py-16 mx-auto px-2 md:px-0">
         <DealOfTheMonth />
       </section>
       <section className="w-full bg-[#FAFAFB] dark:text-white/80 dark:bg-neutral-600">

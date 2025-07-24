@@ -102,10 +102,13 @@ const DealOfTheMonth = () => {
   return (
     <div className="w-full flex gap-4 md:flex-row flex-col">
       <div className="md:w-4/7 w-full flex flex-col justify-center gap-6 px-4">
-        <h3 className="lg:text-4xl md:text-3xl text-xl font-medium">
-          Deals of the Month
+        <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+          Deal of the Month
+        </h2>
+
+        <h3 className="text-xl lg:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          {deal?.title || "Exclusive Fashion Collection"}
         </h3>
-        <p className="font-bold text-xl">{deal?.title}</p>
         <p>
           {`${deal?.description}, ` +
             `Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nulla totam
@@ -123,19 +126,21 @@ const DealOfTheMonth = () => {
         </div>
       </div>
       <div className="flex-1">
-        {deal?.thumbnail ? (
-          <img
-            src={deal.thumbnail}
-            alt={deal.title}
-            className="w-full h-[480px] object-cover"
-          />
-        ) : (
-          <Image
-            alt="this is image"
-            className="w-full h-[480px] object-cover"
-            src={IMAGETEST}
-          />
-        )}
+        <div className="w-full h-[480px] relative overflow-hidden rounded-lg shadow-lg">
+          {deal?.thumbnail ? (
+            <img
+              src={deal.thumbnail}
+              alt={deal.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Image
+              alt="this is image"
+              className="w-full h-full object-cover"
+              src={IMAGETEST}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

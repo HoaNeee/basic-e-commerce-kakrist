@@ -18,94 +18,179 @@ import { Button } from "../ui/button";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Input } from "../ui/input";
 
 const payment = [AMEX, GOOGLE, PAYPAL, MASTER, VISA];
 
 const FooterComponent = () => {
   const pathName = usePathname();
+
+  const footerLinks = {
+    information: [
+      { title: "My Account", href: "/profile" },
+      { title: "Login", href: "/auth/login" },
+      { title: "My Cart", href: "/cart" },
+      { title: "Wishlist", href: "/wishlists" },
+      { title: "Checkout", href: "/cart/checkout" },
+    ],
+    service: [
+      { title: "About Us", href: "/about" },
+      { title: "Contact", href: "/contact" },
+      { title: "Shipping Info", href: "/shipping" },
+      { title: "Privacy Policy", href: "/privacy" },
+      { title: "Terms & Conditions", href: "/terms" },
+    ],
+  };
+
+  const socialLinks = [
+    {
+      icon: <FaFacebookF size={18} />,
+      href: "https://facebook.com",
+      label: "Facebook",
+    },
+    {
+      icon: <FaInstagram size={18} />,
+      href: "https://instagram.com",
+      label: "Instagram",
+    },
+    {
+      icon: <BsTwitterX size={18} />,
+      href: "https://twitter.com",
+      label: "Twitter",
+    },
+  ];
+
   return (
     !pathName.startsWith("/auth") && (
-      <footer className="w-full bg-[#131118] tracking-wider font-light">
-        <div className="container w-full xl:px-4 px-2 md:px-0 mx-auto">
-          <div className="grid grid-cols-2 md:gap-0 gap-6 md:grid-cols-4 py-16 text-white">
-            <div>
-              <Image alt="this is LOGO" src={LOGO} width={142} height={58} />
-              <div className="text-white flex flex-col gap-5 mt-5">
-                <div className="flex gap-2 items-center">
-                  <BiPhoneCall size={21} /> <span>0393911183</span>{" "}
+      <footer className="bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-16">
+            <div className="lg:col-span-1">
+              <Image
+                alt="Company Logo"
+                src={LOGO}
+                width={142}
+                height={58}
+                className="mb-6"
+              />
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                Your trusted partner for premium fashion and lifestyle products.
+                Quality guaranteed, customer satisfaction first.
+              </p>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                  <BiPhoneCall size={18} />
+                  <span>+84 393 911 183</span>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <MdOutlineMailOutline size={21} />{" "}
-                  <span>nhhoa03@gmail.com</span>{" "}
+                <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                  <MdOutlineMailOutline size={18} />
+                  <span>contact@krist.com</span>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <FaMapMarkerAlt size={21} /> <span>Hanoi, Vietnam</span>{" "}
+                <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                  <FaMapMarkerAlt size={18} />
+                  <span>Hanoi, Vietnam</span>
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
-              <p className="font-bold">Information</p>
-              <Link href={"/profile"} className="">
-                My Account
-              </Link>
-              <Link href={"/auth/login"}>Login</Link>
-              <Link href={"/cart"}>My Cart</Link>
-              <Link href={"/wishlists"}>My Wishlist</Link>
-              <Link href={"/cart/checkout"}>Checkout</Link>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-6">Account</h3>
+              <ul className="space-y-3">
+                {footerLinks.information.map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      href={link.href}
+                      className="text-gray-400 hover:text-white transition-colors duration-200"
+                    >
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="flex flex-col gap-3">
-              <p className="font-bold">Service</p>
-              <Link href={"/"}>About Us</Link>
-              <Link href={"/"}>Careers</Link>
-              <Link href={"/"}>Delivery Infomation</Link>
-              <Link href={"/"}>Privacy Policy</Link>
-              <Link href={"/"}>Terms & Conditions</Link>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-6">Company</h3>
+              <ul className="space-y-3">
+                {footerLinks.service.map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      href={link.href}
+                      className="text-gray-400 hover:text-white transition-colors duration-200"
+                    >
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="flex flex-col gap-5">
-              <p className="font-bold">Subscribe</p>
-              <p>
-                Enter your email below to be the first to know about new
-                collections and product launches.
+
+            <div>
+              <h3 className="text-lg font-semibold mb-6">Stay Updated</h3>
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                Subscribe to get updates on new collections and exclusive
+                offers.
               </p>
-              <div>
-                <form action={"/"} method="post">
-                  <div className="px-2 h-13 border-2 border-white rounded-md flex items-center pl-4">
-                    <MdOutlineMailOutline size={30} />
-                    <input
-                      type="email"
-                      name="email"
-                      className="w-full h-full outline-0 pl-2 bg-transparent dark"
-                      placeholder="Your Email"
-                    />
-                    <Button title="Subscribe">
-                      <FaLongArrowAltRight />
-                    </Button>
-                  </div>
-                </form>
+
+              <form className="space-y-4">
+                <div className="flex relative">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 py-6 pr-10 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-gray-500 text-white placeholder-gray-400"
+                  />
+                  <Button
+                    type="submit"
+                    className="bg-white text-gray-900 hover:bg-gray-100 px-6 absolute right-2 top-1/2 transform -translate-y-1/2"
+                  >
+                    <FaLongArrowAltRight />
+                  </Button>
+                </div>
+              </form>
+
+              <div className="mt-6">
+                <p className="text-sm font-medium mb-3">Follow Us</p>
+                <div className="flex gap-3">
+                  {socialLinks.map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200"
+                    >
+                      {social.icon}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="container w-full xl:px-4 px-2 md:px-0 text-white mx-auto">
-          <div className="flex gap-2 w-full border-t-2 py-6 border-gray-500 items-center justify-between relative">
-            <div className="hidden gap-2 md:flex">
-              {payment.map((item, index) => (
-                <div
-                  key={index}
-                  className="lg:w-[46px] lg:h-[28px] w-[40px] h-[22px] rounded-[3px] bg-white flex items-center justify-center"
-                >
-                  <Image src={item} alt="payment" className="" />
-                </div>
-              ))}
-            </div>
-            <div className="absolute flex items-center justify-center left-0 w-full h-full">
-              <p className="">@2025 Krist All Rights are reserved </p>
-            </div>
 
-            <div className="items-center hidden gap-2 md:flex">
-              <FaFacebookF size={18} />
-              <FaInstagram size={18} />
-              <BsTwitterX size={18} />
+          <div className="border-t border-gray-800 py-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-2">
+                {payment.map((item, index) => (
+                  <div
+                    key={index}
+                    className="w-10 h-6 bg-white rounded flex items-center justify-center p-1"
+                  >
+                    <Image
+                      src={item}
+                      alt="Payment method"
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-400">
+                  ©2025 Krist. All rights reserved.
+                </p>
+              </div>
             </div>
           </div>
         </div>

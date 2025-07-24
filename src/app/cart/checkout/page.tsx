@@ -5,22 +5,13 @@
 import ButtonLoading from "@/components/ButtonLoading";
 import DialogCheckoutSuccess from "@/components/dialog/DialogCheckoutSuccess";
 import DialogConfirm from "@/components/dialog/DialogConfirm";
-import HeadContent from "@/components/HeadContent";
 import { TransactionSteps } from "@/components/TransactionSteps";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableHeader,
   TableRow,
@@ -64,7 +55,7 @@ const Checkout = () => {
         setCartCheckout(cart.carts);
       }
     }
-  }, []);
+  }, [cart]);
 
   useEffect(() => {
     if (cartCheckout) {
@@ -83,7 +74,7 @@ const Checkout = () => {
   }, [cartCheckout]);
 
   useEffect(() => {
-    if (discount?.value) {
+    if (discount?.value && subTotal) {
       if (discount.type === "percent") {
         const dis = subTotal * (discount.value / 100);
         setGrandTotal(Math.max(subTotal - dis, 0));
@@ -91,53 +82,7 @@ const Checkout = () => {
         setGrandTotal(Math.max(subTotal - discount.value, 0));
       }
     }
-  }, [discount]);
-
-  const renderTableCell = (item: CartModel) => {
-    return (
-      <TableRow key={item.cartItem_id}>
-        <TableCell>
-          <div className="flex items-center gap-3 py-2 dark:text-white/80">
-            <div className="w-16 h-16 bg-[#f1f1f3] dark:bg-neutral-700">
-              <img
-                src={item.thumbnail ? item.thumbnail : item.thumbnail_product}
-                alt={item.title}
-                className="w-full h-full object-cover rounded-xs"
-              />
-            </div>
-            <div className="flex flex-col gap-2 flex-1">
-              <p className="font-bold text-ellipsis line-clamp-1">
-                {item.title}
-              </p>
-              {item.productType === "variations" ? (
-                <p>
-                  Options: {item.options_info?.map((it) => it.title).join(", ")}
-                </p>
-              ) : (
-                <>-</>
-              )}
-            </div>
-          </div>
-        </TableCell>
-        <TableCell>
-          {item.discountedPrice !== null &&
-          item.discountedPrice !== undefined ? (
-            <div className="lowercase">{VND.format(item.discountedPrice)}</div>
-          ) : (
-            <div className="lowercase">{VND.format(item.price)}</div>
-          )}
-        </TableCell>
-        <TableCell>{item.quantity}</TableCell>
-        <TableCell>
-          <div className="font-medium">
-            {item.discountedPrice !== undefined && item.discountedPrice !== null
-              ? VND.format(item.quantity * item.discountedPrice)
-              : VND.format(item.price * item.quantity)}
-          </div>
-        </TableCell>
-      </TableRow>
-    );
-  };
+  }, [discount, subTotal]);
 
   const handleCheckCode = async () => {
     const code = CODE.toUpperCase();
@@ -231,204 +176,306 @@ const Checkout = () => {
 
   return (
     <>
-      <section className="container w-full xl:px-4 py-10 mx-auto px-2 md:px-0 dark:text-white/80">
-        <HeadContent title="Checkout" left={<></>} />
-        <div className="w-full h-full flex gap-10 overflow-hidden">
-          <div className="w-6/8 relative">
-            <div
-              className={`transition-all w-full ${
-                isProceed ? "duration-300" : "duration-500"
-              }`}
-              style={{
-                transform: isProceed ? "translateX(-200%)" : "translateX(0)",
-                maxHeight: !isProceed ? "auto" : "0px",
-                visibility: !isProceed ? "visible" : "hidden",
-                opacity: !isProceed ? "1" : "0",
-                pointerEvents: !isProceed ? "all" : "none",
-              }}
-            >
-              <TableContainer>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Products</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Quantity</TableHead>
-                      <TableHead>Subtotal</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cartCheckout.map((item) => renderTableCell(item))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
-
-            <div
-              className={`w-full ${
-                !isProceed ? "duration-300" : "duration-500"
-              }`}
-              style={{
-                transform: isProceed ? "translateY(0)" : "translateY(200%)",
-                maxHeight: isProceed ? "2000px" : "0px",
-                visibility: isProceed ? "visible" : "hidden",
-                opacity: isProceed ? "1" : "0",
-                pointerEvents: isProceed ? "all" : "none",
-              }}
-            >
-              <TransactionSteps
-                onNextStep={(step, val) => {
-                  setCurrentStep(step);
-                  setInfomationOrder({ ...infomationOrder, ...val });
-                }}
-                cartsCheckout={cartCheckout}
-                isProceed={isProceed}
-              />
-            </div>
+      <section className="min-h-screen bg-gray-50 dark:bg-black/90">
+        <div className="mx-auto px-4 py-8 pb-12">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Checkout
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Review your order and complete your purchase
+            </p>
           </div>
 
-          <div className="flex-1">
-            <Card className="py-0 gap-0 rounded-xs transition-all duration-300">
-              <CardHeader className="">
-                <div className="flex py-4 justify-between items-center font-bold border-b-2 border-muted w-full">
-                  <p>Subtotal</p>
-                  <p>
-                    {VND.format(
-                      cartCheckout.reduce(
-                        (val, item) =>
-                          val +
-                          item.quantity *
-                            (item.discountedPrice !== undefined &&
-                            item.discountedPrice !== null
-                              ? item.discountedPrice
-                              : item.price),
-                        0
-                      )
-                    )}
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-2/3 relative pb-10 h-fit flex overflow-hidden">
+              <div
+                className={`bg-white min-w-full dark:bg-gray-800 rounded-lg shadow-sm transition-all duration-300 transform ${
+                  !isProceed ? "translate-x-0" : "-translate-x-full"
+                }`}
+                style={{
+                  maxHeight: !isProceed ? "1500px" : "0px",
+                  pointerEvents: !isProceed ? "auto" : "none",
+                  opacity: !isProceed ? 1 : 0,
+                }}
+              >
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Order Review
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {cartCheckout.length} item
+                    {cartCheckout.length !== 1 ? "s" : ""} in your order
                   </p>
                 </div>
-              </CardHeader>
-              <CardContent className="transition-all duration-300">
-                <div className="border-b-2 border-muted py-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs">Enter Discount Code: </Label>
-                    <div className="flex items-center h-12 w-full relative">
-                      <input
-                        className="h-full border-2 pl-4 w-9/10 rounded-tl-lg rounded-bl-lg focus-visible:outline-ring uppercase"
+
+                <div className={`overflow-x-auto p-2 transform`}>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-gray-200 dark:border-gray-700">
+                        <TableHead className="text-gray-600 dark:text-gray-400">
+                          Product
+                        </TableHead>
+                        <TableHead className="text-gray-600 dark:text-gray-400">
+                          Price
+                        </TableHead>
+                        <TableHead className="text-gray-600 dark:text-gray-400">
+                          Qty
+                        </TableHead>
+                        <TableHead className="text-gray-600 dark:text-gray-400 text-right">
+                          Total
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {cartCheckout.map((item) => (
+                        <TableRow
+                          key={item.cartItem_id}
+                          className="border-gray-200 dark:border-gray-700 my-1"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-4">
+                              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                                <img
+                                  src={item.thumbnail || item.thumbnail_product}
+                                  alt={item.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2">
+                                  {item.title}
+                                </h3>
+                                {item.productType === "variations" &&
+                                  item.options_info && (
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                      {item.options_info
+                                        .map((opt) => opt.title)
+                                        .join(", ")}
+                                    </p>
+                                  )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-gray-900 dark:text-white font-medium">
+                            {VND.format(item.discountedPrice ?? item.price)}
+                          </TableCell>
+                          <TableCell className="text-gray-900 dark:text-white">
+                            {item.quantity}
+                          </TableCell>
+                          <TableCell className="text-right text-gray-900 dark:text-white font-medium">
+                            {VND.format(
+                              item.quantity *
+                                (item.discountedPrice ?? item.price)
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              <div
+                className={`bg-white pb-10 min-w-full dark:bg-gray-800 rounded-lg shadow-sm transition-all duration-300 transform w-full ${
+                  isProceed ? "-translate-x-full" : "translate-x-full"
+                }`}
+                style={{
+                  maxHeight: isProceed ? "1500px" : "0px",
+                  pointerEvents: isProceed ? "auto" : "none",
+                  opacity: isProceed ? 1 : 0,
+                }}
+              >
+                <div className="p-4 border-b h-fit border-gray-200 dark:border-gray-700">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Checkout Information
+                  </h2>
+                </div>
+                <div className="px-4 mt-8 h-fit">
+                  <TransactionSteps
+                    onNextStep={(step, val) => {
+                      setCurrentStep(step);
+                      setInfomationOrder({ ...infomationOrder, ...val });
+                    }}
+                    cartsCheckout={cartCheckout}
+                    isProceed={isProceed}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary Sidebar */}
+            <div className="lg:w-1/3">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm sticky top-30">
+                <div className="p-6">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                    Order Summary
+                  </h2>
+
+                  {/* Subtotal */}
+                  <div className="space-y-4 mb-6">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Subtotal
+                      </span>
+                      <span className="text-gray-900 dark:text-white font-medium">
+                        {VND.format(subTotal)}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Shipping
+                      </span>
+                      <span className="text-gray-900 dark:text-white font-medium">
+                        Free
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Discount Code */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                      Discount Code
+                    </h3>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="Enter code"
                         value={CODE}
                         onChange={(e) => {
-                          if (errorCode) {
-                            setErrorCode("");
-                          }
-
-                          setCODE(e.target.value);
+                          if (errorCode) setErrorCode("");
+                          setCODE(e.target.value.toUpperCase());
                         }}
-                        name="promotionCode"
+                        className="flex-1 px-3 py-5"
                       />
-                      <div className="bg-white absolute right-0 z-20 overflow-hidden h-full">
+                      <Button
+                        onClick={handleCheckCode}
+                        disabled={!CODE}
+                        size="sm"
+                        className="py-5"
+                      >
+                        Apply
+                      </Button>
+                    </div>
+
+                    {errorCode && (
+                      <p className="text-red-500 text-sm mt-2">{errorCode}</p>
+                    )}
+
+                    {discount?.title && (
+                      <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-green-800 dark:text-green-400">
+                              {discount.title}
+                            </p>
+                            <p className="text-sm text-green-600 dark:text-green-500">
+                              -
+                              {VND.format(
+                                discount.type === "percent"
+                                  ? subTotal * (discount.value / 100)
+                                  : discount.value
+                              )}
+                            </p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setDiscount(undefined);
+                              setGrandTotal(subTotal);
+                              setCODE("");
+                            }}
+                            className="text-green-600 hover:text-green-700 p-1 h-auto"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Total */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+                    <div className="flex justify-between">
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Total
+                      </span>
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {VND.format(grandTotal)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    {currentStep === "3" ? (
+                      <ButtonLoading
+                        onClick={handleSubmitOrder}
+                        loading={isPosting}
+                        className="w-full py-6 font-medium"
+                      >
+                        Place Order
+                      </ButtonLoading>
+                    ) : !isProceed ? (
+                      <>
                         <Button
-                          type="submit"
-                          className="h-full rounded-tl-none rounded-bl-none px-7"
-                          disabled={!CODE}
-                          onClick={handleCheckCode}
+                          onClick={() => setIsProceed(true)}
+                          disabled={cartCheckout.length <= 0}
+                          className="w-full py-6 font-medium"
                         >
-                          Apply
+                          Proceed to Checkout
                         </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => router.back()}
+                          className="w-full border-gray-300 py-6 dark:text-white/80"
+                        >
+                          Back to Cart
+                        </Button>
+                      </>
+                    ) : (
+                      <DialogConfirm
+                        onConfirm={() => {
+                          setIsProceed(false);
+                          setCurrentStep(undefined);
+                        }}
+                        description="Are you sure? Your progress will be lost."
+                      >
+                        <Button
+                          variant="outline"
+                          className="w-full border-gray-300 py-6 dark:text-white/80"
+                        >
+                          Back to Review
+                        </Button>
+                      </DialogConfirm>
+                    )}
+                  </div>
+
+                  {/* Trust Indicators */}
+                  <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Secure SSL</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span>Money Back</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span>Fast Delivery</span>
                       </div>
                     </div>
                   </div>
-                  <div className="min-h-4 mt-3 text-sm">
-                    {errorCode ? (
-                      <p className="text-red-500">{errorCode}</p>
-                    ) : (
-                      discount?.title && (
-                        <div className="flex w-full items-center justify-between">
-                          <div>
-                            <p>{discount.title}</p>
-
-                            {discount.type === "percent" ? (
-                              <p>
-                                -
-                                {VND.format(
-                                  grandTotal * (discount.value / 100)
-                                )}
-                              </p>
-                            ) : (
-                              <p>-{VND.format(discount.value)}</p>
-                            )}
-                          </div>
-                          <Badge
-                            className="cursor-pointer"
-                            onClick={() => {
-                              setDiscount({
-                                title: "",
-                                value: 0,
-                                type: "",
-                              });
-                              setGrandTotal(subTotal);
-                            }}
-                          >
-                            Remove
-                          </Badge>
-                        </div>
-                      )
-                    )}
-                  </div>
                 </div>
-              </CardContent>
-              <CardFooter className="py-4 flex flex-col transition-all duration-500 relative">
-                <div className="flex justify-between items-center font-bold w-full">
-                  <p>Grand Total</p>
-                  <p>{VND.format(grandTotal)}</p>
-                </div>
-
-                {currentStep === "3" && (
-                  <ButtonLoading
-                    className="w-full py-6 mt-4"
-                    onClick={handleSubmitOrder}
-                    loading={isPosting}
-                  >
-                    Place Order
-                  </ButtonLoading>
-                )}
-
-                {!isProceed ? (
-                  <div className="flex flex-col gap-1.5 w-full">
-                    <Button
-                      className="w-full py-6 mt-4"
-                      onClick={() => setIsProceed(true)}
-                      disabled={cartCheckout.length <= 0}
-                    >
-                      Proceed to Checkout
-                    </Button>
-                    <Button
-                      className="w-full py-6"
-                      onClick={() => {
-                        router.back();
-                      }}
-                      variant={"outline"}
-                    >
-                      Return previous step
-                    </Button>
-                  </div>
-                ) : (
-                  <DialogConfirm
-                    onConfirm={() => {
-                      setIsProceed(false);
-                      setCurrentStep(undefined);
-                    }}
-                    description="Are you sure about that? This change won't be saved!"
-                  >
-                    <Button className="w-full py-6 mt-4" variant={"outline"}>
-                      Cancel proceed
-                    </Button>
-                  </DialogConfirm>
-                )}
-              </CardFooter>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
       <DialogCheckoutSuccess
         open={openDialogSuccess}
         setOpen={setOpenDialogSuccess}
