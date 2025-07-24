@@ -47,21 +47,26 @@ const Notifications = () => {
         }`}
         onClick={() => handleRead(item._id)}
       >
-        <div className="flex items-center gap-4">
-          <Avatar className="size-13">
-            <AvatarImage src={item.image} />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col gap-1">
-            <p className="font-bold">{item.title}</p>
-            <p className="text-sm text-gray-400 tracking-wider">{item.body}</p>
+        <div className="flex md:items-center justify-between md:flex-row flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="size-13">
+              <AvatarImage src={item.image} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col gap-1">
+              <p className="font-bold">{item.title}</p>
+              <p className="text-sm text-gray-400 tracking-wider">
+                {item.body}
+              </p>
+            </div>
           </div>
+          <p className="tracking-wider text-gray-400 text-sm">
+            {formatDistanceStrict(new Date(item.createdAt), new Date(), {
+              addSuffix: true,
+            })}
+          </p>
         </div>
-        <p className="tracking-wider text-gray-400 text-sm">
-          {formatDistanceStrict(new Date(item.createdAt), new Date(), {
-            addSuffix: true,
-          })}
-        </p>
+
         {!item.isRead && (
           <div className="absolute top-2 rounded-full right-2 w-1.5 h-1.5 bg-red-500" />
         )}
@@ -79,26 +84,33 @@ const Notifications = () => {
           handleRead(item._id);
         }}
       >
-        <div className="flex items-center gap-4">
-          <div
-            className={`size-13 rounded-full overflow-hidden flex items-center justify-center ${
-              item.isRead ? "bg-gray-100 " : "bg-gray-300"
-            }`}
-          >
-            <div className="w-6 h-6">
-              <img src={item.image} className="w-full h-full object-cover" />
+        <div className="flex md:items-center justify-between md:flex-row flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <div
+              className={`md:size-13 md:max-w-auto max-w-2/9 md:w-auto w-full`}
+            >
+              <div
+                className={`w-[54px] h-[54px] rounded-full overflow-hidden flex items-center justify-center ${
+                  item.isRead ? "bg-gray-100 " : "bg-gray-300"
+                }`}
+              >
+                <img src={item.image} className="w-6 h-6 object-cover" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="font-bold">{item.title}</p>
+              <p className="text-sm text-gray-400 tracking-wider">
+                {item.body}
+              </p>
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <p className="font-bold">{item.title}</p>
-            <p className="text-sm text-gray-400 tracking-wider">{item.body}</p>
-          </div>
+          <p className="tracking-wider text-gray-400 text-sm">
+            {formatDistanceStrict(new Date(item.createdAt), new Date(), {
+              addSuffix: true,
+            })}
+          </p>
         </div>
-        <p className="tracking-wider text-gray-400 text-sm">
-          {formatDistanceStrict(new Date(item.createdAt), new Date(), {
-            addSuffix: true,
-          })}
-        </p>
+
         {!item.isRead && (
           <div className="absolute top-2 rounded-full right-2 w-1.5 h-1.5 bg-red-500" />
         )}

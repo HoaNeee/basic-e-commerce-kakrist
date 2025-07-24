@@ -16,7 +16,7 @@ const blogPosts = [
       "Mùa hè 2024 đang đến gần, và thế giới thời trang đang chào đón những xu hướng mới đầy hứa hẹn...",
     image:
       "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop",
-    author: "Nguyễn Minh Anh",
+    author: "Nguyễn Văn A",
     publishedAt: "2024-06-15",
     readTime: "5 phút",
     category: "Thời trang",

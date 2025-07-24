@@ -101,6 +101,12 @@ const LayoutShopWithSuspense = ({
   const keySearch = searchParams.get("q");
 
   useEffect(() => {
+    if (maxPrice) {
+      setRangePrice([0, maxPrice]);
+    }
+  }, [maxPrice]);
+
+  useEffect(() => {
     getProducts();
     if (min_price !== null || max_price !== null) {
       setRangePrice([Number(min_price || 0), Number(max_price || 0)]);

@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { IoArrowBack } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { Badge } from "./ui/badge";
+import { FiCalendar, FiUser, FiX } from "react-icons/fi";
+import { format } from "date-fns";
 
 interface Props {
   order_no: string;
@@ -95,18 +97,25 @@ const OrderDetail = (props: Props) => {
   return (
     <div className="w-full min-h-screen">
       <div className="sticky top-0 z-10 bg-white dark:bg-neutral-800 shadow-sm border-b px-4 py-3">
-        <div className="mx-auto flex items-center gap-3">
-          <Button
-            variant={"outline"}
-            onClick={() => router.back()}
-            className="flex items-center gap-2"
-          >
-            <IoArrowBack />
-            <span className="hidden sm:inline">Back</span>
-          </Button>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white/80">
-            Order Details - #{order_no}
-          </h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              variant={"outline"}
+              onClick={() => router.back()}
+              className="flex items-center gap-2"
+            >
+              <IoArrowBack />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-white/80">
+              Order Details - #{order_no}
+            </h1>
+          </div>
+          {order.status === "canceled" && (
+            <div>
+              <Button className="py-5">Reorder</Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -133,16 +142,59 @@ const OrderDetail = (props: Props) => {
                 {order.status || "Processing"}
               </p>
             </div>
-            <Badge
-              className={`${statusColor(order.status).bgDeep} ${
-                statusColor(order.status).textDeep
-              }`}
-            >
-              Order #{order.orderNo || "Processing"}
-            </Badge>
+
+            <div className="flex flex-col gap-1 items-end">
+              <Badge
+                className={`${statusColor(order.status).bgDeep} ${
+                  statusColor(order.status).textDeep
+                }`}
+              >
+                Order #{order.orderNo || "Processing"}
+              </Badge>
+              <span className="text-gray-600 text-xs">
+                {format(order.createdAt, "PP")}
+              </span>
+            </div>
           </div>
         </div>
       )}
+      {
+        <div>
+          {" "}
+          {order?.status === "canceled" && order.cancel && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-red-700 font-medium mb-2">
+                <FiX className="w-4 h-4" />
+                Order Canceled
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <FiCalendar className="w-3 h-3 text-red-500" />
+                    <span className="text-red-600">Canceled at:</span>
+                    <span className="text-red-900 font-medium">
+                      {format(order.cancel.canceledAt || new Date(), "PP")}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FiUser className="w-3 h-3 text-red-500" />
+                    <span className="text-red-600">Canceled by:</span>
+                    <span className="text-red-900 font-medium">
+                      {order.cancel.canceledBy}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <span className="text-red-600">Reason:</span>
+                  <p className="text-red-900 mt-1">
+                    {order.cancel.reasonCancel || "Canceled by system"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      }
       <div className="w-full mx-auto pb-6">
         <ReviewOrder order={order} />
       </div>

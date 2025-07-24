@@ -267,8 +267,8 @@ const Order = () => {
   const renderSkeleton = (key: number) => {
     return (
       <div key={key} className="w-full pb-4 border-b-2 border-muted">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex md:items-center justify-between md:flex-row flex-col gap-4">
+          <div className="flex items-center gap-4 ">
             <Skeleton className="w-18 h-18 bg-muted" />
             <div className="text-sm flex flex-col gap-3">
               <Skeleton className="h-3 w-40" />
@@ -280,8 +280,8 @@ const Order = () => {
             <Skeleton className="h-4 w-20" />
           </div>
           <div className="space-y-1">
-            <Skeleton className="h-9 w-30" />
-            <Skeleton className="h-9 w-30" />
+            <Skeleton className="h-9 md:w-30 w-full" />
+            <Skeleton className="h-9 md:w-30 w-full" />
           </div>
         </div>
         <div className="flex items-center gap-2 mt-4">
@@ -394,19 +394,22 @@ const Order = () => {
             <div
               key={order._id}
               className="w-full pb-4 border-b-2 border-muted"
-              style={{
-                opacity: order.status === "canceled" ? "0.7" : "1",
-              }}
               id={order.orderNo}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-18 h-18 bg-muted">
-                    <img
-                      src={order?.products[0].thumbnail}
-                      alt={""}
-                      className="h-full w-full object-cover rounded-xs"
-                    />
+              <div className="flex md:items-center justify-between md:flex-row flex-col gap-4">
+                <div
+                  className={`flex items-center gap-4 ${
+                    order.status === "canceled" ? "text-gray-500" : ""
+                  }`}
+                >
+                  <div className="max-w-2/9">
+                    <div className="w-18 h-18 bg-muted">
+                      <img
+                        src={order?.products[0].thumbnail}
+                        alt={""}
+                        className="h-full w-full object-cover rounded-xs"
+                      />
+                    </div>
                   </div>
                   <div className="text-sm flex flex-col gap-1">
                     <p className="font-bold text-base">
@@ -443,10 +446,14 @@ const Order = () => {
                     )}
                   </div>
                 </div>
-                <div className="font-bold">
+                <div
+                  className={`font-bold md:text-lg leading-tight ${
+                    order.status === "canceled" ? "text-gray-500" : ""
+                  }`}
+                >
                   {VND.format(totalPriceOrderItem(order))}
                 </div>
-                {order.status !== "canceled" && (
+                {
                   <div className="flex flex-col gap-2">
                     <Button
                       variant={"outline"}
@@ -459,10 +466,12 @@ const Order = () => {
                     >
                       View Order
                     </Button>
+
                     {order.status === "delivered" ? (
                       <Button className="py-5">Write A review</Button>
                     ) : (
-                      order.status !== "shipping" && (
+                      order.status !== "shipping" &&
+                      order.status !== "canceled" && (
                         <DialogConfirm
                           onConfirm={() => handleCancelOrder(order)}
                           description="Can you tell us why you want to cancel?"
@@ -493,8 +502,9 @@ const Order = () => {
                       )
                     )}
                   </div>
-                )}
+                }
               </div>
+
               {orderStatus(order)}
             </div>
           ))}

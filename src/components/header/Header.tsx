@@ -246,7 +246,7 @@ const Header = () => {
 
                     <PopoverContent
                       sideOffset={10}
-                      className="bg-white dark:bg-black dark:text-white/80 sm:w-[340px]  w-[280px] p-0 py-3 absolute sm:-left-64 -left-48 min-h-40 text-sm shadow-2xl z-41"
+                      className="bg-white dark:bg-black dark:text-white/80 sm:w-[340px] w-[280px] p-0 py-3 absolute sm:-left-64 -left-60 min-h-40 text-sm shadow-2xl z-41"
                     >
                       {auth.isLogin ? (
                         <>

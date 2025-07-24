@@ -58,7 +58,7 @@ const WishLists = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid xl:grid-cols-3 grid-cols-2 gap-5">
         {Array.from({ length: limit }).map((_, index) => (
           <CardSkeleton key={index} control className="xl:h-120" />
         ))}
@@ -71,7 +71,7 @@ const WishLists = () => {
       {!isLoading && (
         <>
           {listFavoriteInfo.length > 0 ? (
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid xl:grid-cols-3 grid-cols-2 gap-5">
               {listFavoriteInfo.map((item) => (
                 <CardProduct
                   key={item._id}
