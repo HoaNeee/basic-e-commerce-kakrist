@@ -218,7 +218,7 @@ const LayoutShopWithSuspense = ({
                       newQuery = deleteQueryString("page", newQuery);
                     }
 
-                    router.push(`${pathName}?${newQuery}`);
+                    router.push(`${pathName}?${newQuery}`, { scroll: false });
                   }}
                 />
                 <Label
@@ -270,7 +270,7 @@ const LayoutShopWithSuspense = ({
                 rangePrice[1].toString(),
                 newQuery
               );
-              router.push(`${pathName}?${newQuery}`);
+              router.push(`${pathName}?${newQuery}`, { scroll: false });
             }}
             // disabled={rangePrice[0] === 0 && rangePrice[1] === 0}
           >
@@ -320,7 +320,7 @@ const LayoutShopWithSuspense = ({
                     newQuery = createQueryString("supplier_id", "", newQuery);
                   }
                 }
-                router.push(`${pathName}?${newQuery}`);
+                router.push(`${pathName}?${newQuery}`, { scroll: false });
               }}
             />
             <Label htmlFor={item._id}>{item.name}</Label>
@@ -377,7 +377,9 @@ const LayoutShopWithSuspense = ({
                               );
                             }
                           }
-                          router.push(`${pathName}?${newQuery}`);
+                          router.push(`${pathName}?${newQuery}`, {
+                            scroll: false,
+                          });
                         }}
                       />
                       <Label htmlFor={option._id}>{option.title}</Label>
@@ -623,7 +625,7 @@ const LayoutShopWithSuspense = ({
                       size="sm"
                       onClick={() => {
                         setKeyword("");
-                        router.push(pathName);
+                        router.push(pathName, { scroll: false });
                       }}
                       className="text-red-600 border-red-200 hover:bg-red-50"
                     >
@@ -645,7 +647,9 @@ const LayoutShopWithSuspense = ({
                           if (newQuery.includes("page")) {
                             newQuery = deleteQueryString("page", newQuery);
                           }
-                          router.push(`${pathName}?${newQuery}`);
+                          router.push(`${pathName}?${newQuery}`, {
+                            scroll: false,
+                          });
                         }
                       }}
                       className="pr-10 lg:w-64 w-full dark:text-white"
@@ -658,7 +662,9 @@ const LayoutShopWithSuspense = ({
                         if (newQuery.includes("page")) {
                           newQuery = deleteQueryString("page", newQuery);
                         }
-                        router.push(`${pathName}?${newQuery}`);
+                        router.push(`${pathName}?${newQuery}`, {
+                          scroll: false,
+                        });
                       }}
                     />
                   </div>
@@ -680,7 +686,9 @@ const LayoutShopWithSuspense = ({
                         value={sortBy}
                         onValueChange={(value) => {
                           const query = createQueryString("sort", value);
-                          router.push(`${pathName}?${query}`);
+                          router.push(`${pathName}?${query}`, {
+                            scroll: false,
+                          });
                           setSortBy(value);
                         }}
                       >
@@ -755,7 +763,9 @@ const LayoutShopWithSuspense = ({
                       </p>
                       <div className="space-y-3">
                         <Button
-                          onClick={() => router.push(pathName)}
+                          onClick={() =>
+                            router.push(pathName, { scroll: false })
+                          }
                           className="w-full"
                         >
                           Clear All Filters

@@ -462,10 +462,17 @@ const Header = () => {
                       <DropdownMenuItem
                         className="text-destructive"
                         onClick={async () => {
-                          dispatch(removeAuth());
-                          dispatch(removeCart([]));
-                          dispatch(removeList([]));
-                          await post("/auth/logout", {});
+                          try {
+                            const response = await post("/auth/logout", {});
+                            toast.success(response.message, {
+                              duration: 1000,
+                            });
+                            dispatch(removeAuth());
+                            dispatch(removeCart([]));
+                            dispatch(removeList([]));
+                          } catch (error: any) {
+                            toast.error(error.message);
+                          }
                         }}
                       >
                         <LogOut className="h-4 w-4 text-destructive" /> Logout

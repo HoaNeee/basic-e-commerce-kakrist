@@ -10,13 +10,15 @@ import {
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   totalPage: number;
+  className?: string;
 }
 
 const PaginationComponent = (props: Props) => {
-  const { totalPage } = props;
+  const { totalPage, className } = props;
 
   const searchParams = useSearchParams();
   const pathName = usePathname();
@@ -34,7 +36,9 @@ const PaginationComponent = (props: Props) => {
   const renderPagination = () => {
     const page = Number(searchParams.get("page")) || 1;
     return (
-      <Pagination className="justify-end dark:text-white/80">
+      <Pagination
+        className={`${cn(`justify-end dark:text-white/80`, className)}`}
+      >
         <PaginationContent>
           <PaginationItem>
             <Button variant={"ghost"} className="p-0" disabled={page === 1}>
