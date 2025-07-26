@@ -23,12 +23,10 @@ import {
   syncCart,
 } from "@/redux/reducer/cartReducer";
 import { Badge } from "../ui/badge";
-
 import { GoTrash } from "react-icons/go";
 import { VND } from "@/utils/formatCurrency";
 import { ScrollArea } from "../ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
 import DialogConfirm from "../dialog/DialogConfirm";
@@ -59,6 +57,7 @@ import MenuNavMobile from "./MenuNavMobile";
 
 const Header = () => {
   const [openPopoverCart, setOpenPopoverCart] = useState(false);
+  const [isLogouting, setIsLogouting] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -180,7 +179,13 @@ const Header = () => {
   return (
     !pathName.startsWith("/auth") && (
       <>
-        <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white dark:bg-black dark:text-white/80 drop-shadow-md">
+        <header className="flex items-center justify-center w-full z-40 sticky top-0 bg-white dark:bg-black dark:text-white/80 drop-shadow-md">
+          {isLogouting && (
+            <div className="h-screen w-screen justify-center items-center flex flex-col fixed top-0 left-0 z-50 bg-black/20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80 mx-auto mb-4"></div>
+              <p className="text-white/80">Loading...</p>
+            </div>
+          )}
           <div className="container w-full py-5 flex justify-between items-center bg-white dark:bg-black dark:text-white/80 xl:px-4 md:px-0 px-2">
             <div>
               <Link className="w-30 h-12 md:block hidden" href="/">
@@ -344,7 +349,7 @@ const Header = () => {
                                   Cart is empty.{" "}
                                   <PopoverClose asChild>
                                     <Link
-                                      href="/"
+                                      href="/shop"
                                       className="text-blue-500 underline"
                                     >
                                       Go to shop
@@ -359,7 +364,7 @@ const Header = () => {
                               <p>Subtotal</p>
                               <p>
                                 {VND.format(
-                                  cart?.carts.reduce(
+                                  cart?.carts?.reduce(
                                     (val, item) =>
                                       val +
                                       item.quantity *
@@ -434,7 +439,7 @@ const Header = () => {
                     className="absolute lg:-top-1.5 text-[10px] p-0 px-1 lg:-right-1 -right-1.5 -top-2"
                     variant={"destructive"}
                   >
-                    {cart.carts.reduce(
+                    {cart?.carts?.reduce(
                       (value, item) => value + item.quantity,
                       0
                     )}
@@ -470,6 +475,7 @@ const Header = () => {
                         className="text-destructive group"
                         onClick={async () => {
                           try {
+                            setIsLogouting(true);
                             const response = await post("/auth/logout", {});
                             toast.success(response.message, {
                               duration: 1000,
@@ -479,6 +485,8 @@ const Header = () => {
                             dispatch(removeList([]));
                           } catch (error: any) {
                             toast.error(error.message);
+                          } finally {
+                            setIsLogouting(false);
                           }
                         }}
                       >
@@ -502,7 +510,7 @@ const Header = () => {
               )}
             </div>
           </div>
-        </div>
+        </header>
         {openPopoverCart && (
           <div className="fixed w-full h-full top-0 bg-black opacity-20 z-40" />
         )}

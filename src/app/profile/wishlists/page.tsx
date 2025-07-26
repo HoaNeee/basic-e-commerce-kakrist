@@ -28,8 +28,11 @@ const WishLists = () => {
       setIsLoading(true);
       const api = `/favorites/info?page=${page || 1}&limit=${limit}`;
       const response = await get(api);
+      const products = Array.isArray(response.data.products)
+        ? response.data.products
+        : [];
       setTotalPage(response.data.totalPage);
-      setListFavoriteInfo(response.data.products);
+      setListFavoriteInfo(products);
     } catch (error) {
       console.log(error);
     } finally {
@@ -89,7 +92,9 @@ const WishLists = () => {
           )}
         </>
       )}
-      <PaginationComponent totalPage={totalPage} />
+      <div className="mt-8">
+        <PaginationComponent totalPage={totalPage} />
+      </div>
     </div>
   );
 };

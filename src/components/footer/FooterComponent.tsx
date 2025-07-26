@@ -34,11 +34,11 @@ const FooterComponent = () => {
       { title: "Checkout", href: "/cart/checkout" },
     ],
     service: [
-      { title: "About Us", href: "/about" },
+      { title: "About Us", href: "/stories" },
       { title: "Contact", href: "/contact" },
-      { title: "Shipping Info", href: "/shipping" },
-      { title: "Privacy Policy", href: "/privacy" },
-      { title: "Terms & Conditions", href: "/terms" },
+      { title: "Shipping Info", href: "/" },
+      { title: "Privacy Policy", href: "/" },
+      { title: "Terms & Conditions", href: "/" },
     ],
   };
 

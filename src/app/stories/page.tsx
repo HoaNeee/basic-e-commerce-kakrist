@@ -217,7 +217,7 @@ const Stories = () => {
           <div className="max-w-4xl mx-auto">
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-blue-200"></div>
+              <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-blue-200 md:block hidden"></div>
 
               {milestones.map((milestone, index) => (
                 <div
@@ -227,7 +227,7 @@ const Stories = () => {
                   } mb-12`}
                 >
                   <div
-                    className={`w-5/12 ${
+                    className={`md:w-5/12 w-full ${
                       index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"
                     }`}
                   >
@@ -243,7 +243,7 @@ const Stories = () => {
                   </div>
 
                   {/* Timeline dot */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow-md"></div>
+                  <div className="absolute left-1/2 md:block hidden transform -translate-x-1/2 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow-md"></div>
                 </div>
               ))}
             </div>
