@@ -11,7 +11,7 @@ export const fetcher = (url: string) =>
     res.json()
   );
 
-export const get = async (path: string, token?: string) => {
+export const get = async (path: string, token?: string, config?: any) => {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   if (token) {
@@ -22,6 +22,7 @@ export const get = async (path: string, token?: string) => {
     const response = await fetch(API_URL + path, {
       credentials: "include",
       headers: myHeaders,
+      ...config,
     });
     const result = await response.json();
 
