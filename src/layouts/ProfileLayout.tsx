@@ -11,7 +11,6 @@ import {
   Heart,
   Package,
   MapPin,
-  CreditCard,
   Bell,
   Lock,
 } from "lucide-react";
@@ -46,11 +45,7 @@ const tabs = [
     value: "/address",
     icon: MapPin,
   },
-  {
-    name: "Saved Cards",
-    value: "/credit-card",
-    icon: CreditCard,
-  },
+
   {
     name: "Notifications",
     value: "/notifications",
@@ -75,12 +70,6 @@ const ProfileLayout = ({ children }: { children: any }) => {
   }, []);
 
   useEffect(() => {
-    if (!auth.isLogin && loaded) {
-      router.replace("/");
-    }
-  }, [auth]);
-
-  useEffect(() => {
     checkRead();
   }, [pathName]);
 
@@ -94,7 +83,7 @@ const ProfileLayout = ({ children }: { children: any }) => {
     }
   };
 
-  if (!loaded) {
+  if (!loaded || !auth.isLogin) {
     return (
       <div className="w-full flex items-start gap-8 justify-center flex-row h-130"></div>
     );
@@ -151,7 +140,7 @@ const ProfileLayout = ({ children }: { children: any }) => {
           ))}
         </TabsList>
 
-        <TabsList className="shrink-0 grid md:hidden grid-cols-7 p-0 bg-background border-2 border-muted rounded-none h-16 w-full fixed bottom-0 left-0 z-20">
+        <TabsList className="shrink-0 grid md:hidden grid-cols-6 p-0 bg-background border-2 border-muted rounded-none h-16 w-full fixed bottom-0 left-0 z-20">
           {tabs.slice(1).map((tab) => (
             <TabsTrigger
               key={tab.value}

@@ -17,14 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import LOGO from "../../../assets/logo.png";
+import LOGOWHITE from "../../../assets/logo-white.png";
 import Image from "next/image";
 import Link from "next/link";
 import { post } from "@/utils/requets";
 import { toast } from "sonner";
-import { useDispatch, useSelector } from "react-redux";
-import { addAuth } from "@/redux/reducer/authReducer";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 // import { FcGoogle } from "react-icons/fc";
@@ -46,7 +45,6 @@ const LayoutLoginWithSuspense = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const setting = useSelector((state: RootState) => state.setting.setting);
-  const dispatch = useDispatch();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,8 +52,6 @@ const LayoutLoginWithSuspense = () => {
       isRemmember: false,
     },
   });
-
-  const router = useRouter();
 
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
@@ -67,10 +63,7 @@ const LayoutLoginWithSuspense = () => {
       toast.success(response.message, {
         description: "Login successfully, Welcome!",
       });
-      console.log(response);
-      router.replace(next ? next : "/");
-      dispatch(addAuth(response.data));
-      console.log(next);
+      window.location.href = next ?? "/";
     } catch (error: any) {
       toast.error(error.message, {
         description: "Login failed!",
@@ -83,7 +76,7 @@ const LayoutLoginWithSuspense = () => {
   return (
     <div className="w-full h-screen flex gap-2 dark:text-white/80">
       <div className="bg-[url(../assets/auth-login.jpg)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
-        <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
+        <Image alt="LOGO" src={LOGOWHITE} className="mt-5 ml-5" priority />
       </div>
       <div className="flex-1 flex flex-col justify-center px-6">
         <div className="mb-8">
@@ -193,14 +186,14 @@ const LayoutLoginWithSuspense = () => {
             <div className="text-center mt-5">
               <p>
                 {"Don't have an account? "}{" "}
-                <Link
+                <a
                   href={`/auth/register${
                     next ? `?next=${encodeURIComponent(next)}` : ""
                   }`}
                   className="text-blue-600 italic"
                 >
                   register
-                </Link>
+                </a>
               </p>
             </div>
           </form>

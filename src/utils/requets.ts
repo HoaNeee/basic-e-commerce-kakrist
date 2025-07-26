@@ -24,6 +24,7 @@ export const get = async (path: string, token?: string) => {
       headers: myHeaders,
     });
     const result = await response.json();
+
     if (result.code > 300) {
       throw Error(result.message);
     }

@@ -17,12 +17,19 @@
   font-weight: bold;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  color: #111827;
 }
 
 .prose p {
   margin-bottom: 1rem;
   line-height: 1.75;
+}
+
+.prose .dark h2 {
+  color: #e5e7eb !important;
+}
+
+.prose p .dark {
+  color: #e5e7eb;
 }
 
 @custom-variant dark (&:is(.dark *));

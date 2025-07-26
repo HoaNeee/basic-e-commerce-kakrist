@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,12 +20,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import LOGO from "../../../assets/logo.png";
 import Image from "next/image";
 import { post } from "@/utils/requets";
-import Link from "next/link";
-import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircleIcon } from "lucide-react";
 
 const formSchema = z.object({
   firstName: z.any(),
@@ -46,6 +46,8 @@ const formSchema = z.object({
 const LayoutRegisterWithSuspense = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [timeInterval, setTimeInterval] = useState(5);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,26 +58,27 @@ const LayoutRegisterWithSuspense = () => {
   const next = searchParams.get("next");
   const setting = useSelector((state: RootState) => state.setting.setting);
 
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setInterval(() => {
+        setTimeInterval(timeInterval - 1);
+      }, 1000);
+
+      if (timeInterval <= 0) {
+        window.location.href = `/auth/login${
+          next ? `?next=${encodeURIComponent(next)}` : ""
+        }`;
+        clearInterval(timer);
+      }
+      return () => clearInterval(timer);
+    }
+  }, [isSuccess, next, timeInterval]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-
     try {
-      const response = await post("/auth/register", values);
-      toast.success(response.message, {
-        description: "You register account sccuess, login now!",
-        action: {
-          label: (
-            <Link
-              href={`/auth/login${
-                next ? `?next=${encodeURIComponent(next)}` : ""
-              }`}
-            >
-              Login
-            </Link>
-          ),
-          onClick() {},
-        },
-      });
+      await post("/auth/register", values);
+      setIsSuccess(true);
     } catch (error: any) {
       setErrorMessage(error.message);
     } finally {
@@ -88,10 +91,35 @@ const LayoutRegisterWithSuspense = () => {
       <div className="bg-[url(../assets/auth-register.png)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
         <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" />
       </div>
-      <div className="flex-1 flex flex-col justify-center px-6">
-        <div className="mb-8">
+      <div className="flex-1 flex flex-col justify-center px-6 transition-all duration-300">
+        <div className="mb-4">
           <h3 className="text-3xl font-bold">Create New Account</h3>
           <p className="text-neutral-400 text-sm">Please enter details</p>
+        </div>
+        <div
+          className="mb-8 transition-all duration-300 ease-in-out"
+          style={{
+            opacity: isSuccess ? "1" : "0",
+            visibility: isSuccess ? "visible" : "hidden",
+            transition: "opacity 0.3s, visibility 0.3s",
+            maxHeight: isSuccess ? "200px" : "0",
+          }}
+        >
+          <Alert
+            className={`${
+              isSuccess ? "opacity-100 visible" : "opacity-0 invisible"
+            } transition-all duration-300 bg-green-50 text-green-600`}
+          >
+            <CheckCircleIcon className="text-green-500" />
+            <AlertTitle>Register successfully!</AlertTitle>
+            <AlertDescription className="flex items-center gap-1">
+              You will be redirected to the{" "}
+              <a href="/auth/login" className="underline inline italic">
+                login
+              </a>{" "}
+              page in {timeInterval} seconds.
+            </AlertDescription>
+          </Alert>
         </div>
         <Form {...form}>
           <form
@@ -202,7 +230,7 @@ const LayoutRegisterWithSuspense = () => {
               <span className="text-red-600 text-sm">{errorMessage}</span>
             )}
             <Button
-              disabled={isLoading}
+              disabled={isLoading || isSuccess}
               type="submit"
               className="py-6 transition-all duration-400 flex items-center justify-center relative"
             >
@@ -229,14 +257,14 @@ const LayoutRegisterWithSuspense = () => {
             <div className="text-center mt-5">
               <p>
                 {"Already an account? "}{" "}
-                <Link
+                <a
                   href={`/auth/login${
                     next ? `?next=${encodeURIComponent(next)}` : ""
                   }`}
                   className="text-blue-600 italic"
                 >
                   login
-                </Link>
+                </a>
               </p>
             </div>
           </form>

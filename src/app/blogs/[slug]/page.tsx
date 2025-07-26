@@ -13,7 +13,7 @@ import {
   BookmarkPlus,
   Eye,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { BlogModel } from "@/models/blogModel";
 import { get, patch } from "@/utils/requets";
@@ -29,7 +29,6 @@ const BlogDetail = () => {
   const params = useParams();
   const slug = params.slug as string;
   const auth = useSelector((state: RootState) => state.auth.auth);
-  const router = useRouter();
 
   useEffect(() => {
     const handleAction = async () => {
@@ -105,7 +104,7 @@ const BlogDetail = () => {
 
     if (!auth.isLogin) {
       const next = `/blogs/${slug}`;
-      router.push(`/auth/login?next=${next}`);
+      window.location.href = `/auth/login?next=${next}`;
       return;
     }
 
@@ -133,13 +132,13 @@ const BlogDetail = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-black">
         {/* Navigation */}
-        <div className="bg-white border-b">
+        <div className="bg-white border-b dark:border-neutral-700 dark:bg-neutral-800">
           <div className="container mx-auto px-4 py-4">
             <Link
               href="/blogs"
-              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-white/80 dark:hover:text-white/100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Quay lại danh sách blog
@@ -152,19 +151,21 @@ const BlogDetail = () => {
             {/* Header */}
             <header className="mb-8">
               <div className="mb-4">
-                <span className="bg-black text-white px-3 py-1 capitalize rounded-full text-sm font-medium">
+                <span className="bg-black text-white dark:bg-neutral-700 px-3 py-1 capitalize rounded-full text-sm font-medium">
                   {blog?.tags && blog.tags.length > 0 && blog.tags[0]}
                 </span>
               </div>
 
-              <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white/80 mb-6 leading-tight">
                 {blog?.title}
               </h1>
 
-              <p className="text-xl text-gray-600 mb-6">{blog?.excerpt}</p>
+              <p className="text-xl text-gray-600 dark:text-white/60 mb-6">
+                {blog?.excerpt}
+              </p>
 
               {/* Meta Information */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 mb-6">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-white/60 mb-6">
                 <div className="flex items-center">
                   <User className="w-4 h-4 mr-2" />
                   {blog?.author.fullName || "Unknown Author"}
@@ -188,7 +189,7 @@ const BlogDetail = () => {
               {/* Action Buttons */}
               <div className="flex items-center gap-4 pb-6 border-b flex-wrap">
                 <button
-                  className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                  className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-red-50 text-red-600 dark:bg-red-800/80 dark:text-white rounded-lg hover:bg-red-100 transition-colors dark:hover:bg-red-700"
                   onClick={handleLikeBlog}
                 >
                   <Heart
@@ -196,7 +197,7 @@ const BlogDetail = () => {
                     fill={
                       !auth.isLogin
                         ? "none"
-                        : blog.liked.includes(auth.user_id)
+                        : blog?.liked?.includes(auth.user_id)
                         ? "red"
                         : "none"
                     }
@@ -208,11 +209,11 @@ const BlogDetail = () => {
                     : "Thích"}{" "}
                   ({blog?.liked?.length || 0})
                 </button>
-                <button className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                <button className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-800 dark:text-white rounded-lg hover:bg-blue-100 transition-colors dark:hover:bg-blue-700">
                   <BookmarkPlus className="w-4 h-4" />
                   Lưu
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-white rounded-lg hover:bg-gray-100 transition-colors dark:hover:bg-gray-700">
                   <Share2 className="w-4 h-4" />
                   Chia sẻ
                 </button>
@@ -230,21 +231,21 @@ const BlogDetail = () => {
             </div>
 
             {/* Content */}
-            <div className="bg-white rounded-xl p-8 shadow-sm mb-8">
+            <div className="bg-white rounded-xl p-8 shadow-sm mb-8 dark:bg-neutral-800 dark:text-white/80">
               <div
-                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed"
+                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed dark"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mt-8 pt-8 border-t">
-                <span className="text-sm font-medium text-gray-700 mr-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">
                   Tags:
                 </span>
                 {blog.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-neutral-600 dark:text-white/80 hover:bg-gray-200 transition-colors cursor-pointer"
                   >
                     <Tag className="w-3 h-3 mr-1" />
                     {tag}
@@ -254,19 +255,19 @@ const BlogDetail = () => {
             </div>
 
             {/* Author Bio */}
-            <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm mb-8">
               <div className="flex items-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                   {blog.author.fullName.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white/80">
                     {blog.author.fullName}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-white/70">
                     Fashion Blogger & Style Consultant
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 mt-1 dark:text-white/60">
                     Chuyên gia tư vấn thời trang với hơn 5 năm kinh nghiệm trong
                     ngành.
                   </p>
@@ -275,8 +276,8 @@ const BlogDetail = () => {
             </div>
 
             {/* Related Posts */}
-            <div className="bg-white rounded-xl p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-xl p-8 shadow-sm dark:bg-neutral-800 dark:text-white/80">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white/80 mb-6">
                 Bài viết liên quan
               </h3>
               <div className="grid md:grid-cols-3 gap-6">
@@ -300,7 +301,7 @@ const BlogDetail = () => {
                         </span>
                       </div>
                     </div>
-                    <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h4 className="font-semibold text-gray-900 dark:text-white/80 dark:group-hover:text-blue-400 group-hover:text-blue-600 transition-colors">
                       {blog.title}
                     </h4>
                   </Link>

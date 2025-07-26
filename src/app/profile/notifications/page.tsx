@@ -8,6 +8,7 @@ import { formatDistanceStrict } from "date-fns";
 import { get, patch } from "@/utils/requets";
 import { NotificationModel } from "@/models/notificationModel";
 import Link from "next/link";
+import { Bell } from "lucide-react";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState<NotificationModel[]>([]);
@@ -125,7 +126,19 @@ const Notifications = () => {
           {notifications.map((item) => renderItem(item))}
         </div>
       ) : (
-        <div>No Data</div>
+        <div className="py-16 flex items-center justify-center">
+          <div className="flex flex-col w-full h-full items-center justify-center">
+            <div className="w-25 h-25 mx-auto mb-4 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center dark:bg-neutral-600/90 dark:text-gray-300">
+              <Bell className="size-13 mx-auto" />
+            </div>
+            <h3 className="text-2xl font-bold text-center mb-2">
+              No notifications found
+            </h3>
+            <p className="text-center text-neutral-500">
+              You will see your notifications here.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

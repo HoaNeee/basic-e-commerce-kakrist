@@ -99,6 +99,9 @@ const LayoutShopWithSuspense = ({
   const sort = searchParams.get("sort");
   const supplier_id = searchParams.get("supplier_id");
   const keySearch = searchParams.get("q");
+  const next = encodeURIComponent(
+    pathName + (searchParams ? `?${searchParams}` : ``)
+  );
 
   useEffect(() => {
     if (maxPrice) {
@@ -395,11 +398,7 @@ const LayoutShopWithSuspense = ({
 
   const handleCart = async (product: ProductModel) => {
     if (!auth.isLogin) {
-      const next = encodeURIComponent(
-        pathName + (searchParams ? `?${searchParams}` : ``)
-      );
-
-      router.push(`/auth/login?next=${next}`);
+      window.location.href = `/auth/login?next=${next}`;
       return;
     }
 
@@ -461,9 +460,7 @@ const LayoutShopWithSuspense = ({
   const handleFavorite = async (product_id: string) => {
     try {
       if (!auth.isLogin) {
-        const next = encodeURIComponent(`${pathName}?${searchParams}`);
-
-        router.push("/auth/login?next=" + next);
+        window.location.href = "/auth/login?next=" + next;
 
         return;
       }

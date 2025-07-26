@@ -55,6 +55,8 @@ import {
 } from "../ui/sheet";
 import MenuNavMobile from "./MenuNavMobile";
 
+const routePrivate = ["/profile", "/cart"];
+
 const Header = () => {
   const [openPopoverCart, setOpenPopoverCart] = useState(false);
   const [isLogouting, setIsLogouting] = useState(false);
@@ -85,8 +87,9 @@ const Header = () => {
       return () => {};
     }
 
+    console.log("data", data);
+
     if (data && data.code === 200) {
-      console.log(data);
       dispatch(
         addAuth({
           ...data.data,
@@ -175,6 +178,36 @@ const Header = () => {
       </div>
     );
   }
+
+  const handleLogout = async () => {
+    try {
+      setIsLogouting(true);
+      const response = await post("/auth/logout", {});
+      toast.success(response.message, {
+        duration: 1000,
+      });
+
+      // socket.disconnect();
+      checkRedirect();
+
+      dispatch(removeAuth());
+      dispatch(removeCart([]));
+      dispatch(removeList([]));
+      setIsLogouting(false);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const checkRedirect = () => {
+    for (const route of routePrivate) {
+      if (pathName.startsWith(route)) {
+        window.location.href =
+          "/auth/login?next=" + encodeURIComponent(pathName);
+        return;
+      }
+    }
+  };
 
   return (
     !pathName.startsWith("/auth") && (
@@ -410,7 +443,7 @@ const Header = () => {
                           <div className="text-muted-foreground text-base">
                             Please{" "}
                             <PopoverClose>
-                              <Link
+                              <a
                                 href={`/auth/login?next=${encodeURIComponent(
                                   "/cart"
                                 )}`}
@@ -420,7 +453,7 @@ const Header = () => {
                                 className="italic underline text-blue-400"
                               >
                                 login
-                              </Link>
+                              </a>
                             </PopoverClose>{" "}
                             to view your cart.
                           </div>
@@ -473,22 +506,7 @@ const Header = () => {
 
                       <DropdownMenuItem
                         className="text-destructive group"
-                        onClick={async () => {
-                          try {
-                            setIsLogouting(true);
-                            const response = await post("/auth/logout", {});
-                            toast.success(response.message, {
-                              duration: 1000,
-                            });
-                            dispatch(removeAuth());
-                            dispatch(removeCart([]));
-                            dispatch(removeList([]));
-                          } catch (error: any) {
-                            toast.error(error.message);
-                          } finally {
-                            setIsLogouting(false);
-                          }
-                        }}
+                        onClick={handleLogout}
                       >
                         <LogOut className="h-4 w-4 text-destructive" />{" "}
                         <span className="group-hover:text-destructive text-destructive">
@@ -500,12 +518,12 @@ const Header = () => {
                 </>
               ) : (
                 <div>
-                  <Button
-                    variant={"default"}
-                    onClick={() => router.push("/auth/login")}
+                  <a
+                    className="inline-block py-2 px-4 rounded-md text-sm font-medium text-white bg-black hover:bg-neutral-800 transition-colors"
+                    href="/auth/login"
                   >
                     Login
-                  </Button>
+                  </a>
                 </div>
               )}
             </div>

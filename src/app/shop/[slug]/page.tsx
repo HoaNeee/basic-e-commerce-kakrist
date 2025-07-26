@@ -7,12 +7,7 @@ import { GoPlus } from "react-icons/go";
 import { AiOutlineMinus } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { FaRegHeart } from "react-icons/fa";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import {
   OptionsInfo,
   ProductModel,
@@ -73,9 +68,9 @@ const ProductDetail = () => {
   const listFavorite = useSelector((state: RootState) => state.favorite.list);
   const path = usePathname();
   const search = useSearchParams().toString();
-  const router = useRouter();
   const tabInitRef = useRef<any>(null);
   const dispatch = useDispatch();
+  const next = encodeURIComponent(path + (search ? `?${search}` : ``));
 
   useEffect(() => {
     if (!loaded) {
@@ -87,7 +82,6 @@ const ProductDetail = () => {
     if (slug) {
       getProductDetail();
     }
-    console.log(loaded);
   }, [slug]);
 
   useEffect(() => {
@@ -158,18 +152,14 @@ const ProductDetail = () => {
 
   const handleCart = async () => {
     if (!auth.isLogin) {
-      console.log("need login");
-
-      const next = encodeURIComponent(path + (search ? `?${search}` : ``));
-
-      router.push(`/auth/login?next=${next}`);
+      window.location.href = `/auth/login?next=${next}`;
       return;
     }
 
     try {
       if (productDetail?.productType === "variations") {
         if (!subProductDetail) {
-          console.log("need choose at least one");
+          toast.error("need choose at least one", { duration: 1000 });
           return;
         }
 
@@ -316,6 +306,7 @@ const ProductDetail = () => {
 
   const handleFavorite = async () => {
     if (!auth.isLogin) {
+      window.location.href = `/auth/login?next=${next}`;
       return;
     }
     try {

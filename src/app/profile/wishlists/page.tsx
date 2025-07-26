@@ -6,6 +6,7 @@ import CardProduct from "@/components/product/CardProduct";
 import CardSkeleton from "@/components/product/CardSkeleton";
 import { ProductModel } from "@/models/productModel";
 import { del, get } from "@/utils/requets";
+import { HeartPlus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -88,13 +89,28 @@ const WishLists = () => {
               ))}
             </div>
           ) : (
-            <div>No data</div>
+            <div className="py-16 w-full flex items-center justify-center">
+              <div className="flex flex-col w-full h-full">
+                <div className="w-25 h-25 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center dark:bg-neutral-600/90 dark:text-gray-300">
+                  <HeartPlus className="size-13" />
+                </div>
+                <h3 className="text-2xl font-bold text-center mb-2">
+                  No products in your wishlists
+                </h3>
+                <p className="text-center text-neutral-500">
+                  You can add products to your wishlists from product detail
+                  page.
+                </p>
+              </div>
+            </div>
           )}
         </>
       )}
-      <div className="mt-8">
-        <PaginationComponent totalPage={totalPage} />
-      </div>
+      {totalPage > 1 && (
+        <div className="mt-8">
+          <PaginationComponent totalPage={totalPage} />
+        </div>
+      )}
     </div>
   );
 };

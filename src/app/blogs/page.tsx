@@ -110,7 +110,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
     return (
       <article
         key={blog._id}
-        className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
+        className="bg-white dark:bg-neutral-800 dark:text-white/80 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
       >
         {/* Image */}
         <div className="relative h-48 overflow-hidden">
@@ -129,16 +129,18 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
 
         {/* Content */}
         <div className="p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white/80 mb-3 group-hover:text-blue-600 transition-colors">
             <Link href={`/blogs/${blog.slug}`} className="hover:underline">
               {blog.title}
             </Link>
           </h2>
 
-          <p className="text-gray-600 mb-4 line-clamp-3">{blog.excerpt}</p>
+          <p className="text-gray-600 dark:text-white/60 mb-4 line-clamp-3">
+            {blog.excerpt}
+          </p>
 
           {/* Meta Information */}
-          <div className="flex items-center text-sm text-gray-500 mb-4">
+          <div className="flex items-center text-sm text-gray-500 dark:text-white/60 mb-4">
             <div className="flex items-center mr-4">
               <User className="w-4 h-4 mr-1" />
               {blog.author?.fullName || "Unknown Author"}
@@ -158,7 +160,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
             {blog.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800"
+                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800 dark:bg-neutral-600 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-neutral-500 transition-colors"
               >
                 <Tag className="w-3 h-3 mr-1" />
                 {tag}
@@ -169,7 +171,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
           {/* Read More Button */}
           <Link
             href={`/blogs/${blog.slug}`}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+            className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm transition-colors"
           >
             Đọc thêm
             <svg
@@ -232,7 +234,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
               }}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 selectedTag === tag
-                  ? "bg-black text-white"
+                  ? "bg-black text-white dark:bg-neutral-600 "
                   : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
               }`}
             >
@@ -289,7 +291,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
                 }
                 router.push(pathName, { scroll: false });
               }}
-              className="px-2 flex items-center gap-1 py-1 text-sm text-red-600 bg-red-100/70 rounded-md hover:bg-red-200 transition-colors"
+              className="px-2 flex items-center gap-1 py-1 text-sm text-red-600 bg-red-100/70 dark:bg-red-900/40 rounded-md hover:bg-red-200 transition-colors"
             >
               <X className="w-4 h-4" />
               Clear filter
@@ -414,15 +416,15 @@ const Blogs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-800 dark:text-white">
       {/* Header Section */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-white shadow-sm dark:bg-black/90">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4 dark:text-white">
               Blog Thời Trang
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto dark:text-white/80">
               Khám phá những xu hướng mới nhất, mẹo hay và cảm hứng thời trang
               từ các chuyên gia
             </p>

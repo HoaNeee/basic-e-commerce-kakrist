@@ -16,7 +16,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import lodash from "lodash";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search } from "lucide-react";
+import { ClipboardList, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { VscSettings } from "react-icons/vsc";
 
@@ -49,6 +49,7 @@ const Order = () => {
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [isFilter, setIsFilter] = useState(false);
 
   const listRef = useRef<any>(null);
   const router = useRouter();
@@ -87,6 +88,16 @@ const Order = () => {
 
     return () => window.removeEventListener("scroll", scrollToBottom);
   }, [showSkeleton, isLoading, order_no]);
+
+  useEffect(() => {
+    if (keyword || statusFilter) {
+      setIsFilter(true);
+    } else {
+      setTimeout(() => {
+        setIsFilter(false);
+      }, 1000);
+    }
+  }, [keyword, statusFilter]);
 
   const scrollToBottom = () => {
     if (
@@ -136,7 +147,6 @@ const Order = () => {
 
   const getOrders = async (page = 1, keyword = "", status = "") => {
     const api = `/orders?page=${page}&limit=${limit}&keyword=${keyword}&status=${status}`;
-    console.log(api);
     const response = await get(api);
     const data = response.data.orders;
     setTotalPage(response.data.totalPage);
@@ -164,63 +174,45 @@ const Order = () => {
   };
 
   const orderStatus = (order: OrderModel) => {
+    let statusClass = "";
+    let statusText = "";
+
     switch (order.status) {
       case "delivered":
-        return (
-          <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-green-100/50 text-green-600 dark:bg-green-50/20 dark:text-green-500">
-              Delivered
-            </Badge>
-            <p className="text-sm tracking-wider">
-              Your order has been delivered
-            </p>
-          </div>
-        );
+        statusClass =
+          "rounded-xs bg-green-100/50 text-green-600 dark:bg-green-50/20 dark:text-green-500 shadow";
+        statusText = "Your order has been delivered";
+        break;
       case "shipping":
-        return (
-          <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-red-100/50 text-red-600 dark:bg-red-50/20 dark:text-red-500">
-              Shipping
-            </Badge>
-            <p className="text-sm tracking-wider">
-              Your order is being shipped
-            </p>
-          </div>
-        );
+        statusClass =
+          "rounded-xs bg-red-100/50 text-red-600 dark:bg-red-50/20 dark:text-red-500 shadow";
+        statusText = "Your order is being shipped";
+        break;
+
       case "canceled":
-        return (
-          <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-gray-100/50 text-gray-600 dark:text-white/80 dark:bg-neutral-50/20">
-              Canceled
-            </Badge>
-            <p className="text-sm tracking-wider">
-              Your order has been Canceled
-            </p>
-          </div>
-        );
+        statusClass =
+          "rounded-xs bg-gray-100/50 text-gray-600 dark:text-white/80 dark:bg-neutral-50/20 shadow";
+        statusText = "Your order has been Canceled";
+        break;
 
       case "confirmed":
-        return (
-          <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-blue-100/50 text-blue-600 dark:bg-blue-50/20 dark:text-blue-500">
-              Confirmed
-            </Badge>
-            <p className="text-sm tracking-wider">
-              Your order has been Confirmed
-            </p>
-          </div>
-        );
+        statusClass =
+          "rounded-xs bg-blue-100/50 text-blue-600 dark:bg-blue-50/20 dark:text-blue-500 shadow";
+        statusText = "Your order has been Confirmed";
+        break;
 
       default:
-        return (
-          <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
-            <Badge className="rounded-xs bg-yellow-100/40 text-yellow-500 dark:bg-yellow-50/20">
-              Pending
-            </Badge>
-            <p className="text-sm tracking-wider">Your order is pending</p>
-          </div>
-        );
+        statusClass =
+          "rounded-xs bg-yellow-100/40 text-yellow-500 dark:bg-yellow-50/20 shadow";
+        statusText = "Your order is pending";
     }
+
+    return (
+      <div className="flex items-center gap-2 mt-4 mb-2 text-sm">
+        <Badge className={`capitalize ${statusClass}`}>{order.status}</Badge>
+        <p className="text-sm tracking-wider">{statusText}</p>
+      </div>
+    );
   };
 
   const handleCancelOrder = async (order: OrderModel) => {
@@ -308,6 +300,36 @@ const Order = () => {
       setIsLoading(false);
     }
   };
+
+  if (
+    orders &&
+    orders.length === 0 &&
+    !keyword &&
+    !statusFilter &&
+    !showSkeleton &&
+    !isLoading &&
+    !isFilter
+  ) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <ClipboardList className="w-12 h-12 text-gray-400" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          Your order is empty
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          Add some items to your cart and checkout to get started.
+        </p>
+        <Button
+          onClick={() => router.push("/shop")}
+          className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
+        >
+          Shop
+        </Button>
+      </div>
+    );
+  }
 
   return order_no ? (
     <OrderDetail order_no={order_no} />
@@ -402,7 +424,7 @@ const Order = () => {
                     order.status === "canceled" ? "text-gray-500" : ""
                   }`}
                 >
-                  <div className="max-w-2/9">
+                  <div className="md:max-w-full max-w-2/9">
                     <div className="w-18 h-18 bg-muted">
                       <img
                         src={order?.products[0].thumbnail}
@@ -510,7 +532,19 @@ const Order = () => {
           ))}
         </div>
       ) : (
-        !showSkeleton && <div> No data</div>
+        !showSkeleton && (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
+              <Search className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              No orders found
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Try searching with different keywords or filters.
+            </p>
+          </div>
+        )
       )}
       {showSkeleton && !isLoading && (
         <div className="flex flex-col gap-5 w-full mt-5">

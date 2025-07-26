@@ -180,7 +180,7 @@ const OrderDetail = (props: Props) => {
                     <FiUser className="w-3 h-3 text-red-500" />
                     <span className="text-red-600">Canceled by:</span>
                     <span className="text-red-900 font-medium">
-                      {order.cancel.canceledBy}
+                      {order.cancel.canceledBy === "admin" ? "shop" : "you"}
                     </span>
                   </div>
                 </div>

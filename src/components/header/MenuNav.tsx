@@ -14,9 +14,12 @@ import MegaMenu from "./MegaMenu";
 import { get } from "@/utils/requets";
 import { createTree } from "@/utils/createTree";
 import { CategoryModel } from "@/models/categoryModel";
+import { usePathname } from "next/navigation";
 
 export function MenuNav() {
   const [categories, setCategories] = useState<CategoryModel[]>([]);
+
+  const pathName = usePathname();
 
   useEffect(() => {
     getCategories();
@@ -31,19 +34,30 @@ export function MenuNav() {
     }
   };
   return (
-    <NavigationMenu viewport={false} className="">
+    <NavigationMenu className="focus:bg-red-500">
       <NavigationMenuList className="xl:gap-4 lg:gap-2 gap-0">
-        <NavigationMenuItem className="">
+        <NavigationMenuItem className={``}>
           <NavigationMenuLink asChild>
-            <Link href={"/"} className="lg:text-[16px] text-sm">
+            <Link href={"/"} className={`lg:text-base text-sm`}>
               Home
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
-        <NavigationMenuItem className="">
-          <NavigationMenuTrigger className="lg:text-[16px] text-sm">
-            <NavigationMenuLink asChild>
-              <Link href={"/shop"} className="lg:text-[16px] text-sm">
+        <NavigationMenuItem className={``}>
+          <NavigationMenuTrigger
+            className={`${
+              pathName.startsWith("/shop")
+                ? "bg-neutral-100 dark:bg-neutral-800"
+                : ""
+            }`}
+          >
+            <NavigationMenuLink
+              asChild
+              className={`${
+                pathName.startsWith("/shop") ? "hover:bg-transparent" : ""
+              }`}
+            >
+              <Link href={"/shop"} className="lg:text-base text-sm">
                 Shop
               </Link>
             </NavigationMenuLink>
@@ -58,24 +72,45 @@ export function MenuNav() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href={"/blogs"} className="lg:text-[16px] text-sm">
+          <NavigationMenuLink
+            asChild
+            className={`${
+              pathName.startsWith("/blogs")
+                ? "bg-neutral-100 dark:bg-neutral-800"
+                : ""
+            }`}
+          >
+            <Link href={"/blogs"} className="lg:text-base text-sm">
               Blog
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href={"/stories"} className="lg:text-[16px] text-sm">
+          <NavigationMenuLink
+            asChild
+            className={`${
+              pathName.startsWith("/stories")
+                ? "bg-neutral-100 dark:bg-neutral-800"
+                : ""
+            }`}
+          >
+            <Link href={"/stories"} className="lg:text-base text-sm">
               Our Story
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href={"/contact"} className="lg:text-[16px] text-sm">
+          <NavigationMenuLink
+            asChild
+            className={`${
+              pathName.startsWith("/contact")
+                ? "bg-neutral-100 dark:bg-neutral-800"
+                : ""
+            }`}
+          >
+            <Link href={"/contact"} className="lg:text-base text-sm">
               Contact Us
             </Link>
           </NavigationMenuLink>

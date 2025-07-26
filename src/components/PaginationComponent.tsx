@@ -18,7 +18,7 @@ interface Props {
 }
 
 const PaginationComponent = (props: Props) => {
-  const { totalPage, className } = props;
+  const { totalPage = 1, className } = props;
 
   const searchParams = useSearchParams();
   const pathName = usePathname();
