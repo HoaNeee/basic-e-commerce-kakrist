@@ -252,7 +252,7 @@ const Header = () => {
                         <>
                           <p className="pt-2 px-4">
                             You have{" "}
-                            {cart.carts.reduce(
+                            {cart?.carts?.reduce(
                               (value, item) => value + item.quantity,
                               0
                             )}{" "}
@@ -342,12 +342,14 @@ const Header = () => {
                               ) : (
                                 <div className="">
                                   Cart is empty.{" "}
-                                  <Link
-                                    href={"/shop"}
-                                    className="underline hover:text-blue-400"
-                                  >
-                                    Shop now
-                                  </Link>
+                                  <PopoverClose asChild>
+                                    <Link
+                                      href="/"
+                                      className="text-blue-500 underline"
+                                    >
+                                      Go to shop
+                                    </Link>
+                                  </PopoverClose>
                                 </div>
                               )}
                             </div>
@@ -402,14 +404,19 @@ const Header = () => {
                         <div className="px-4 flex w-full h-40 items-center justify-center">
                           <div className="text-muted-foreground text-base">
                             Please{" "}
-                            <Link
-                              href={`/auth/login?next=${encodeURIComponent(
-                                "/cart"
-                              )}`}
-                              className="italic underline text-blue-400"
-                            >
-                              login
-                            </Link>{" "}
+                            <PopoverClose>
+                              <Link
+                                href={`/auth/login?next=${encodeURIComponent(
+                                  "/cart"
+                                )}`}
+                                onClick={() => {
+                                  setOpenPopoverCart(false);
+                                }}
+                                className="italic underline text-blue-400"
+                              >
+                                login
+                              </Link>
+                            </PopoverClose>{" "}
                             to view your cart.
                           </div>
                         </div>
@@ -460,7 +467,7 @@ const Header = () => {
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
-                        className="text-destructive"
+                        className="text-destructive group"
                         onClick={async () => {
                           try {
                             const response = await post("/auth/logout", {});
@@ -475,15 +482,23 @@ const Header = () => {
                           }
                         }}
                       >
-                        <LogOut className="h-4 w-4 text-destructive" /> Logout
+                        <LogOut className="h-4 w-4 text-destructive" />{" "}
+                        <span className="group-hover:text-destructive text-destructive">
+                          Logout
+                        </span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </>
               ) : (
-                <Link href={"/auth/login"}>
-                  <Button variant={"default"}>Login</Button>
-                </Link>
+                <div>
+                  <Button
+                    variant={"default"}
+                    onClick={() => router.push("/auth/login")}
+                  >
+                    Login
+                  </Button>
+                </div>
               )}
             </div>
           </div>
