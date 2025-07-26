@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -24,20 +30,13 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BlogModel } from "@/models/blogModel";
 
-const Blogs = () => {
+const LayoutBlogs = ({ tags }: { tags: string[] }) => {
   const [selectedTag, setSelectedTag] = useState("Tất cả");
   const [blogs, setBlogs] = useState<BlogModel[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [scrollLeft, setScrollLeft] = useState(0);
-
-  const { data } = useSWR("/blogs/tags", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
 
   const searchParams = useSearchParams();
   const pathName = usePathname();
@@ -47,19 +46,6 @@ const Blogs = () => {
   const tagQuery = searchParams.get("tag") || "";
   const listTags = useRef<any>(null);
   const limit = 10;
-
-  useEffect(() => {
-    if (data && data.code === 200) {
-      let array = [];
-      array.push("Tất cả");
-      array = [...array, ...data.data];
-      setTags(array);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
 
   const getBlogs = useCallback(async (page = 1, keyword = "", tag = "") => {
     try {
@@ -213,14 +199,6 @@ const Blogs = () => {
     );
   };
 
-  if (!loaded) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-black dark:border-white"></div>
-      </div>
-    );
-  }
-
   const renderTagFilter = (tags: string[]) => {
     const clientWidth = listTags.current ? listTags.current.clientWidth : 1280;
 
@@ -296,6 +274,146 @@ const Blogs = () => {
   };
 
   return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Search and Filter Section */}
+      <div className="mb-8">
+        {(keywordQuery || tagQuery) && (
+          <div className="mb-2">
+            <button
+              onClick={() => {
+                if (keywordQuery) {
+                  setKeyword("");
+                }
+                if (tagQuery) {
+                  setSelectedTag("Tất cả");
+                }
+                router.push(pathName, { scroll: false });
+              }}
+              className="px-2 flex items-center gap-1 py-1 text-sm text-red-600 bg-red-100/70 rounded-md hover:bg-red-200 transition-colors"
+            >
+              <X className="w-4 h-4" />
+              Clear filter
+            </button>
+          </div>
+        )}
+        <div className="flex w-full gap-4 mb-8">
+          {/* Search Bar */}
+          <div className="flex items-center gap-2 w-full">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Tìm kiếm bài viết..."
+                className="w-full pl-10 pr-4 py-6 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    let newQuery: any = createQueryString("keyword", keyword);
+                    if (newQuery.includes("page")) {
+                      newQuery = deleteQueryString("page", newQuery);
+                    }
+
+                    router.push(`${pathName}?${newQuery}`, { scroll: false });
+                  }
+                }}
+              />
+            </div>
+            <Button
+              onClick={() => {
+                let newQuery: any = createQueryString("keyword", keyword);
+                if (newQuery.includes("page")) {
+                  newQuery = deleteQueryString("page", newQuery);
+                }
+
+                router.push(`${pathName}?${newQuery}`);
+              }}
+              className="py-6"
+            >
+              Tìm kiếm
+            </Button>
+          </div>
+        </div>
+
+        {/* Tag Filter */}
+        {renderTagFilter(tags)}
+      </div>
+
+      {/* Blog Posts Grid */}
+      {!isLoading ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blogs.map((blog) => renderItemBlog(blog))}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Array.from({ length: limit }).map((_, index) =>
+            renderSkeleton(index)
+          )}
+        </div>
+      )}
+      {/* No Results */}
+      {blogs.length === 0 && !isLoading && (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <Search className="w-16 h-16 mx-auto" />
+          </div>
+          <h3 className="text-xl font-medium text-gray-900 mb-2">
+            Không tìm thấy bài viết
+          </h3>
+          <p className="text-gray-600">
+            Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác
+          </p>
+        </div>
+      )}
+
+      {/* Pagination would go here */}
+      {totalPage > 1 && (
+        <div className="flex justify-center mt-8">
+          <PaginationComponent
+            totalPage={totalPage}
+            className="justify-center"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Blogs = () => {
+  const [tags, setTags] = useState<string[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  const { data } = useSWR("/blogs/tags", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  useEffect(() => {
+    if (data && data.code === 200) {
+      let array = [];
+      array.push("Tất cả");
+      array = [...array, ...data.data];
+      setTags(array);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
+
+  const renderLoading = () => {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-black dark:border-white"></div>
+      </div>
+    );
+  };
+
+  if (!loaded) {
+    return renderLoading();
+  }
+
+  return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="bg-white shadow-sm">
@@ -312,108 +430,9 @@ const Blogs = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Search and Filter Section */}
-        <div className="mb-8">
-          {(keywordQuery || tagQuery) && (
-            <div className="mb-2">
-              <button
-                onClick={() => {
-                  if (keywordQuery) {
-                    setKeyword("");
-                  }
-                  if (tagQuery) {
-                    setSelectedTag("Tất cả");
-                  }
-                  router.push(pathName, { scroll: false });
-                }}
-                className="px-2 flex items-center gap-1 py-1 text-sm text-red-600 bg-red-100/70 rounded-md hover:bg-red-200 transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Clear filter
-              </button>
-            </div>
-          )}
-          <div className="flex w-full gap-4 mb-8">
-            {/* Search Bar */}
-            <div className="flex items-center gap-2 w-full">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  type="text"
-                  placeholder="Tìm kiếm bài viết..."
-                  className="w-full pl-10 pr-4 py-6 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  onKeyUp={(e) => {
-                    if (e.key === "Enter") {
-                      let newQuery: any = createQueryString("keyword", keyword);
-                      if (newQuery.includes("page")) {
-                        newQuery = deleteQueryString("page", newQuery);
-                      }
-
-                      router.push(`${pathName}?${newQuery}`, { scroll: false });
-                    }
-                  }}
-                />
-              </div>
-              <Button
-                onClick={() => {
-                  let newQuery: any = createQueryString("keyword", keyword);
-                  if (newQuery.includes("page")) {
-                    newQuery = deleteQueryString("page", newQuery);
-                  }
-
-                  router.push(`${pathName}?${newQuery}`);
-                }}
-                className="py-6"
-              >
-                Tìm kiếm
-              </Button>
-            </div>
-          </div>
-
-          {/* Tag Filter */}
-          {renderTagFilter(tags)}
-        </div>
-
-        {/* Blog Posts Grid */}
-        {!isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogs.map((blog) => renderItemBlog(blog))}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: limit }).map((_, index) =>
-              renderSkeleton(index)
-            )}
-          </div>
-        )}
-        {/* No Results */}
-        {blogs.length === 0 && !isLoading && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">
-              Không tìm thấy bài viết
-            </h3>
-            <p className="text-gray-600">
-              Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác
-            </p>
-          </div>
-        )}
-
-        {/* Pagination would go here */}
-        {totalPage > 1 && (
-          <div className="flex justify-center mt-8">
-            <PaginationComponent
-              totalPage={totalPage}
-              className="justify-center"
-            />
-          </div>
-        )}
-      </div>
+      <Suspense fallback={renderLoading()}>
+        <LayoutBlogs tags={tags} />
+      </Suspense>
     </div>
   );
 };
