@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 // import { FcGoogle } from "react-icons/fc";
 import { RootState } from "@/redux/store";
+import LoadingComponent from "@/components/LoadingComponent";
 
 const formSchema = z.object({
   email: z
@@ -205,7 +206,7 @@ const LayoutLoginWithSuspense = () => {
 
 const Login = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingComponent type="screen" />}>
       <LayoutLoginWithSuspense />
     </Suspense>
   );

@@ -2,8 +2,20 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 
-const LoadingComponent = ({ size = 28, className, ...props }: ISVGProps) => {
-  return (
+const LoadingComponent = ({
+  size = 28,
+  type = "spinner",
+  className,
+  ...props
+}: ISVGProps) => {
+  return type === "screen" ? (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-400 mx-auto mb-4"></div>
+        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    </div>
+  ) : (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}

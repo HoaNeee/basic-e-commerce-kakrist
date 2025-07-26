@@ -17,8 +17,11 @@ const Address = () => {
   const [openDialogAddress, setOpenDialogAddress] = useState(false);
   const [openDialogEditAddress, setOpenDialogEditAddress] = useState(false);
   const [addressSelected, setAddressSelected] = useState<AddressModel>();
+  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoaded(true);
     getAddress();
   }, []);
 
@@ -30,10 +33,13 @@ const Address = () => {
 
   const getAddress = async () => {
     try {
+      setLoading(true);
       const response = await get("/address");
       setAddress(response.data.address);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,6 +70,28 @@ const Address = () => {
       });
     }
   };
+
+  if (!loaded || loading) {
+    return (
+      <div className="w-full h-full">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className="w-full pb-5 border-b-2 border-muted flex items-center justify-between animate-pulse"
+          >
+            <div className="text-sm space-y-1.5">
+              <div className="h-6 bg-gray-200 dark:bg-neutral-600/90 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-neutral-600/90 rounded w-full"></div>
+              <div className="h-4 bg-gray-200 dark:bg-neutral-600/90 rounded w-1/2"></div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="h-8 bg-gray-200 dark:bg-neutral-600/90 rounded w-full"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>

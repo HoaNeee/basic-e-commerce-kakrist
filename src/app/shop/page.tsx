@@ -326,7 +326,9 @@ const LayoutShopWithSuspense = ({
                 router.push(`${pathName}?${newQuery}`, { scroll: false });
               }}
             />
-            <Label htmlFor={item._id}>{item.name}</Label>
+            <Label htmlFor={item._id} className="dark:text-white/80">
+              {item.name}
+            </Label>
           </div>
         ))}
       </div>
@@ -461,7 +463,6 @@ const LayoutShopWithSuspense = ({
     try {
       if (!auth.isLogin) {
         window.location.href = "/auth/login?next=" + next;
-
         return;
       }
       dispatch(toggleProduct(product_id));
@@ -519,10 +520,10 @@ const LayoutShopWithSuspense = ({
                 </div>
               </CollapsibleTrigger>
 
-              <CollapsibleContent>
+              <CollapsibleContent className="max-h-120 overflow-hidden overflow-y-auto">
                 <Accordion
                   type="multiple"
-                  className="w-full space-y-3"
+                  className="w-full space-y-3 overflow-y-auto"
                   defaultValue={[]}
                 >
                   <AccordionItem

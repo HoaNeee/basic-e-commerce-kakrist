@@ -34,7 +34,7 @@ export function MenuNav() {
     }
   };
   return (
-    <NavigationMenu className="focus:bg-red-500">
+    <NavigationMenu className="" viewport={false}>
       <NavigationMenuList className="xl:gap-4 lg:gap-2 gap-0">
         <NavigationMenuItem className={``}>
           <NavigationMenuLink asChild>

@@ -25,10 +25,16 @@ const OurBestSeller = (props: Props) => {
   const { products } = props;
 
   const listFavorite = useSelector((state: RootState) => state.favorite.list);
+  const auth = useSelector((state: RootState) => state.auth.auth);
 
   const dispatch = useDispatch();
 
   const handleFavorite = async (product_id: string) => {
+    if (!auth.isLogin) {
+      window.location.href = "/auth/login";
+      return;
+    }
+
     try {
       dispatch(toggleProduct(product_id));
       const list = listFavoriteToggle(listFavorite, product_id);
