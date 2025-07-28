@@ -5,10 +5,12 @@ import PaginationComponent from "@/components/PaginationComponent";
 import CardProduct from "@/components/product/CardProduct";
 import CardSkeleton from "@/components/product/CardSkeleton";
 import { ProductModel } from "@/models/productModel";
+import { toggleProduct } from "@/redux/reducer/favoriteReducer";
 import { del, get } from "@/utils/requets";
 import { HeartPlus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
 const WishLists = () => {
@@ -19,6 +21,7 @@ const WishLists = () => {
   const limit = 9;
   const searchParams = useSearchParams();
   const page = searchParams.get("page") || "";
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getList();
@@ -55,6 +58,7 @@ const WishLists = () => {
           onClick() {},
         },
       });
+      dispatch(toggleProduct(product_id));
     } catch (error: any) {
       toast.error(error.message);
     }

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   Calendar,
@@ -18,8 +19,16 @@ import Link from "next/link";
 import { BlogModel } from "@/models/blogModel";
 import { get, patch } from "@/utils/requets";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import lodash from "lodash";
+import {
+  handleToggleBlog,
+  listFavoriteToggle,
+  toggleBlog,
+} from "@/redux/reducer/favoriteReducer";
+import { toast } from "sonner";
+import IMAGEDEFAULT from "../../../assets/imagenotfound.png";
 
 const BlogDetail = () => {
   const [blog, setBlog] = useState<BlogModel>();
@@ -29,6 +38,10 @@ const BlogDetail = () => {
   const params = useParams();
   const slug = params.slug as string;
   const auth = useSelector((state: RootState) => state.auth.auth);
+  const listBlogSaved = useSelector(
+    (state: RootState) => state.favorite.listBlog
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleAction = async () => {
@@ -61,6 +74,25 @@ const BlogDetail = () => {
   const handleRead = async (slug: string) => {
     if (!slug) return;
     await get(`/blogs/read/${slug}`);
+  };
+
+  const debounceToggleFavorite = useRef(
+    lodash.debounce((list: string[]) => handleToggleBlog(list), 500)
+  ).current;
+
+  const handleFavorite = async (blog_id: string) => {
+    try {
+      const next = `/blogs/${slug}`;
+      if (!auth.isLogin) {
+        window.location.href = "/auth/login?next=" + next;
+        return;
+      }
+      dispatch(toggleBlog(blog_id));
+      const list = listFavoriteToggle(listBlogSaved, blog_id);
+      debounceToggleFavorite(list);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   if (!blog || isLoading) {
@@ -111,7 +143,6 @@ const BlogDetail = () => {
     try {
       const api = `/blogs/like/${slug}`;
       const user_id = auth.user_id;
-      await patch(api, { user_id: user_id });
 
       const liked = blog.liked || [];
       if (liked.includes(user_id)) {
@@ -125,11 +156,11 @@ const BlogDetail = () => {
           liked: [...liked, user_id],
         });
       }
+      await patch(api, { user_id: user_id });
     } catch (error) {
       console.log(error);
     }
   };
-
   return (
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-black">
@@ -178,7 +209,7 @@ const BlogDetail = () => {
                 </div>
                 <div className="flex items-center">
                   <Clock className="w-4 h-4 mr-2" />
-                  {blog.readTime}
+                  {blog.readTime} phút đọc
                 </div>
                 <div className="flex items-center">
                   <Eye className="w-4 h-4 mr-2" />
@@ -209,9 +240,23 @@ const BlogDetail = () => {
                     : "Thích"}{" "}
                   ({blog?.liked?.length || 0})
                 </button>
-                <button className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-800 dark:text-white rounded-lg hover:bg-blue-100 transition-colors dark:hover:bg-blue-700">
-                  <BookmarkPlus className="w-4 h-4" />
-                  Lưu
+                <button
+                  onClick={() => {
+                    handleFavorite(blog._id);
+                  }}
+                  className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-50 text-blue-600 dark:bg-blue-800 dark:text-white rounded-lg hover:bg-blue-100 dark:hover:bg-blue-700 transition-all duration-300"
+                >
+                  <BookmarkPlus
+                    className="w-4 h-4"
+                    fill={
+                      !auth.isLogin
+                        ? "none"
+                        : listBlogSaved.includes(blog._id)
+                        ? "blue"
+                        : "none"
+                    }
+                  />
+                  {listBlogSaved.includes(blog._id) ? "Đã lưu" : "Lưu"}
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-white rounded-lg hover:bg-gray-100 transition-colors dark:hover:bg-gray-700">
                   <Share2 className="w-4 h-4" />
@@ -257,10 +302,12 @@ const BlogDetail = () => {
             {/* Author Bio */}
             <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm mb-8">
               <div className="flex items-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                  {blog.author.fullName.charAt(0)}
-                </div>
                 <div>
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    {blog.author.fullName.charAt(0)}
+                  </div>
+                </div>
+                <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white/80">
                     {blog.author.fullName}
                   </h3>
@@ -290,7 +337,7 @@ const BlogDetail = () => {
                   >
                     <div className="relative h-40 mb-3 rounded-lg overflow-hidden">
                       <Image
-                        src={blog.image}
+                        src={blog.image || IMAGEDEFAULT}
                         alt={blog.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"

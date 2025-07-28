@@ -13,6 +13,7 @@ import {
   MapPin,
   Bell,
   Lock,
+  BookMarked,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -36,14 +37,19 @@ const tabs = [
     icon: Package,
   },
   {
+    name: "Manager Address",
+    value: "/address",
+    icon: MapPin,
+  },
+  {
     name: "My Wishlists",
     value: "/wishlists",
     icon: Heart,
   },
   {
-    name: "Manager Address",
-    value: "/address",
-    icon: MapPin,
+    name: "Blog Saved",
+    value: "/blog-saved",
+    icon: BookMarked,
   },
 
   {
@@ -140,7 +146,7 @@ const ProfileLayout = ({ children }: { children: any }) => {
           ))}
         </TabsList>
 
-        <TabsList className="shrink-0 grid md:hidden grid-cols-6 p-0 bg-background border-2 border-muted rounded-none h-16 w-full fixed bottom-0 left-0 z-20">
+        <TabsList className="shrink-0 grid md:hidden grid-cols-7 p-0 bg-background border-2 border-muted rounded-none h-16 w-full fixed bottom-0 left-0 z-20">
           {tabs.slice(1).map((tab) => (
             <TabsTrigger
               key={tab.value}

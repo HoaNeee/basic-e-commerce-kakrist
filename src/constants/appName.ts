@@ -1,5 +1,5 @@
 export const appName = {
   imageNotFound:
-    "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png",
+    "https://salonlfc.com/wp-content/uploads/2018/01/image-not-found-scaled.png",
   avatarNotFound: "",
 };

@@ -50,6 +50,7 @@ const Order = () => {
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [isFilter, setIsFilter] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const listRef = useRef<any>(null);
   const router = useRouter();
@@ -58,6 +59,7 @@ const Order = () => {
   const limit = 5;
 
   useEffect(() => {
+    setLoaded(true);
     const fetchData = async () => {
       try {
         setShowSkeleton(true);
@@ -302,6 +304,7 @@ const Order = () => {
   };
 
   if (
+    loaded &&
     orders &&
     orders.length === 0 &&
     !keyword &&

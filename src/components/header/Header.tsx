@@ -4,10 +4,9 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import LOGOAPP from "@/assets/logo.png";
 import { MenuNav } from "./MenuNav";
-import { LuSearch } from "react-icons/lu";
 import { FaBars } from "react-icons/fa6";
 import Link from "next/link";
 import { IoIosHeartEmpty } from "react-icons/io";
@@ -54,6 +53,7 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import MenuNavMobile from "./MenuNavMobile";
+import SearchComponent from "./SearchComponent";
 
 const routePrivate = ["/profile", "/cart"];
 
@@ -162,7 +162,14 @@ const Header = () => {
     try {
       const response = await get("/favorites");
       const list = response?.data?.list?.products || [];
-      dispatch(syncList(list));
+      const listBlog = response?.data?.listBlog?.blogs || [];
+      console.log(response);
+      dispatch(
+        syncList({
+          list: list,
+          listBlog: listBlog,
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -219,8 +226,8 @@ const Header = () => {
               <p className="text-white/80">Loading...</p>
             </div>
           )}
-          <div className="container w-full py-5 flex justify-between items-center bg-white dark:bg-black dark:text-white/80 xl:px-4 md:px-0 px-2">
-            <div>
+          <div className="container w-full py-5 flex items-center gap-4 bg-white dark:bg-black dark:text-white/80 xl:px-4 md:px-0 px-2">
+            <div className="flex items-center md:gap-10 gap-4 flex-1">
               <Link className="w-30 h-12 md:block hidden" href="/">
                 <Image
                   alt="LOGO"
@@ -229,7 +236,7 @@ const Header = () => {
                   className="w-full h-full"
                 />
               </Link>
-              <div className="md:hidden">
+              <div className="md:hidden md:invisible flex items-center justify-center">
                 <Sheet>
                   <SheetTrigger>
                     <FaBars size={20} />
@@ -256,18 +263,24 @@ const Header = () => {
                   </SheetContent>
                 </Sheet>
               </div>
-            </div>
-            <div className="hidden md:block">
-              <MenuNav />
+              <div className="flex items-center gap-8 flex-1">
+                <div className="hidden md:block md:visible invisible">
+                  <MenuNav />
+                </div>
+                <Suspense fallback={<></>}>
+                  <SearchComponent />
+                </Suspense>
+              </div>
             </div>
             <div className="flex gap-4 items-center">
-              <LuSearch className="lg:text-2xl text-xl" onClick={() => {}} />
               <IoIosHeartEmpty
                 className="lg:text-2xl text-xl cursor-pointer"
                 onClick={() => {
                   router.push("/profile/wishlists");
                 }}
               />
+
+              {/* mini cart */}
               <div className="relative">
                 {!pathName.includes("/cart") ? (
                   <Popover
@@ -298,11 +311,13 @@ const Header = () => {
                           </p>
                           <ScrollArea
                             className={`${
-                              cart.carts && cart.carts?.length > 0 ? "h-80" : ""
+                              cart?.carts && cart.carts?.length > 0
+                                ? "h-80"
+                                : ""
                             } w-full`}
                           >
                             <div className="mt-6 flex flex-col gap-4 px-4">
-                              {cart && cart.carts?.length > 0 ? (
+                              {cart && cart?.carts?.length > 0 ? (
                                 cart.carts.map((item, index) => (
                                   <div
                                     key={index}
@@ -430,7 +445,7 @@ const Header = () => {
                                   onClick={() => {
                                     router.push("/cart/checkout");
                                   }}
-                                  disabled={cart.carts.length <= 0}
+                                  disabled={cart?.carts?.length <= 0}
                                 >
                                   Checkout
                                 </Button>

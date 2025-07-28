@@ -51,13 +51,11 @@ export function MenuNav() {
                 : ""
             }`}
           >
-            <NavigationMenuLink
-              asChild
-              className={`${
-                pathName.startsWith("/shop") ? "hover:bg-transparent" : ""
-              }`}
-            >
-              <Link href={"/shop"} className="lg:text-base text-sm">
+            <NavigationMenuLink asChild className={``}>
+              <Link
+                href={"/shop"}
+                className="lg:text-base text-sm hover:bg-transparent data-[active=true]:bg-transparent focus:bg-transparent focus-visible:bg-transparent"
+              >
                 Shop
               </Link>
             </NavigationMenuLink>

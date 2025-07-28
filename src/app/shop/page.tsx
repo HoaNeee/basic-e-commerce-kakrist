@@ -38,7 +38,7 @@ import {
 import { RootState } from "@/redux/store";
 import { createTree } from "@/utils/createTree";
 import { fetcher, get, post } from "@/utils/requets";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
@@ -763,12 +763,12 @@ const LayoutShopWithSuspense = ({
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar */}
-          <div className="lg:w-1/4 w-full">
+          <div className="lg:w-1/4 w-full md:relative sticky top-30 md:top-0 z-30 md:z-auto">
             <Collapsible
-              defaultOpen
-              className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm px-6 py-4 sticky top-30 lg:data-[state=open]:pb-10 group/collapsible"
+              defaultOpen={window?.innerWidth < 768 ? false : true}
+              className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm md:sticky md:top-30 py-4 px-1 lg:data-[state=open]:pb-10 group/collapsible"
             >
-              <CollapsibleTrigger asChild className="">
+              <CollapsibleTrigger asChild className="pl-5 pr-4">
                 <div className="flex items-center justify-between group-data-[state=open]/collapsible:mb-4">
                   <h2 className="font-semibold text-gray-900 dark:text-gray-300">
                     Filters
@@ -779,15 +779,15 @@ const LayoutShopWithSuspense = ({
                     className="px-0 rounded-full w-6 h-6"
                     style={{ padding: 0 }}
                   >
-                    <X className="w-4 h-4 group-data-[state=open]/collapsible:rotate-180 transition-transform duration-300" />
+                    <Plus className="w-4 h-4 group-data-[state=open]/collapsible:rotate-135 text-gray-500 dark:text-white/80 transition-transform duration-300" />
                   </Button>
                 </div>
               </CollapsibleTrigger>
 
-              <CollapsibleContent className="max-h-120 overflow-hidden overflow-y-auto">
+              <CollapsibleContent className="max-h-120 overflow-hidden overflow-y-auto custom-scrollbar">
                 <Accordion
                   type="multiple"
-                  className="w-full space-y-3 overflow-y-auto"
+                  className="w-full space-y-3 overflow-y-auto px-5"
                   defaultValue={[]}
                 >
                   <AccordionItem

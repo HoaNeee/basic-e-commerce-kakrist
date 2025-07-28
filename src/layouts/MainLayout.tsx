@@ -20,7 +20,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <div className="w-full h-full">
+    <>
       <Toaster
         position="top-right"
         className="dark:text-white/80"
@@ -29,7 +29,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
       <Header />
       {children}
       <FooterComponent />
-    </div>
+    </>
   );
 };
 
