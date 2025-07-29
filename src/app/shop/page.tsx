@@ -763,7 +763,7 @@ const LayoutShopWithSuspense = ({
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar */}
-          <div className="lg:w-1/4 w-full md:relative sticky top-30 md:top-0 z-30 md:z-auto">
+          <div className="lg:w-1/4 w-full md:relative sticky top-25 md:top-0 z-30 md:z-auto">
             <Collapsible
               defaultOpen={window?.innerWidth < 768 ? false : true}
               className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm md:sticky md:top-30 py-4 px-1 lg:data-[state=open]:pb-10 group/collapsible"
