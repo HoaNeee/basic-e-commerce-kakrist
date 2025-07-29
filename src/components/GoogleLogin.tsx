@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { BASE_URL } from "@/utils/requets";
 
 const GoogleLogin = () => {
   // useEffect(() => {
@@ -39,7 +40,7 @@ const GoogleLogin = () => {
     const endpont = "https://accounts.google.com/o/oauth2/v2/auth";
     const params = new URLSearchParams({
       client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
-      redirect_uri: "http://localhost:3000/auth/google",
+      redirect_uri: `${BASE_URL}/auth/google`,
       response_type: "code",
       scope:
         "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
