@@ -61,7 +61,6 @@ const LayoutLoginWithSuspense = () => {
     try {
       await post("/auth/login", values);
       window.location.href = next ?? "/";
-      sessionStorage.setItem("logined_session", "true");
       localStorage.setItem("is_toast_login_success", "true");
     } catch (error: any) {
       toast.error(error.message, {

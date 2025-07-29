@@ -44,7 +44,6 @@ const GoogleLoginPageCallback = () => {
       const result = await response.json();
       if (result.code === 200) {
         localStorage.setItem("is_toast_login_success", "true");
-        sessionStorage.setItem("logined_session", "true");
         window.location.href = "/";
       } else {
         if (result.code === 409) {
@@ -58,7 +57,6 @@ const GoogleLoginPageCallback = () => {
           );
         }
       }
-      // Handle the response from the server
     } catch (error: any) {
       localStorage.setItem(
         "google_login_error",

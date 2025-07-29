@@ -90,7 +90,7 @@ const Header = () => {
     console.log("data", data);
 
     if (data && data.code === 200) {
-      checkIsSessionLogin();
+      checkIsSessionLogin(data.data);
       dispatch(
         addAuth({
           ...data.data,
@@ -217,22 +217,14 @@ const Header = () => {
     }
   };
 
-  const checkIsSessionLogin = () => {
-    const isFirstLoginThisSession = sessionStorage.getItem("logined_session");
-    if (!isFirstLoginThisSession) {
-      sessionStorage.setItem("logined_session", "true");
-      //toast here
-      toast.success(
-        `Welcome back! ${data.data.firstName} ${data.data.lastName}`,
-        {
-          description: "You have successfully logged in.",
-          style: {
-            top: "75px",
-          },
-        }
-      );
-    } else {
-      console.log("logined with this session");
+  const checkIsSessionLogin = (data: any) => {
+    if (data.has_welcome) {
+      toast.success(`Welcome back! ${data.firstName} ${data.lastName}`, {
+        description: "You have successfully logged in.",
+        style: {
+          top: "75px",
+        },
+      });
     }
   };
 
