@@ -26,17 +26,17 @@ const SearchComponent = () => {
 
   const handleSearch = (keyword: string) => {
     if (keyword.trim() === "") {
-      router.push("/search");
       return;
     }
 
     if (pathName === "/search") {
-      // If already on search page, just update the URL
       const url = new URL(window.location.href);
       url.searchParams.set("keyword", keyword.trim());
+      // already on search page
       router.push(url.toString());
     } else {
-      window.location.href = `/search?keyword=${encodeURIComponent(keyword)}`;
+      const href = `/search?keyword=${keyword.trim().replace(/\s+/g, "+")}`;
+      window.location.href = href;
     }
   };
 
@@ -97,7 +97,7 @@ const SearchComponent = () => {
       <div className="w-full relative z-10 transition-all duration-300 ease-in-out">
         <Input
           placeholder="Enter products, blog,..."
-          className="w-full relative z-10 pr-10 py-5"
+          className="w-full relative z-10 py-5"
           autoComplete="off"
           value={keyword}
           onChange={(e) => {
@@ -118,11 +118,6 @@ const SearchComponent = () => {
             }
           }}
         />
-        <div
-          className={`absolute top-1/2 right-3 transform -translate-y-1/2 animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-white/80 transition-opacity duration-300 ${
-            isLoading ? "opacity-100" : "opacity-0"
-          }`}
-        ></div>
       </div>
       {openPopover && (
         <>

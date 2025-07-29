@@ -172,7 +172,7 @@ const Address = () => {
           ) : (
             <div className="py-16 flex items-center justify-center">
               <div className="flex flex-col w-full h-full items-center justify-center">
-                <div className="w-25 h-25 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center dark:bg-neutral-600/90 dark:text-gray-300">
+                <div className="w-25 h-25 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center dark:bg-neutral-600/90 dark:text-gray-300 text-gray-500">
                   <MapPinPlus className="size-13 mx-auto" />
                 </div>
                 <h3 className="text-2xl font-bold text-center mb-2">

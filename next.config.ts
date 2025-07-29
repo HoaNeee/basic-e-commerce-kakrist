@@ -16,8 +16,31 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/dlogl1cn7/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
+  // headers: async () => {
+  //   return [
+  //     {
+  //       source: "/(.*)",
+  //       headers: [
+  //         {
+  //           key: "Cross-Origin-Opener-Policy",
+  //           value: "same-origin-allow-popups",
+  //         },
+  //         {
+  //           key: "Secure-Referrer-Policy",
+  //           value: "strict-origin-when-cross-origin",
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import LOGO from "../../assets/logo-white.png";
 import { BiPhoneCall } from "react-icons/bi";
 import { MdOutlineMailOutline } from "react-icons/md";
@@ -19,46 +19,64 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 const payment = [AMEX, GOOGLE, PAYPAL, MASTER, VISA];
+
+const footerLinks = {
+  information: [
+    { title: "My Account", href: "/profile" },
+    { title: "Login", href: "/auth/login" },
+    { title: "My Cart", href: "/cart" },
+    { title: "Wishlist", href: "/wishlists" },
+    { title: "Checkout", href: "/cart/checkout" },
+  ],
+  service: [
+    { title: "About Us", href: "/stories" },
+    { title: "Contact", href: "/contact" },
+    { title: "Shipping Info", href: "/" },
+    { title: "Privacy Policy", href: "/" },
+    { title: "Terms & Conditions", href: "/" },
+  ],
+};
+
+const socialLinks = [
+  {
+    icon: <FaFacebookF size={18} />,
+    href: "https://facebook.com",
+    label: "Facebook",
+  },
+  {
+    icon: <FaInstagram size={18} />,
+    href: "https://instagram.com",
+    label: "Instagram",
+  },
+  {
+    icon: <BsTwitterX size={18} />,
+    href: "https://twitter.com",
+    label: "Twitter",
+  },
+];
 
 const FooterComponent = () => {
   const pathName = usePathname();
 
-  const footerLinks = {
-    information: [
-      { title: "My Account", href: "/profile" },
-      { title: "Login", href: "/auth/login" },
-      { title: "My Cart", href: "/cart" },
-      { title: "Wishlist", href: "/wishlists" },
-      { title: "Checkout", href: "/cart/checkout" },
-    ],
-    service: [
-      { title: "About Us", href: "/stories" },
-      { title: "Contact", href: "/contact" },
-      { title: "Shipping Info", href: "/" },
-      { title: "Privacy Policy", href: "/" },
-      { title: "Terms & Conditions", href: "/" },
-    ],
-  };
+  useEffect(() => {
+    checkIsToastLogin();
+  }, []);
 
-  const socialLinks = [
-    {
-      icon: <FaFacebookF size={18} />,
-      href: "https://facebook.com",
-      label: "Facebook",
-    },
-    {
-      icon: <FaInstagram size={18} />,
-      href: "https://instagram.com",
-      label: "Instagram",
-    },
-    {
-      icon: <BsTwitterX size={18} />,
-      href: "https://twitter.com",
-      label: "Twitter",
-    },
-  ];
+  const checkIsToastLogin = () => {
+    const isToastLogin = localStorage.getItem("is_toast_login_success");
+    if (isToastLogin && isToastLogin === "true") {
+      toast.success("Login successfully, Welcome!", {
+        description: "You have successfully logged in.",
+        style: {
+          top: "75px",
+        },
+      });
+      localStorage.removeItem("is_toast_login_success");
+    }
+  };
 
   return (
     !pathName.startsWith("/auth") && (
@@ -180,7 +198,7 @@ const FooterComponent = () => {
                     <Image
                       src={item}
                       alt="Payment method"
-                      className="max-w-full max-h-full object-contain"
+                      className="object-contain"
                     />
                   </div>
                 ))}

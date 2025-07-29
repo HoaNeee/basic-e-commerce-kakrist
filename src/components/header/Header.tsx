@@ -90,6 +90,7 @@ const Header = () => {
     console.log("data", data);
 
     if (data && data.code === 200) {
+      checkIsSessionLogin();
       dispatch(
         addAuth({
           ...data.data,
@@ -196,7 +197,7 @@ const Header = () => {
 
       // socket.disconnect();
       checkRedirect();
-
+      sessionStorage.removeItem("logined_session");
       dispatch(removeAuth());
       dispatch(removeCart([]));
       dispatch(removeList([]));
@@ -213,6 +214,25 @@ const Header = () => {
           "/auth/login?next=" + encodeURIComponent(pathName);
         return;
       }
+    }
+  };
+
+  const checkIsSessionLogin = () => {
+    const isFirstLoginThisSession = sessionStorage.getItem("logined_session");
+    if (!isFirstLoginThisSession) {
+      sessionStorage.setItem("logined_session", "true");
+      //toast here
+      toast.success(
+        `Welcome back! ${data.data.firstName} ${data.data.lastName}`,
+        {
+          description: "You have successfully logged in.",
+          style: {
+            top: "75px",
+          },
+        }
+      );
+    } else {
+      console.log("logined with this session");
     }
   };
 

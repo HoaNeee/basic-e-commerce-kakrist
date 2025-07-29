@@ -12,6 +12,7 @@ export interface AuthState {
     notification: boolean;
     emailNotification: boolean;
   };
+  provider: "local" | "google";
 }
 
 const initialState: AuthState = {
@@ -22,6 +23,7 @@ const initialState: AuthState = {
   isLogin: false,
   email: "",
   phone: "",
+  provider: "local",
 };
 
 const authReducer = createSlice({

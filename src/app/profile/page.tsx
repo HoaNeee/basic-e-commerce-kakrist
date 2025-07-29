@@ -221,45 +221,50 @@ const Profile = () => {
                   <User />
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute bottom-0 right-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant={"default"}
-                      size={"sm"}
-                      className="h-6 w-6 rounded-sm flex items-center justify-center relative"
-                    >
-                      <div className="absolute w-full h-full justify-center items-center flex">
-                        <BiEdit size={12} className="size-4" />
-                      </div>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel className="">Avatar</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem disabled={!auth.avatar}>
-                      <ScanEye />
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Label htmlFor="avatar-picker" className="w-full h-full">
-                        <RiImageEditLine />
-                        {!auth.avatar ? "Add" : "Change"} Image
-                      </Label>
-                    </DropdownMenuItem>
-                    {auth.avatar && (
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => setOpenDialogConfirm(true)}
+              {auth.provider !== "google" && (
+                <div className="absolute bottom-0 right-0">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant={"default"}
+                        size={"sm"}
+                        className="h-6 w-6 rounded-sm flex items-center justify-center relative"
                       >
-                        <Trash2 className="text-destructive" />
-                        Remove
+                        <div className="absolute w-full h-full justify-center items-center flex">
+                          <BiEdit size={12} className="size-4" />
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel className="">Avatar</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem disabled={!auth.avatar}>
+                        <ScanEye />
+                        View
                       </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                      <DropdownMenuItem>
+                        <Label
+                          htmlFor="avatar-picker"
+                          className="w-full h-full"
+                        >
+                          <RiImageEditLine />
+                          {!auth.avatar ? "Add" : "Change"} Image
+                        </Label>
+                      </DropdownMenuItem>
+                      {auth.avatar && (
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => setOpenDialogConfirm(true)}
+                        >
+                          <Trash2 className="text-destructive" />
+                          Remove
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
             </div>
             <div className="">
               <ButtonLoading
@@ -275,6 +280,7 @@ const Profile = () => {
           <div className="mt-8 flex flex-col gap-0">
             <div className="flex items-center gap-4">
               <FormField
+                disabled={auth.provider === "google"}
                 control={form.control}
                 name="firstName"
                 render={({ field }) => {
@@ -297,6 +303,7 @@ const Profile = () => {
                 }}
               />
               <FormField
+                disabled={auth.provider === "google"}
                 control={form.control}
                 name="lastName"
                 render={({ field }) => {
@@ -346,6 +353,7 @@ const Profile = () => {
                 }}
               />
               <FormField
+                disabled={auth.provider === "google"}
                 control={form.control}
                 name="email"
                 render={({ field }) => {
@@ -395,13 +403,15 @@ const Profile = () => {
           </div>
         </form>
       </Form>
-      <div className="mt-6">
-        <Link href={"/profile/change-password"}>
-          <Button variant={"outline"} onClick={() => {}}>
-            Change your Password
-          </Button>
-        </Link>
-      </div>
+      {auth.provider !== "google" && (
+        <div className="mt-6">
+          <Link href={"/profile/change-password"}>
+            <Button variant={"outline"} onClick={() => {}}>
+              Change your Password
+            </Button>
+          </Link>
+        </div>
+      )}
       <AlertDialog onOpenChange={setOpenDialogConfirm} open={openDialogConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>

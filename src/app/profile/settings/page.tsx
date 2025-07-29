@@ -120,7 +120,6 @@ const Settings = () => {
         </div>
         <div
           className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative `}
-          onClick={() => {}}
         >
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-1">
@@ -144,6 +143,32 @@ const Settings = () => {
             </Select>
           </div>
         </div>
+        {auth.provider === "google" && (
+          <div
+            className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative `}
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-1">
+                <p className="font-bold">Account Login</p>
+                <p className="text-sm text-gray-400 tracking-wider">
+                  Your account Login
+                </p>
+              </div>
+            </div>
+            <div className="tracking-wider text-sm">
+              <Select defaultValue={"google"} disabled>
+                <SelectTrigger>
+                  <SelectValue placeholder="Social" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="google">Google</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
         <div
           className={`flex justify-between border-b-2 border-muted items-center transition-all duration-200 rounded py-4 px-2 relative `}
           onClick={() => {}}

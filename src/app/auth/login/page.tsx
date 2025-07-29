@@ -5,7 +5,6 @@ import React, { Suspense, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-// import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -26,9 +25,9 @@ import { useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-// import { FcGoogle } from "react-icons/fc";
 import { RootState } from "@/redux/store";
 import LoadingComponent from "@/components/LoadingComponent";
+import GoogleLogin from "@/components/GoogleLogin";
 
 const formSchema = z.object({
   email: z
@@ -60,11 +59,10 @@ const LayoutLoginWithSuspense = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const response = await post("/auth/login", values);
-      toast.success(response.message, {
-        description: "Login successfully, Welcome!",
-      });
+      await post("/auth/login", values);
       window.location.href = next ?? "/";
+      sessionStorage.setItem("logined_session", "true");
+      localStorage.setItem("is_toast_login_success", "true");
     } catch (error: any) {
       toast.error(error.message, {
         description: "Login failed!",
@@ -179,10 +177,7 @@ const LayoutLoginWithSuspense = () => {
               }
             </Button>
 
-            {/* <Button variant={"outline"} onClick={() => {}} className="py-6">
-              <FcGoogle size={22} className="size-6" />
-              Login with Google
-            </Button> */}
+            <GoogleLogin />
 
             <div className="text-center mt-5">
               <p>
