@@ -13,7 +13,6 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import LoadingComponent from "./LoadingComponent";
 import {
   Select,
   SelectContent,
@@ -512,31 +511,14 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
 
           {!address && !isModal ? (
             <div className="sm:w-1/3 w-1/2">
-              <Button
-                disabled={false}
+              <ButtonLoading
+                loading={isUpdating}
                 type="submit"
-                className="py-6 transition-all duration-400 flex items-center justify-center relative w-full"
+                typeLoading={1}
+                className="w-full"
               >
-                <div
-                  className="opacity-0 transition-all duration-300 invisible"
-                  style={{
-                    opacity: 1 > 2 ? "1" : undefined,
-                    visibility: 1 > 2 ? "visible" : undefined,
-                  }}
-                >
-                  <LoadingComponent size={50} />
-                </div>
-                {
-                  <p
-                    className="transition-all duration-300 absolute flex items-center justify-center"
-                    style={{
-                      marginLeft: 1 > 2 ? "86px" : undefined,
-                    }}
-                  >
-                    Add New Address
-                  </p>
-                }
-              </Button>
+                Add new address
+              </ButtonLoading>
             </div>
           ) : (
             (isModal || address) && (

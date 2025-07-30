@@ -6,29 +6,11 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 
 const GoogleLogin = () => {
-  // useEffect(() => {
-  //   if (window.google) {
-  //     window.google.accounts.id.initialize({
-  //       client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
-  //       // callback: (response) => {
-  //       //   console.log("Google login response:", response);
-  //       //   // Handle the response from Google here
-  //       // },
-  //       ux_mode: "redirect",
-  //       login_uri: `http://localhost:3001/auth/google`,
-  //     });
-
-  //     window.google.accounts.id.renderButton(
-  //       document.getElementById("google-login-button"),
-  //       { theme: "outline", size: "large", text: "continue_with" }
-  //     );
-  //   }
-  // }, []);
-
   useEffect(() => {
     const error = localStorage.getItem("google_login_error");
     if (error) {
-      toast.error("Google login failed: " + error, {
+      console.log("Login google: " + error);
+      toast.error("Google login failed", {
         description: "Please try again or use a different login method.",
       });
       localStorage.removeItem("google_login_error");

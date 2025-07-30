@@ -8,12 +8,13 @@ import { CartModel } from "@/models/cartModel";
 import { addCartCheckout } from "@/redux/reducer/cartReducer";
 import { RootState } from "@/redux/store";
 import { VND } from "@/utils/formatCurrency";
+import { get } from "@/utils/requets";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const Cart = () => {
-  const [loaded, setLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [rowSelection, setRowSelection] = useState<any>({});
   const [dataSelected, setDataSelected] = useState<CartModel[]>([]);
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
@@ -23,7 +24,7 @@ const Cart = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setLoaded(true);
+    checkTransactionExist();
   }, []);
 
   useEffect(() => {
@@ -50,14 +51,36 @@ const Cart = () => {
 
   const handleCheckout = () => {
     if (dataSelected && dataSelected.length > 0) {
+      localStorage.setItem("cart_checkout", JSON.stringify(dataSelected));
       dispatch(addCartCheckout(dataSelected));
-      router.push("/cart/checkout");
+      router.push("/cart/checkout", { scroll: true });
     } else {
       setOpenAlertDialog(true);
     }
   };
 
-  if (!loaded) {
+  const checkTransactionExist = async () => {
+    try {
+      setIsLoading(true);
+      const response = await get("/transaction/detail");
+
+      if (response && response.data) {
+        window.location.href = "/cart/checkout";
+        localStorage.setItem("transaction", JSON.stringify(response.data));
+        localStorage.setItem(
+          "cart_checkout",
+          JSON.stringify(response.data.cart_items_info)
+        );
+        localStorage.setItem("toast_transaction_exists", "true");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -170,7 +193,7 @@ const Cart = () => {
                         disabled={dataSelected.length === 0}
                         className="w-full py-6 disabled:cursor-not-allowed"
                       >
-                        Proceed to Checkout ({dataSelected.length} item
+                        Go to Checkout ({dataSelected.length} item
                         {dataSelected.length !== 1 ? "s" : ""})
                       </Button>
 

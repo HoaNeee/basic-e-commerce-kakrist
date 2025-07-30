@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { AddressModel } from "@/models/addressModel";
 import { CartModel } from "@/models/cartModel";
-import { PaymentMethodModel } from "@/models/paymentMethod";
 import React from "react";
 import { Button } from "./ui/button";
 import { FaRegEdit } from "react-icons/fa";
@@ -14,14 +13,15 @@ import { Badge } from "./ui/badge";
 interface Props {
   cartsCheckout?: CartModel[];
   shippingAddress?: AddressModel;
-  paymentMethod?: string;
-  paymentCard?: PaymentMethodModel;
+  payment?: {
+    method: string;
+    status?: string;
+  };
   order?: OrderModel;
 }
 
 const ReviewOrder = (props: Props) => {
-  const { cartsCheckout, shippingAddress, paymentCard, paymentMethod, order } =
-    props;
+  const { cartsCheckout, shippingAddress, payment, order } = props;
 
   const estimatedDelivery = new Date().getTime() + 1000 * 60 * 60 * 24 * 3;
 
@@ -212,14 +212,14 @@ const ReviewOrder = (props: Props) => {
         <li className="py-5 border-b-2 border-muted order-5 dark:border-white/70">
           <>
             <h3 className="font-bold text-lg">Payment Method</h3>
-            {paymentMethod ? (
+            {payment ? (
               <div className="flex items-center justify-between">
                 <div className="mt-4">
-                  {paymentMethod === "cod" ? (
+                  {payment.method === "cod" ? (
                     <div className="font-semibold">Cash on Delivering</div>
                   ) : (
                     // updateting
-                    <div>{paymentCard?.method}</div>
+                    <div>{payment?.method}</div>
                   )}
                 </div>
                 <div>

@@ -155,7 +155,7 @@ const SearchResultComponent = () => {
                       <div
                         className={` ${
                           result.type === "products"
-                            ? "flex flex-wrap gap-6 w-full"
+                            ? "grid lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 gap-8"
                             : "grid md:grid-cols-2 lg:grid-cols-3 gap-8"
                         }`}
                       >
@@ -172,6 +172,7 @@ const SearchResultComponent = () => {
                                 favorited={listFavorites.includes(
                                   String(item._id)
                                 )}
+                                control
                               />
                             );
                           }

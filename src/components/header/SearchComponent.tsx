@@ -11,7 +11,9 @@ const SearchComponent = () => {
   const [openPopover, setOpenPopover] = useState(false);
   const [suggests, setSuggests] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [keywordDebounce, setKeywordDebounce] = useState<string>("");
+  const [keywordStrong, setKeywordStrong] = useState<string>("");
+  const [isSuggestWithKeywordEmpty, setisSuggestWithKeywordEmpty] =
+    useState(false);
 
   const searchParams = useSearchParams();
   const pathName = usePathname();
@@ -25,10 +27,6 @@ const SearchComponent = () => {
   }, [initialKeyword]);
 
   const handleSearch = (keyword: string) => {
-    if (keyword.trim() === "") {
-      return;
-    }
-
     if (pathName === "/search") {
       const url = new URL(window.location.href);
       url.searchParams.set("keyword", keyword.trim());
@@ -57,12 +55,15 @@ const SearchComponent = () => {
   const debounceSuggest = useRef(
     lodash.debounce((keyword: string) => {
       if (keyword.trim() === "") {
-        setSuggests([]);
-        setOpenPopover(false);
-        setIsLoading(false);
-        return;
+        //   setSuggests([]);
+        //   setOpenPopover(false);
+        //   setIsLoading(false);
+        //   return;
+        setisSuggestWithKeywordEmpty(true);
+      } else {
+        setisSuggestWithKeywordEmpty(false);
       }
-      setKeywordDebounce(keyword);
+      setKeywordStrong(keyword);
       setIsLoading(true);
       setOpenPopover(true);
       getSuggest(keyword);
@@ -70,15 +71,15 @@ const SearchComponent = () => {
   ).current;
 
   const handleSolveSuggest = (suggest: string) => {
-    const index = convertStr(suggest).indexOf(convertStr(keywordDebounce));
+    const index = convertStr(suggest).indexOf(convertStr(keywordStrong));
     if (index !== -1) {
       return (
         <>
           {suggest.slice(0, index)}
           <span className="text-black font-semibold">
-            {suggest.slice(index, index + keywordDebounce.length)}
+            {suggest.slice(index, index + keywordStrong.length)}
           </span>
-          {suggest.slice(index + keywordDebounce.length)}
+          {suggest.slice(index + keywordStrong.length)}
         </>
       );
     }
@@ -102,11 +103,11 @@ const SearchComponent = () => {
           value={keyword}
           onChange={(e) => {
             setKeyword(e.target.value);
-            if (e.target.value.trim() === "") {
-              setSuggests([]);
-              setOpenPopover(false);
-              setIsLoading(false);
-            }
+            // if (e.target.value.trim() === "") {
+            //   setSuggests([]);
+            //   setOpenPopover(false);
+            //   setIsLoading(false);
+            // }
             debounceSuggest(e.target.value);
           }}
           onKeyUp={(e) => {
@@ -121,9 +122,14 @@ const SearchComponent = () => {
       </div>
       {openPopover && (
         <>
-          <div className="absolute min-h-10 z-40 w-9/10 xl:w-25/26 bg-white p-2 top-10 shadow-2xl left-0 rounded-sm border border-gray-200">
+          <div className="absolute min-h-10 z-40 w-9/10 xl:w-25/26 bg-white p-2 top-11 shadow-2xl left-0 rounded-sm border border-gray-200">
             {!isLoading ? (
               <div className="flex flex-col gap-0">
+                {isSuggestWithKeywordEmpty && (
+                  <div className="text-gray-500 text-sm p-2">
+                    Suggestions for you:
+                  </div>
+                )}
                 {suggests.length > 0 ? (
                   suggests.map((item, index) => (
                     <div

@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
-import { PaymentMethodModel } from "@/models/paymentMethod";
 import { Button } from "./ui/button";
 
 interface Props {
-  onNext: (val: {
-    method: string;
-    paymentChecked?: PaymentMethodModel;
-  }) => void;
+  onNext: (val: { method: string; status?: string }) => void;
 }
 
 const PaymentMethod = (props: Props) => {
@@ -38,7 +34,7 @@ const PaymentMethod = (props: Props) => {
               onClick={() => {
                 onNext({
                   method: paymentMethod,
-                  paymentChecked: undefined,
+                  status: "pending",
                 });
               }}
             >

@@ -2,14 +2,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { defineStepper } from "@/components/ui/stepper";
 import { RiHome4Line } from "react-icons/ri";
 import { MdPayment } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
 import ShippingAddress from "./ShippingAddress";
 import { AddressModel } from "@/models/addressModel";
-import { get } from "@/utils/requets";
+import { get, patch } from "@/utils/requets";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,17 +52,26 @@ interface Props {
   onNextStep?: (step: string, val?: any) => void;
   cartsCheckout?: CartModel[];
   isProceed?: boolean;
+  setIsLoading?: (val: boolean) => void;
+  transactionExists?: any;
 }
 
 export function TransactionSteps(props: Props) {
-  const { onNextStep, cartsCheckout, isProceed } = props;
+  const {
+    onNextStep,
+    cartsCheckout,
+    isProceed,
+    setIsLoading,
+    transactionExists,
+  } = props;
 
   const [openDialog, setOpenDialog] = useState(false);
   const [prevStep, setPrevStep] = useState<any>();
   const [clientWidth, setClientWidth] = useState(1280);
+  const [transaction_info, setTransaction_info] = useState<any>({});
 
   useEffect(() => {
-    if (window) {
+    if (typeof window !== "undefined") {
       setClientWidth(window.innerWidth);
       window.addEventListener("resize", onWidthChange);
     }
@@ -71,10 +79,116 @@ export function TransactionSteps(props: Props) {
     return () => {
       window.removeEventListener("resize", onWidthChange);
     };
-  }, [window.innerWidth]);
+  }, []);
+
+  useEffect(() => {
+    if (transactionExists) {
+      console.log(transactionExists);
+      setTransaction_info(transactionExists.transaction_info);
+    }
+  }, [transactionExists]);
 
   const onWidthChange = () => {
     setClientWidth(window.innerWidth);
+  };
+
+  const handleNextStep = async (
+    step: string,
+    key: string,
+    val: any,
+    methods: any
+  ) => {
+    try {
+      setIsLoading?.(true);
+      const payload = {
+        ...transaction_info,
+        [key]: val,
+      };
+
+      const api = `/transaction/change?action=next`;
+      const response = await patch(api, {
+        step,
+        payload,
+      });
+
+      toast.success(response.message || "Success!", {
+        description: "Let us proceed to the next step!",
+      });
+
+      if (onNextStep) {
+        onNextStep(step, { [key]: val });
+      }
+      methods.goTo(step);
+      setTransaction_info({
+        ...transaction_info,
+        [key]: val,
+      });
+      handleSetToLocalStorage(step, {
+        [key]: val,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading?.(false);
+    }
+  };
+
+  const handlePreviousStep = async (prevStep: string, methods: any) => {
+    try {
+      setIsLoading?.(true);
+      if (prevStep) {
+        const object: any = {
+          address: null,
+          payment: null,
+        };
+
+        const current_step = methods.current.id;
+
+        if (current_step === "3") {
+          if (prevStep === "2") {
+            object.address = transaction_info.address;
+            object.payment = null;
+          }
+        }
+        const api = `/transaction/change?action=next`;
+        const response = await patch(api, {
+          prevStep,
+          payload: object,
+        });
+
+        toast.success(response.message || "Success!");
+        handleSetToLocalStorage(prevStep, object);
+        setTransaction_info(object);
+        methods.goTo(prevStep);
+        if (onNextStep) {
+          onNextStep(prevStep);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading?.(false);
+    }
+  };
+
+  const handleSetToLocalStorage = (step: string, value: any) => {
+    const transaction = localStorage.getItem("transaction");
+    if (transaction) {
+      const parsedTransaction = JSON.parse(transaction);
+      if (parsedTransaction && parsedTransaction._id) {
+        localStorage.setItem(
+          "transaction",
+          JSON.stringify({
+            ...parsedTransaction,
+            current_step: step,
+            transaction_info: {
+              ...parsedTransaction.transaction_info,
+              ...value,
+            },
+          })
+        );
+      }
+    }
   };
 
   return (
@@ -83,6 +197,7 @@ export function TransactionSteps(props: Props) {
         <StepperProvider
           className="space-y-4 relative dark:text-white/80"
           variant={clientWidth < 640 ? "vertical" : "horizontal"}
+          initialStep={transactionExists?.current_step?.toString() || "1"}
         >
           {({ methods }) => (
             <>
@@ -109,12 +224,11 @@ export function TransactionSteps(props: Props) {
                   <Content
                     step={step.id}
                     onNextStep={(id, val) => {
-                      if (onNextStep) {
-                        onNextStep(id, {
-                          address: val,
-                        });
-                      }
-                      methods.goTo(id);
+                      handleNextStep(id, "address", val, methods);
+                      setTransaction_info({
+                        ...transaction_info,
+                        address: val,
+                      });
                     }}
                   />
                 ),
@@ -122,12 +236,7 @@ export function TransactionSteps(props: Props) {
                   <Content
                     step={step.id}
                     onNextStep={(id, val) => {
-                      if (onNextStep) {
-                        onNextStep(id, {
-                          payment: val,
-                        });
-                      }
-                      methods.goTo(id);
+                      handleNextStep(id, "payment", val, methods);
                     }}
                   />
                 ),
@@ -149,12 +258,7 @@ export function TransactionSteps(props: Props) {
                 open={openDialog}
                 setOpen={setOpenDialog}
                 onOK={() => {
-                  if (prevStep) {
-                    methods.goTo(prevStep);
-                    if (onNextStep) {
-                      onNextStep(prevStep);
-                    }
-                  }
+                  handlePreviousStep(prevStep, methods);
                 }}
               />
             </>
@@ -175,7 +279,10 @@ const Content = (props: StepProps) => {
   const { step, onNextStep, cartsCheckout } = props;
   const [address, setAddress] = useState<AddressModel[]>([]);
   const [addressChecked, setAddressChecked] = useState<AddressModel>();
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [payment, setPayment] = useState<{
+    method: string;
+    status?: string;
+  }>();
 
   useEffect(() => {
     getAddress();
@@ -211,9 +318,7 @@ const Content = (props: StepProps) => {
               addressList={address}
               onNext={(val) => {
                 setAddressChecked(val);
-                if (onNextStep) {
-                  onNextStep("2", val);
-                }
+                onNextStep("2", val);
               }}
               onAddNew={(val) => {
                 setAddress([val, ...address]);
@@ -244,11 +349,14 @@ const Content = (props: StepProps) => {
             <PaymentMethod
               onNext={(val) => {
                 if (val.method === "cod") {
-                  setPaymentMethod(val.method);
-                  onNextStep("3", val);
-                } else if (val.method === "credit") {
-                  console.log(val.paymentChecked);
-                  toast.info("This function is updating...");
+                  const object = {
+                    method: val.method,
+                    status: val.status || "pending",
+                  };
+                  setPayment(object);
+                  onNextStep("3", object);
+                } else if (val.method === "other_method") {
+                  toast.info("This feature is updating...");
                 }
               }}
             />
@@ -263,7 +371,7 @@ const Content = (props: StepProps) => {
             <ReviewOrder
               cartsCheckout={cartsCheckout}
               shippingAddress={addressChecked}
-              paymentMethod={paymentMethod}
+              payment={payment}
             />
           </div>
         </div>
