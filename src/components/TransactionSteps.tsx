@@ -230,6 +230,7 @@ export function TransactionSteps(props: Props) {
                         address: val,
                       });
                     }}
+                    transactionExist={transactionExists}
                   />
                 ),
                 "2": (step) => (
@@ -238,6 +239,7 @@ export function TransactionSteps(props: Props) {
                     onNextStep={(id, val) => {
                       handleNextStep(id, "payment", val, methods);
                     }}
+                    transactionExist={transactionExists}
                   />
                 ),
                 "3": (step) => (
@@ -251,6 +253,7 @@ export function TransactionSteps(props: Props) {
                       methods.goTo(id);
                     }}
                     cartsCheckout={cartsCheckout}
+                    transactionExist={transactionExists}
                   />
                 ),
               })}
@@ -273,10 +276,11 @@ interface StepProps {
   step: "1" | "2" | "3";
   onNextStep: (step: "1" | "2" | "3", val?: any) => void;
   cartsCheckout?: CartModel[];
+  transactionExist?: any;
 }
 
 const Content = (props: StepProps) => {
-  const { step, onNextStep, cartsCheckout } = props;
+  const { step, onNextStep, cartsCheckout, transactionExist } = props;
   const [address, setAddress] = useState<AddressModel[]>([]);
   const [addressChecked, setAddressChecked] = useState<AddressModel>();
   const [payment, setPayment] = useState<{
@@ -287,6 +291,18 @@ const Content = (props: StepProps) => {
   useEffect(() => {
     getAddress();
   }, []);
+
+  useEffect(() => {
+    if (transactionExist && transactionExist.transaction_info) {
+      const { address, payment } = transactionExist.transaction_info;
+      if (address) {
+        setAddressChecked(address);
+      }
+      if (payment) {
+        setPayment(payment);
+      }
+    }
+  }, [transactionExist]);
 
   const getAddress = async () => {
     try {
@@ -311,6 +327,7 @@ const Content = (props: StepProps) => {
             style={{
               visibility: step !== "1" ? "hidden" : "visible",
               height: step !== "1" ? "0px" : "auto",
+              pointerEvents: step !== "1" ? "none" : "auto",
             }}
           >
             <ShippingAddress
@@ -344,6 +361,7 @@ const Content = (props: StepProps) => {
             style={{
               visibility: step !== "2" ? "hidden" : "visible",
               height: step !== "2" ? "0px" : "auto",
+              pointerEvents: step !== "2" ? "none" : "auto",
             }}
           >
             <PaymentMethod
@@ -366,6 +384,7 @@ const Content = (props: StepProps) => {
             style={{
               visibility: step !== "3" ? "hidden" : "visible",
               height: step !== "3" ? "0px" : "auto",
+              pointerEvents: step !== "3" ? "none" : "auto",
             }}
           >
             <ReviewOrder

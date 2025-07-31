@@ -9,6 +9,7 @@ import Shipping from "@/components/home/Shipping";
 import { get } from "@/utils/requets";
 import { CategoryModel } from "@/models/categoryModel";
 import DealOfTheMonth from "@/components/home/DealOfTheMonth";
+import Chatbot from "@/components/home/Chatbot";
 
 export const revalidate = 3600;
 
@@ -77,6 +78,8 @@ export default async function Home() {
       <section className="container xl:px-4 py-10 mx-auto px-2 md:px-0 w-full">
         <Shipping />
       </section>
+
+      <Chatbot />
     </main>
   );
 }

@@ -61,7 +61,7 @@ export function MenuNav() {
             </NavigationMenuLink>
           </NavigationMenuTrigger>
           <NavigationMenuContent
-            className="-left-40 lg:-left-60 z-999"
+            className="-left-30 lg:-left-50 z-999"
             style={{
               zIndex: 99,
             }}

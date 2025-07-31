@@ -33,7 +33,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
   const pathName = usePathname();
   const router = useRouter();
   const page = Number(searchParams.get("page")) || 1;
-  const keywordQuery = searchParams.get("keyword") || "";
+  const keywordQuery = searchParams.get("q") || "";
   const tagQuery = searchParams.get("tag") || "";
   const listTags = useRef<any>(null);
   const limit = 10;
@@ -215,7 +215,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    let newQuery: any = createQueryString("keyword", keyword);
+                    let newQuery: any = createQueryString("q", keyword);
                     if (newQuery.includes("page")) {
                       newQuery = deleteQueryString("page", newQuery);
                     }
@@ -227,7 +227,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
             </div>
             <Button
               onClick={() => {
-                let newQuery: any = createQueryString("keyword", keyword);
+                let newQuery: any = createQueryString("q", keyword);
                 if (newQuery.includes("page")) {
                   newQuery = deleteQueryString("page", newQuery);
                 }

@@ -18,6 +18,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { AnimatePresence, motion } from "motion/react";
 
 const tabs = [
   {
@@ -175,7 +176,21 @@ const ProfileLayout = ({ children }: { children: any }) => {
               value={tab.value}
               className="w-full h-full px-4"
             >
-              {tab.value === (pathName.substring(8) || "/") ? children : null}
+              <AnimatePresence key={tab.value} mode="wait">
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    y: 10,
+                  }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  key={tab.value}
+                >
+                  {tab.value === (pathName.substring(8) || "/")
+                    ? children
+                    : null}
+                </motion.div>
+              </AnimatePresence>
             </TabsContent>
           ))}
         </div>

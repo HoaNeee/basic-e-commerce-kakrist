@@ -29,6 +29,18 @@ export interface ProductModel {
     numberPeople: number;
     average: number;
   };
+  options: Option[];
+}
+
+export interface Option {
+  _id: string;
+  title: string;
+  key: string;
+  variation_id: string;
+  description: string;
+  deleted: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface SubProductModel {

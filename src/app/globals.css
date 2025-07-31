@@ -313,3 +313,46 @@ input.dark:-webkit-autofill:active {
     opacity: 0.7;
   }
 }
+
+/* typing */
+
+.box-typing {
+  display: inline-block;
+}
+
+.inner-dots {
+  display: inline-flex;
+  background: #f1f1f1;
+  padding: 7px 15px;
+  border-radius: 5px;
+  gap: 5px;
+}
+.inner-dots span {
+  animation: blink 1.5s infinite;
+  width: 5px;
+  height: 5px;
+  display: inline-block;
+  background-color: #0000007a;
+}
+
+.inner-dots span:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.inner-dots span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.inner-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}

@@ -56,12 +56,14 @@ const Checkout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [endTimeTransaction, setEndTimeTransaction] = useState<Date>();
   const [transactionExist, setTransactionExist] = useState<ITransaction>();
+  const [loaded, setLoaded] = useState(false);
 
   const cart = useSelector((state: RootState) => state.cart.cart);
   const router = useRouter();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setLoaded(true);
     handleCheckExistTransaction();
   }, []);
 
@@ -297,6 +299,25 @@ const Checkout = () => {
       }
     }
   };
+
+  if (!loaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-400 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartCheckout.length <= 0 && !isProceed && loaded) {
+    return (
+      <div className="text-center py-12 min-h-100 flex items-center justify-center">
+        You are accessing unauthorized{" "}
+      </div>
+    );
+  }
 
   return (
     <>

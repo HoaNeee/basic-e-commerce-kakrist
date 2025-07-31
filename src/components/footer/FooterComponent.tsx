@@ -78,8 +78,13 @@ const FooterComponent = () => {
     }
   };
 
+  if (pathName.startsWith("/auth") || pathName.startsWith("/error")) {
+    return <></>;
+  }
+
   return (
-    !pathName.startsWith("/auth") && (
+    !pathName.startsWith("/auth") &&
+    !pathName.startsWith("/error") && (
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-16">
@@ -97,18 +102,24 @@ const FooterComponent = () => {
               </p>
 
               <div className="space-y-3">
-                <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                <Link
+                  href={"tel:+84393911183"}
+                  className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
+                >
                   <BiPhoneCall size={18} />
                   <span>+84 393 911 183</span>
-                </div>
+                </Link>
                 <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
                   <MdOutlineMailOutline size={18} />
-                  <span>contact@krist.com</span>
+                  <span>contact@kakrist.com</span>
                 </div>
-                <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                <Link
+                  href={"https://www.google.com/maps?q=Hanoi,+Vietnam"}
+                  className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
+                >
                   <FaMapMarkerAlt size={18} />
                   <span>Hanoi, Vietnam</span>
-                </div>
+                </Link>
               </div>
             </div>
 

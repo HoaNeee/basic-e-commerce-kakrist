@@ -3,7 +3,7 @@
 import FileResizer from "react-image-file-resizer";
 
 export const BASE_URL = `https://api.kakrist.site`;
-//  export const BASE_URL =  `http://localhost:3001`;
+// export const BASE_URL = `http://localhost:3001`;
 const API_URL = `${BASE_URL}`;
 
 export const fetcher = (url: string) =>
@@ -48,6 +48,9 @@ export const post = async (path: string, options: any, token?: string) => {
       headers: myHeaders,
       body: JSON.stringify(options),
     });
+    if (response.status === 429) {
+      window.location.href = "/error/429";
+    }
     const result = await response.json();
     if (result.code > 300) {
       throw Error(result.message);

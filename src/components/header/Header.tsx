@@ -163,7 +163,7 @@ const Header = () => {
   };
 
   if (isLoading) {
-    if (pathName.startsWith("/auth")) {
+    if (pathName.startsWith("/auth") || pathName.startsWith("/error")) {
       return <></>;
     }
     return (
@@ -215,7 +215,8 @@ const Header = () => {
   };
 
   return (
-    !pathName.startsWith("/auth") && (
+    !pathName.startsWith("/auth") &&
+    !pathName.startsWith("/error") && (
       <>
         <header className="flex items-center justify-center w-full z-40 sticky top-0 bg-white dark:bg-black dark:text-white/80 drop-shadow-md">
           {isLogouting && (
