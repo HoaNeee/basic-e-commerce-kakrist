@@ -227,7 +227,7 @@ const Chatbot = () => {
           align="end"
           alignOffset={20}
           side="right"
-          className="lg:w-md w-xs bg-white dark:bg-black text-white/80 shadow p-0"
+          className="lg:w-md w-xs bg-white dark:bg-black dark:text-white/80 shadow p-0"
         >
           <div className="w-full h-full flex flex-col justify-between relative">
             <div className="py-2 border-b border-gray-200 dark:border-gray-700 px-4">
@@ -264,7 +264,7 @@ const Chatbot = () => {
               <div className="flex items-center gap-2 relative">
                 <Input
                   placeholder="Type your message..."
-                  className="w-full pr-10 py-5 rounded-full"
+                  className="w-full pr-10 py-5 rounded-full text-black dark:text-white"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onKeyUp={(e) => {
