@@ -237,7 +237,9 @@ const Chatbot = () => {
                     <Bot className="w-5 h-5" />
                   </div>
                   <div className="flex flex-col gap-0">
-                    <h2 className="font-semibold text-sm">Bot</h2>
+                    <h2 className="font-semibold text-sm text-black dark:text-white/80">
+                      Bot
+                    </h2>
                     <span className="text-xs text-gray-400">
                       AI Assistant Demo
                     </span>
