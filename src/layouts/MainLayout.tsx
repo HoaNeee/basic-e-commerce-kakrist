@@ -30,9 +30,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
         theme={setting.theme === "dark" ? "dark" : "light"}
       />
       <Header />
-      {pathName.startsWith("/profile") ||
-      pathName.startsWith("/") ||
-      !pathName ? (
+      {pathName.startsWith("/profile") || pathName === "/" ? (
         children
       ) : (
         <AnimatePresence mode="wait">
