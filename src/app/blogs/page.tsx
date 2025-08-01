@@ -2,15 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, {
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Search, X, ChevronRight, ChevronLeft } from "lucide-react";
-import { fetcher, get } from "@/utils/requets";
+import { fetcher } from "@/utils/requets";
 import useSWR from "swr";
 import PaginationComponent from "@/components/PaginationComponent";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -21,12 +15,88 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BlogModel } from "@/models/blogModel";
 import CardBlog from "@/components/blog/CardBlog";
 
+const limit = 10;
+const ListBlogs = ({
+  page,
+  keywordQuery,
+  tagQuery,
+}: {
+  page: number;
+  keywordQuery: string;
+  tagQuery: string;
+}) => {
+  const api = `/blogs?page=${page}&limit=${limit}&q=${keywordQuery}&tag=${
+    tagQuery !== "Tất cả" ? tagQuery : ""
+  }`;
+  const { data, isLoading, error } = useSWR(api, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  const renderSkeleton = () => {
+    return (
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {Array.from({ length: limit }).map((_, index) => (
+          <div className="w-full h-full" key={index}>
+            <Skeleton className="w-full h-100" />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  if (error || (data && data.code !== 200)) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-xl font-medium text-gray-900 mb-2">
+          Lỗi khi tải dữ liệu
+        </h3>
+        <p className="text-gray-600">Vui lòng thử lại sau</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {!isLoading ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {data?.data?.blogs.map((blog: BlogModel) => (
+            <CardBlog blog={blog} key={blog._id} />
+          ))}
+        </div>
+      ) : (
+        renderSkeleton()
+      )}
+      {/* No Results */}
+      {data?.data?.blogs?.length === 0 && !isLoading && (
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <Search className="w-16 h-16 mx-auto" />
+          </div>
+          <h3 className="text-xl font-medium text-gray-900 mb-2">
+            Không tìm thấy bài viết
+          </h3>
+          <p className="text-gray-600">
+            Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác
+          </p>
+        </div>
+      )}
+
+      {data?.data?.totalPage > 1 && (
+        <div className="flex justify-center mt-8">
+          <PaginationComponent
+            totalPage={data?.data?.totalPage || 1}
+            className="justify-center"
+          />
+        </div>
+      )}
+    </>
+  );
+};
+
 const LayoutBlogs = ({ tags }: { tags: string[] }) => {
   const [selectedTag, setSelectedTag] = useState("Tất cả");
-  const [blogs, setBlogs] = useState<BlogModel[]>([]);
-  const [totalPage, setTotalPage] = useState<number>(1);
   const [keyword, setKeyword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [scrollLeft, setScrollLeft] = useState(0);
 
   const searchParams = useSearchParams();
@@ -36,26 +106,8 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
   const keywordQuery = searchParams.get("q") || "";
   const tagQuery = searchParams.get("tag") || "";
   const listTags = useRef<any>(null);
-  const limit = 10;
-
-  const getBlogs = useCallback(async (page = 1, keyword = "", tag = "") => {
-    try {
-      setIsLoading(true);
-      const api = `/blogs?limit=${limit}&keyword=${keyword}&page=${
-        page || 1
-      }&tag=${tag !== "Tất cả" ? tag : ""}`;
-      const response = await get(api);
-      setBlogs(response.data.blogs);
-      setTotalPage(response.data.totalPage);
-    } catch (error: any) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
-    getBlogs(page, keywordQuery, tagQuery);
     if (keywordQuery) {
       setKeyword(keywordQuery);
     }
@@ -64,7 +116,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
     } else {
       setSelectedTag("Tất cả");
     }
-  }, [getBlogs, page, keywordQuery, tagQuery]);
+  }, [page, keywordQuery, tagQuery]);
 
   useEffect(() => {
     const list = listTags.current;
@@ -79,7 +131,7 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
         list.onscroll = null;
       }
     };
-  }, [listTags, blogs]);
+  }, [listTags]);
 
   const createQueryString = (
     name: string,
@@ -97,10 +149,14 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
     return decodeURIComponent(params.toString());
   };
 
-  const renderSkeleton = (key: number) => {
+  const renderSkeleton = () => {
     return (
-      <div className="w-full h-full" key={key}>
-        <Skeleton className="w-full h-100" />
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {Array.from({ length: limit }).map((_, index) => (
+          <div className="w-full h-full" key={index}>
+            <Skeleton className="w-full h-100" />
+          </div>
+        ))}
       </div>
     );
   };
@@ -181,7 +237,6 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Search and Filter Section */}
       <div className="mb-8">
         {(keywordQuery || tagQuery) && (
           <div className="mb-2">
@@ -203,7 +258,6 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
           </div>
         )}
         <div className="flex w-full gap-4 mb-8">
-          {/* Search Bar */}
           <div className="flex items-center gap-2 w-full">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -241,55 +295,22 @@ const LayoutBlogs = ({ tags }: { tags: string[] }) => {
           </div>
         </div>
 
-        {/* Tag Filter */}
         {renderTagFilter(tags)}
       </div>
 
-      {/* Blog Posts Grid */}
-      {!isLoading ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.map((blog) => (
-            <CardBlog blog={blog} key={blog._id} />
-          ))}
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {Array.from({ length: limit }).map((_, index) =>
-            renderSkeleton(index)
-          )}
-        </div>
-      )}
-      {/* No Results */}
-      {blogs.length === 0 && !isLoading && (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <Search className="w-16 h-16 mx-auto" />
-          </div>
-          <h3 className="text-xl font-medium text-gray-900 mb-2">
-            Không tìm thấy bài viết
-          </h3>
-          <p className="text-gray-600">
-            Thử thay đổi từ khóa tìm kiếm hoặc chọn danh mục khác
-          </p>
-        </div>
-      )}
-
-      {/* Pagination would go here */}
-      {totalPage > 1 && (
-        <div className="flex justify-center mt-8">
-          <PaginationComponent
-            totalPage={totalPage}
-            className="justify-center"
-          />
-        </div>
-      )}
+      <Suspense fallback={<>{renderSkeleton()}</>}>
+        <ListBlogs
+          page={page || 1}
+          keywordQuery={keywordQuery}
+          tagQuery={tagQuery}
+        />
+      </Suspense>
     </div>
   );
 };
 
 const Blogs = () => {
   const [tags, setTags] = useState<string[]>([]);
-  const [loaded, setLoaded] = useState(false);
 
   const { data } = useSWR("/blogs/tags", fetcher, {
     revalidateOnFocus: false,
@@ -305,10 +326,6 @@ const Blogs = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
-
   const renderLoading = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -316,10 +333,6 @@ const Blogs = () => {
       </div>
     );
   };
-
-  if (!loaded) {
-    return renderLoading();
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-800 dark:text-white">

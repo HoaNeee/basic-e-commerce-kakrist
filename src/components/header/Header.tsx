@@ -275,6 +275,12 @@ const Header = () => {
               <IoIosHeartEmpty
                 className="lg:text-2xl text-xl cursor-pointer"
                 onClick={() => {
+                  if (!auth.isLogin) {
+                    window.location.href = `/auth/login?next=${encodeURIComponent(
+                      "/profile/wishlists"
+                    )}`;
+                    return;
+                  }
                   router.push("/profile/wishlists");
                 }}
               />

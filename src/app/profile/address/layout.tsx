@@ -1,3 +1,4 @@
+import HeadContent from "@/components/HeadContent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,5 +11,15 @@ export default function AddressLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <>
+      <HeadContent
+        title="My Address"
+        desc="List of your address for delivery"
+        size="large"
+        className="mb-8 md:hidden flex flex-col items-start"
+      />
+      {children}
+    </>
+  );
 }

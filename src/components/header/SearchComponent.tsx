@@ -46,9 +46,8 @@ const SearchComponent = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
+      setIsLoading(false);
+      setTimeout(() => {}, 200);
     }
   };
 
@@ -67,7 +66,7 @@ const SearchComponent = () => {
       setIsLoading(true);
       setOpenPopover(true);
       getSuggest(keyword);
-    }, 1000)
+    }, 500)
   ).current;
 
   const handleSolveSuggest = (suggest: string) => {

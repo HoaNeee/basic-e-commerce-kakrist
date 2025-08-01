@@ -1,3 +1,4 @@
+import HeadContent from "@/components/HeadContent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,5 +11,15 @@ export default function WishlistLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <>
+      <HeadContent
+        title="My Wishlists"
+        desc="List of products you have added to your wishlists"
+        size="large"
+        className="mb-8 md:hidden flex flex-col items-start"
+      />
+      {children}
+    </>
+  );
 }

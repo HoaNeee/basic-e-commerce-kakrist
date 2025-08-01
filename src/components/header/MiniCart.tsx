@@ -15,7 +15,6 @@ import { removeCartItem } from "@/redux/reducer/cartReducer";
 import { GoTrash } from "react-icons/go";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 
@@ -233,12 +232,11 @@ const MiniCart = () => {
           />
         )}
         {cart && cart?.carts?.length > 0 && (
-          <Badge
-            className="absolute lg:-top-1.5 text-[10px] p-0 px-1 lg:-right-1 -right-1.5 -top-2"
-            variant={"destructive"}
-          >
-            {cart?.carts?.reduce((value, item) => value + item.quantity, 0)}
-          </Badge>
+          <div className="absolute h-3.5 w-3.5 md:h-4 md:w-4.5 lg:-top-1.5 text-[10px] p-0 px-1 lg:-right-1 -right-2 -top-2 flex items-center justify-center bg-red-500 text-white rounded-full font-bold">
+            <span className="transition-all duration-300 ease-in-out transform translate-y-[1px]">
+              {cart?.carts?.reduce((value, item) => value + item.quantity, 0)}
+            </span>
+          </div>
         )}
       </div>{" "}
       {openPopoverCart && (

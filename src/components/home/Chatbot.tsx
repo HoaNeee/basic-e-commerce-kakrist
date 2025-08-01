@@ -132,10 +132,14 @@ const Chatbot = () => {
                   return (
                     <div
                       key={product._id}
-                      className="py-2 border-b border-gray-200 dark:border-gray-700 flex items-center"
+                      className="py-2 border-b border-gray-200 dark:border-gray-700 flex items-center w-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all duration-300 md:active:bg-none active:bg-gray-100 relative"
                     >
+                      <Link
+                        href={`/shop/${product.slug}`}
+                        className="absolute inset-0 md:hidden block"
+                      />
                       <div className="flex items-center gap-2">
-                        <div className="md:max-w-full max-w-2/9">
+                        <div className="max-w-2/6">
                           <div className="w-15 h-15 rounded-xs bg-muted">
                             <img
                               src={product.thumbnail}
@@ -144,10 +148,10 @@ const Chatbot = () => {
                             />
                           </div>
                         </div>
-                        <div className="flex flex-col gap-0.5 text-sm">
+                        <div className="flex flex-col gap-0.5 text-sm flex-1">
                           <Link
                             href={`/shop/${product.slug}`}
-                            className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800"
+                            className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
                           >
                             {product.title}
                           </Link>

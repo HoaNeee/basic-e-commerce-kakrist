@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import HeadContent from "@/components/HeadContent";
 
 const Order = () => {
   const [orders, setOrders] = useState<OrderModel[]>([]);
@@ -338,6 +339,12 @@ const Order = () => {
     <OrderDetail order_no={order_no} />
   ) : (
     <div className="w-full h-full">
+      <HeadContent
+        title="My Orders"
+        desc="List of all your orders"
+        size="large"
+        className="mb-8 md:hidden flex flex-col items-start"
+      />
       <div className="flex items-center gap-3 justify-end mb-6">
         <div className="relative">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2" />

@@ -1,3 +1,4 @@
+import HeadContent from "@/components/HeadContent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,5 +11,15 @@ export default function BlogSavedLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <>
+      <HeadContent
+        title="Blogs Saved"
+        desc="List of blogs you have saved to read later"
+        size="large"
+        className="mb-8 md:hidden flex flex-col items-start"
+      />
+      {children}
+    </>
+  );
 }

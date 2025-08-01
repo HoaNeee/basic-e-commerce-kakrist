@@ -14,7 +14,7 @@ import {
   BookmarkPlus,
   Eye,
 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { BlogModel } from "@/models/blogModel";
 import { get, patch } from "@/utils/requets";
@@ -42,14 +42,17 @@ const BlogDetail = () => {
     (state: RootState) => state.favorite.listBlog
   );
   const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     const handleAction = async () => {
       try {
         setIsLoading(true);
-        await getBlogDetail();
-        await getRelatedBlogs();
-        await handleRead(slug);
+        await Promise.all([
+          getBlogDetail(),
+          getRelatedBlogs(),
+          handleRead(slug),
+        ]);
       } catch (error) {
         console.log(error);
       } finally {
@@ -167,13 +170,15 @@ const BlogDetail = () => {
         {/* Navigation */}
         <div className="bg-white border-b dark:border-neutral-700 dark:bg-neutral-800">
           <div className="container mx-auto px-4 py-4">
-            <Link
-              href="/blogs"
-              className="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-white/80 dark:hover:text-white/100 transition-colors"
+            <div
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-white/80 dark:hover:text-white/100 transition-colors cursor-pointer"
+              onClick={() => {
+                router.back();
+              }}
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
-              Quay lại danh sách blog
-            </Link>
+              Quay lại
+            </div>
           </div>
         </div>
 
@@ -268,9 +273,10 @@ const BlogDetail = () => {
             {/* Featured Image */}
             <div className="relative h-96 mb-8 rounded-xl overflow-hidden">
               <Image
-                src={blog.image}
+                src={blog.image || IMAGEDEFAULT}
                 alt={blog.title}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
@@ -340,6 +346,7 @@ const BlogDetail = () => {
                         src={blog.image || IMAGEDEFAULT}
                         alt={blog.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute top-3 left-3">
