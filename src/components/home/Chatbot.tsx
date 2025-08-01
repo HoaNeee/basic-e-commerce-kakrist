@@ -24,10 +24,14 @@ const Chatbot = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [clientWidth, setClientWidth] = useState<number>(1280);
 
   const listMessages = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setClientWidth(window.innerWidth);
+    }
     getMessages();
   }, []);
 
@@ -201,21 +205,21 @@ const Chatbot = () => {
     <>
       <Popover open={showBox} onOpenChange={setShowBox}>
         <PopoverTrigger asChild title="Chatbot">
-          <div className="fixed bottom-5 right-2 w-14 h-14 rounded-full overflow-hidden z-50 shadow-lg cursor-pointer transition-all duration-300 ease-in-out flex items-center justify-center">
+          <div className="fixed bottom-5 right-2 w-14 h-14 rounded-full overflow-hidden z-50 shadow-lg cursor-pointer ease-in-out flex items-center justify-center">
             <div
-              className={`w-full h-full shadow-lg flex items-center justify-center relative transition-all duration-300 text-sm ${
+              className={`w-full h-full shadow-lg flex items-center justify-center relative text-sm ${
                 showBox
                   ? "bg-white text-black dark:bg-neutral-800 dark:text-white"
                   : " text-white bg-black dark:bg-white dark:text-black"
               }`}
             >
               <Bot
-                className={`w-7 h-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                className={`w-7 h-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  ${
                   showBox ? "opacity-0" : "opacity-100"
                 }`}
               />
               <ChevronDown
-                className={`w-7 h-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                className={`w-7 h-7 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${
                   !showBox ? "opacity-0" : "opacity-100"
                 }`}
               />
@@ -226,7 +230,7 @@ const Chatbot = () => {
           sideOffset={10}
           align="end"
           alignOffset={20}
-          side="right"
+          side={clientWidth < 640 ? "bottom" : "right"}
           className="lg:w-md w-xs bg-white dark:bg-black dark:text-white/80 shadow p-0"
         >
           <div className="w-full h-full flex flex-col justify-between relative">
