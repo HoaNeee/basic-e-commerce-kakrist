@@ -7,7 +7,12 @@ import { GoPlus } from "react-icons/go";
 import { AiOutlineMinus } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { FaRegHeart } from "react-icons/fa";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import {
   OptionsInfo,
   ProductModel,
@@ -52,7 +57,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const ProductDetail = () => {
   const { slug } = useParams();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [productDetail, setProductDetail] = useState<ProductModel>();
   const [variations, setVariations] = useState<VariationModel[]>();
   const [subProducts, setSubProducts] = useState<SubProductModel[]>();
@@ -61,7 +66,6 @@ const ProductDetail = () => {
   const [optionsChoosed, setOptionsChoosed] = useState<OptionsInfo[]>([]);
   const [count, setCount] = useState(1);
   const [tabSelected, setTabSelected] = useState<any>();
-  const [loaded, setLoaded] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const cart = useSelector((state: RootState) => state.cart.cart);
@@ -70,13 +74,8 @@ const ProductDetail = () => {
   const search = useSearchParams().toString();
   const tabInitRef = useRef<any>(null);
   const dispatch = useDispatch();
+  const router = useRouter();
   const next = encodeURIComponent(path + (search ? `?${search}` : ``));
-
-  useEffect(() => {
-    if (!loaded) {
-      setLoaded(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (slug) {
@@ -338,7 +337,7 @@ const ProductDetail = () => {
     );
   };
 
-  if (!loaded) {
+  if (isLoading || !productDetail) {
     return (
       <div className="w-full h-full container xl:px-4 px-2 md:px-0 mx-auto ">
         <div className="w-full my-12 grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
@@ -362,6 +361,7 @@ const ProductDetail = () => {
             <Skeleton className="h-5 w-36" />
             <Skeleton className="h-3 w-42 mt-1" />
             <Skeleton className="h-5 w-36 my-1" />
+            <Skeleton className="h-5 w-full md:w-1/2 my-1" />
             <div className="space-y-1.5">
               <Skeleton className="h-2.5 w-full" />
               <Skeleton className="h-2.5 w-full" />
@@ -453,6 +453,7 @@ const ProductDetail = () => {
               <Skeleton className="h-5 w-36" />
               <Skeleton className="h-3 w-42 mt-1" />
               <Skeleton className="h-5 w-36 my-1" />
+              <Skeleton className="h-5 md:w-1/2 w-full my-1" />
               <div className="space-y-1.5">
                 <Skeleton className="h-2.5 w-full" />
                 <Skeleton className="h-2.5 w-full" />
@@ -552,6 +553,22 @@ const ProductDetail = () => {
                     )}
                   </>
                 )}
+              </div>
+              <div className="text-sm flex items-center gap-2">
+                <p className="">Categories:</p>
+                <div className="flex items-center gap-2">
+                  {productDetail?.categories_info?.map((category) => (
+                    <p
+                      onClick={() =>
+                        router.push(`/shop?filter_cats=${category._id}`)
+                      }
+                      className="p-1 text-xs bg-gray-50 border border-gray-200 rounded-sm dark:bg-neutral-700 dark:border-neutral-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-600 transition-all duration-300"
+                      key={category._id}
+                    >
+                      {category.title}
+                    </p>
+                  ))}
+                </div>
               </div>
               <div
                 className="text-sm tracking-wider"
@@ -681,12 +698,9 @@ const ProductDetail = () => {
                   : tabInitRef.current
                   ? tabInitRef.current.offsetLeft
                   : "",
-                // backgroundColor: "#131118",
               }}
             ></div>
             <TabsTrigger
-              //data-[state=active]:border-blue-700 border-b-3 border-white
-
               value="description"
               className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
               onClick={(e) => {

@@ -10,6 +10,7 @@ import ListComment from "./ListComment";
 import { CommentModel, ReviewModel } from "@/models/reviewModel";
 import DialogConfirm from "../dialog/DialogConfirm";
 import { Spinner } from "../ui/spinner";
+import ButtonLoading from "../ButtonLoading";
 
 interface Props {
   item: ReviewModel | CommentModel | any;
@@ -27,6 +28,7 @@ interface Props {
   isUser: boolean; //me
   onDelete?: (val: any) => void;
   loading?: boolean;
+  isSubmitingComment?: boolean;
 }
 
 const ItemListComment = (props: Props) => {
@@ -46,6 +48,7 @@ const ItemListComment = (props: Props) => {
     isUser,
     onDelete,
     loading,
+    isSubmitingComment,
   } = props;
 
   const [contentReply, setContentReply] = useState("");
@@ -79,7 +82,6 @@ const ItemListComment = (props: Props) => {
                         ? "text-yellow-500 "
                         : "text-muted-foreground"
                     }
-                    //var(--muted-foreground)
                     icon={<StarIcon strokeWidth={1} />}
                     index={index}
                   />
@@ -209,7 +211,7 @@ const ItemListComment = (props: Props) => {
           <div className="flex gap-2 flex-col my-2">
             <Input
               id={"reply-" + item._id}
-              className="w-1/2"
+              className="md:w-1/2 w-full"
               placeholder={`replying @${item?.user?.firstName} ${item?.user?.lastName}`}
               value={contentReply}
               onChange={(e) => setContentReply(e.target.value)}
@@ -223,21 +225,29 @@ const ItemListComment = (props: Props) => {
               }}
             />
             <div className="text-sm flex items-center gap-2">
-              <Button variant={"outline"} size={"sm"} onClick={onCancelReply}>
+              <Button
+                variant={"outline"}
+                className="py-4.5"
+                size={"sm"}
+                onClick={onCancelReply}
+              >
                 Cancel
               </Button>
-              <Button
-                variant={"default"}
-                size={"sm"}
+              <ButtonLoading
+                loading={isSubmitingComment}
                 onClick={async () => {
                   if (contentReply) {
                     await onSubmit(contentReply);
                     setContentReply("");
                   }
                 }}
+                typeLoading={1}
+                styles={{
+                  padding: "0px 12px",
+                }}
               >
                 Submit
-              </Button>
+              </ButtonLoading>
             </div>
           </div>
         )}

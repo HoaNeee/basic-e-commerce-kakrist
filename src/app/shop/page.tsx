@@ -37,7 +37,7 @@ import {
 } from "@/redux/reducer/favoriteReducer";
 import { RootState } from "@/redux/store";
 import { createTree } from "@/utils/createTree";
-import { fetcher, get, post } from "@/utils/requets";
+import { fetcher, post } from "@/utils/requets";
 import { ChevronDown, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -182,9 +182,9 @@ const ProductList = (props: ProductListProps) => {
         return "Newest First";
       case "createdAt-asc":
         return "Oldest First";
-      case "price-desc":
+      case "sortPrice-desc":
         return "Price: High to Low";
-      case "price-asc":
+      case "sortPrice-asc":
         return "Price: Low to High";
       default:
         return "Sort By";
@@ -213,7 +213,6 @@ const ProductList = (props: ProductListProps) => {
     <div className="flex-1">
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm p-4 mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          {/* Results Info */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
               <Button
@@ -298,7 +297,6 @@ const ProductList = (props: ProductListProps) => {
             )}
           </div>
 
-          {/* Search & Sort */}
           <div className="flex lg:items-center gap-3 lg:flex-row flex-col">
             <div className="relative">
               <Input
@@ -362,10 +360,10 @@ const ProductList = (props: ProductListProps) => {
                   <DropdownMenuRadioItem value="createdAt-asc">
                     Oldest First
                   </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="price-asc">
+                  <DropdownMenuRadioItem value="sortPrice-asc">
                     Price: Low to High
                   </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="price-desc">
+                  <DropdownMenuRadioItem value="sortPrice-desc">
                     Price: High to Low
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
@@ -374,8 +372,6 @@ const ProductList = (props: ProductListProps) => {
           </div>
         </div>
       </div>
-
-      {/* Products Grid */}
 
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
@@ -449,7 +445,6 @@ const ProductList = (props: ProductListProps) => {
         </div>
       )}
 
-      {/* Pagination */}
       {data?.data?.totalPage > 0 && (
         <div className="mt-8 flex justify-center">
           <PaginationComponent totalPage={data.data.totalPage} />
@@ -493,7 +488,7 @@ const LayoutShopWithSuspense = ({
     } else {
       setRangePrice([0, maxPrice]);
     }
-  }, [searchParams]);
+  }, [min_price, max_price, maxPrice]);
 
   const createQueryString = useCallback(
     (name: string, value: string, query = searchParams) => {
@@ -744,7 +739,6 @@ const LayoutShopWithSuspense = ({
   return (
     <section className="min-h-screen bg-gray-50 dark:bg-black/90">
       <div className="container w-full xl:px-4 py-8 mx-auto px-2 md:px-0">
-        {/* Breadcrumb */}
         <div className="mb-6">
           <Breadcrumb>
             <BreadcrumbList>
@@ -847,56 +841,40 @@ const LayoutShopWithSuspense = ({
 };
 
 const Shop = () => {
-  const [loaded, setLoaded] = useState(false);
   const [categories, setCategories] = useState<CategoryModel[]>([]);
-  const [variations, setVariations] = useState<VariationModel[]>([]);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [maxPrice, setMaxPrice] = useState(0);
+
+  const optionsSWR = {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
+  };
+
+  const { data: categoryResponse, isLoading: isLoadingCategories } = useSWR(
+    "/categories",
+    fetcher,
+    optionsSWR
+  );
+  const { data: priceResponse, isLoading: isLoadingPrice } = useSWR(
+    "/products/get-price",
+    fetcher,
+    optionsSWR
+  );
+  const { data: supplierResponse, isLoading: isLoadingSuppliers } = useSWR(
+    "/suppliers",
+    fetcher,
+    optionsSWR
+  );
+  const { data: variationResponse, isLoading: isLoadingVariations } = useSWR(
+    "/products/variations",
+    fetcher,
+    optionsSWR
+  );
 
   useEffect(() => {
-    getCategories();
-    getPrice();
-    getSupplier();
-    getVariationOptions();
-    setLoaded(true);
-  }, []);
-
-  const getCategories = async () => {
-    try {
-      const response = await get("/categories");
-      const data = createTree(response.data, "", "_id");
-      setCategories(data);
-    } catch (error) {
-      console.log(error);
+    if (categoryResponse && categoryResponse.code === 200) {
+      setCategories(createTree(categoryResponse.data, "", "_id"));
     }
-  };
-
-  const getPrice = async () => {
-    try {
-      const response = await get("/products/get-price");
-      setMaxPrice(response.data.max);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getSupplier = async () => {
-    try {
-      const response = await get("/suppliers");
-      setSuppliers(response.data.suppliers);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getVariationOptions = async () => {
-    try {
-      const response = await get("/products/variations");
-      setVariations(response.data.variations);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }, [categoryResponse]);
 
   const renderSkeleton = () => {
     return (
@@ -917,7 +895,12 @@ const Shop = () => {
     );
   };
 
-  if (!loaded) {
+  if (
+    isLoadingCategories ||
+    isLoadingPrice ||
+    isLoadingSuppliers ||
+    isLoadingVariations
+  ) {
     return renderSkeleton();
   }
 
@@ -925,9 +908,9 @@ const Shop = () => {
     <Suspense fallback={renderSkeleton()}>
       <LayoutShopWithSuspense
         categories={categories}
-        suppliers={suppliers}
-        variations={variations}
-        maxPrice={maxPrice}
+        suppliers={supplierResponse?.data?.suppliers || []}
+        variations={variationResponse?.data?.variations || []}
+        maxPrice={priceResponse?.data?.max || Infinity}
       />
     </Suspense>
   );

@@ -25,7 +25,6 @@ import {
 import { Button } from "./ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 
@@ -50,6 +49,8 @@ const RatingTab = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalReviews, setTotalReviews] = useState(0);
   const [newReviews, setNewReviews] = useState<ReviewModel[]>([]);
+  const [isFirstLoading, setIsFirstLoading] = useState(true);
+  const [isSubmitingComment, setIsSubmitingComment] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const path = usePathname();
@@ -76,6 +77,7 @@ const RatingTab = (props: Props) => {
 
   const getReviews = async (product_id: string) => {
     try {
+      setIsFirstLoading(true);
       const response = await get(
         `/reviews?product_id=${product_id}&limit=${limit}&page=1`
       );
@@ -83,6 +85,8 @@ const RatingTab = (props: Props) => {
       setTotalReviews(response.data.totalRecord);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsFirstLoading(false);
     }
   };
 
@@ -152,6 +156,11 @@ const RatingTab = (props: Props) => {
 
   const handleSubmitComment = async (content: string) => {
     try {
+      if (!content || content.trim() === "") {
+        toast.error("Please enter your comment content");
+        return;
+      }
+      setIsSubmitingComment(true);
       const response = await post("/reviews/create-comment", {
         content: content,
         review_id: idShowReply,
@@ -178,6 +187,8 @@ const RatingTab = (props: Props) => {
       setCommentAdded(comment);
     } catch (error: any) {
       toast.error(error.message);
+    } finally {
+      setIsSubmitingComment(false);
     }
   };
 
@@ -199,6 +210,42 @@ const RatingTab = (props: Props) => {
       setIsDeleting(false);
     }
   };
+
+  const renderSkeleton = () => {
+    return (
+      <>
+        {Array.from({ length: limit }).map((_, index) => (
+          <div
+            key={index}
+            className="border-b-2 border-muted pb-2 transition-all duration-300"
+          >
+            <div className="flex gap-3 items-center ">
+              <Skeleton className="size-7 rounded-full" />
+              <div className="space-y-1.5">
+                <Skeleton className="h-2 w-30" />
+                <Skeleton className="h-3 w-25" />
+              </div>
+            </div>
+            <div className="mt-3 space-y-1">
+              <Skeleton className="h-3 lg:w-1/4 sm:w-1/3 my-2" />
+              <Skeleton className="h-2" />
+              <Skeleton className="h-2 w-2/3" />
+            </div>
+            <Skeleton className="mt-3 mb-1 lg:w-1/4 sm:w-1/3 w-full h-2" />
+          </div>
+        ))}
+      </>
+    );
+  };
+
+  if (isFirstLoading) {
+    return (
+      <div className="w-full h-full py-5">
+        <Skeleton className="h-4 w-1/4 mb-4" />
+        <div className="space-y-3">{renderSkeleton()}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full py-5">
@@ -241,34 +288,15 @@ const RatingTab = (props: Props) => {
                   handleDeleteReview(val);
                 }}
                 loading={isDeleting}
+                isSubmitingComment={isSubmitingComment}
               />
             </div>
           ))}
-          {isLoading &&
-            Array.from({ length: limit }).map((_, index) => (
-              <div
-                key={index}
-                className="border-b-2 border-muted pb-2 transition-all duration-300"
-              >
-                <div className="flex gap-3 items-center ">
-                  <Skeleton className="size-7 rounded-full" />
-                  <div className="space-y-1.5">
-                    <Skeleton className="h-2 w-30" />
-                    <Skeleton className="h-3 w-25" />
-                  </div>
-                </div>
-                <div className="mt-3 space-y-1">
-                  <Skeleton className="h-3 lg:w-1/4 sm:w-1/3 my-2" />
-                  <Skeleton className="h-2" />
-                  <Skeleton className="h-2 w-2/3" />
-                </div>
-                <Skeleton className="mt-3 mb-1 lg:w-1/4 sm:w-1/3 w-full h-2" />
-              </div>
-            ))}
+          {isLoading && <div className="w-full">{renderSkeleton()}</div>}
         </div>
       ) : (
         <div className="w-full text-center py-10 text-muted-foreground">
-          <p>Be the first to review this product.</p>
+          <p className="">No reviews yet.</p>
         </div>
       )}
 
@@ -298,14 +326,14 @@ const RatingTab = (props: Props) => {
         {!auth.isLogin ? (
           <div className="mt-3 text-muted-foreground">
             Please{" "}
-            <Link
+            <a
               href={`/auth/login?next=${encodeURIComponent(
                 path + (search ? `?${search}` : ``)
               )}`}
               className="italic underline text-blue-400"
             >
               login
-            </Link>{" "}
+            </a>{" "}
             to write your review.
           </div>
         ) : (
@@ -424,14 +452,17 @@ const RatingTab = (props: Props) => {
                 </FileUploadList>
               </FileUpload>
             </div>
-            <ButtonLoading
-              loading={isPosting}
-              disabled={!rateScore}
-              className="px-10 py-6 mt-6"
-              onClick={handleSubmitReview}
-            >
-              Submit
-            </ButtonLoading>
+            <div className="lg:w-xs sm:w-1/2 w-full mt-6">
+              <ButtonLoading
+                loading={isPosting}
+                disabled={!rateScore}
+                className="px-10 py-6 w-full"
+                typeLoading={1}
+                onClick={handleSubmitReview}
+              >
+                Submit
+              </ButtonLoading>
+            </div>
           </>
         )}
       </div>

@@ -33,6 +33,7 @@ const ButtonLoading = (props: Props) => {
         disabled={loading || disabled}
         type={type || "submit"}
         onClick={onClick}
+        style={styles}
       >
         <div className="relative">
           <div
@@ -43,7 +44,7 @@ const ButtonLoading = (props: Props) => {
               opacity: loading ? "1" : "0",
             }}
           >
-            <Spinner />
+            <Spinner size={14} />
           </div>
           <div
             className="flex items-center gap-1.5 transition-all duration-300"

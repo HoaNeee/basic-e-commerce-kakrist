@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { CategoryModel } from "./categoryModel";
+
 export interface ProductModel {
   _id: string;
   title: string;
   content?: string;
   shortDescription?: string;
   categories: string[];
+  categories_info?: CategoryModel[];
   price?: number | string;
   stock?: number | string;
   productType: "simple" | "variations";

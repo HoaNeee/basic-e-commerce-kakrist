@@ -11,12 +11,13 @@ import { Input } from "../ui/input";
 import { ProductModel } from "@/models/productModel";
 import { VND } from "@/utils/formatCurrency";
 import Link from "next/link";
+import { BlogModel } from "@/models/blogModel";
 
 interface IMessage {
   role: "user" | "model";
   content: string;
   intent?: string;
-  products?: ProductModel[];
+  data?: any[];
 }
 
 const Chatbot = () => {
@@ -65,18 +66,30 @@ const Chatbot = () => {
       console.log(response);
       const { intent, response: botResponse } = response.data;
 
-      if (intent === "search_product") {
-        const products = response.data.products;
+      if (intent === "search_product" || intent === "search_blog") {
+        const products = response.data.data;
         setMessages((prev) => [
           ...prev,
-          { role: "model", content: botResponse, intent, products },
+          { role: "model", content: botResponse, intent, data: products },
         ]);
         return;
       }
+
       setMessages((prev) => [
         ...prev,
         { role: "model", content: botResponse, intent },
       ]);
+
+      if (
+        (intent === "product_detail" || intent === "guide_website") &&
+        response.data?.auto_redirect &&
+        response.data.redirect_url &&
+        response.data.auto_redirect === true
+      ) {
+        setTimeout(() => {
+          window.location.href = response.data.redirect_url;
+        }, 5000);
+      }
     } catch (error) {
       console.log("Error in Chatbot:", error);
     } finally {
@@ -121,73 +134,127 @@ const Chatbot = () => {
           />
         </div>
         {message.intent === "search_product" &&
-          message.products &&
-          message.products.length > 0 && (
-            <div className="max-w-9/10 w-full ml-4">
-              <h3 className="my-1 text-gray-600 dark:text-gray-200 text-sm">
-                Sản phẩm phù hợp cho bạn:
-              </h3>
-              <div className="flex flex-col gap-2">
-                {message.products.map((product) => {
-                  return (
-                    <div
-                      key={product._id}
-                      className="py-2 border-b border-gray-200 dark:border-gray-700 flex items-center w-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all duration-300 md:active:bg-none active:bg-gray-100 relative"
-                    >
-                      <Link
-                        href={`/shop/${product.slug}`}
-                        className="absolute inset-0 md:hidden block"
-                      />
-                      <div className="flex items-center gap-2">
-                        <div className="max-w-2/6">
-                          <div className="w-15 h-15 rounded-xs bg-muted">
-                            <img
-                              src={product.thumbnail}
-                              alt={""}
-                              className="h-full w-full object-cover rounded-xs"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-0.5 text-sm flex-1">
-                          <Link
-                            href={`/shop/${product.slug}`}
-                            className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
-                          >
-                            {product.title}
-                          </Link>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {product.options &&
-                              product.options.length > 0 &&
-                              product.options.map((o) => o.title).join(", ")}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            {product.discountedPrice !== undefined &&
-                              product.discountedPrice !== null && (
-                                <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">
-                                  {VND.format(
-                                    Number(product.discountedPrice) || 0
-                                  )}
-                                </p>
-                              )}
-                            <p
-                              className={`text-sm text-gray-600 dark:text-gray-300 ${
-                                product.discountedPrice !== undefined &&
-                                product.discountedPrice !== null
-                                  ? "line-through"
-                                  : ""
-                              }`}
-                            >
-                              {VND.format(Number(product.price) || 0)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          message.data &&
+          message.data.length > 0 && (
+            <div className="mt-2 w-full">
+              {renderProducts(message.data as ProductModel[])}
             </div>
           )}
+        {message.intent === "search_blog" &&
+          message.data &&
+          message.data.length > 0 && (
+            <div className="mt-2 w-full">
+              {renderBlogs(message.data as BlogModel[])}
+            </div>
+          )}
+      </div>
+    );
+  };
+
+  const renderBlogs = (blogs: BlogModel[]) => {
+    return (
+      <div className="max-w-9/10 w-full ml-4">
+        <h3 className="my-1 text-gray-600 dark:text-gray-200 text-sm">
+          Bài viết phù hợp cho bạn:
+        </h3>
+        <div className="flex flex-col gap-2">
+          {blogs.map((blog) => {
+            return (
+              <div
+                key={blog._id}
+                className="py-2 border-b border-gray-200 dark:border-gray-700"
+              >
+                <Link
+                  href={`/blog/${blog.slug}`}
+                  className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
+                >
+                  {blog.title}
+                </Link>
+                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 text-ellipsis">
+                  {blog.excerpt}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+  const renderProducts = (products: ProductModel[]) => {
+    return (
+      <div className="max-w-9/10 w-full ml-4">
+        <h3 className="my-1 text-gray-600 dark:text-gray-200 text-sm">
+          Sản phẩm phù hợp cho bạn:
+        </h3>
+        <div className="flex flex-col gap-2">
+          {products.map((product) => {
+            return (
+              <div
+                key={product._id}
+                className="py-2 border-b border-gray-200 dark:border-gray-700 flex items-center w-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all duration-300 md:active:bg-none active:bg-gray-100 relative"
+              >
+                <Link
+                  href={`/shop/${product.slug}`}
+                  className="absolute inset-0 md:hidden block"
+                />
+                <div className="flex items-center gap-2">
+                  <div className="max-w-2/6">
+                    <div className="w-15 h-15 rounded-xs bg-muted">
+                      <img
+                        src={product.thumbnail}
+                        alt={product.title}
+                        className="h-full w-full object-cover rounded-xs"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-0.5 text-sm flex-1">
+                    <Link
+                      href={`/shop/${product.slug}`}
+                      className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
+                    >
+                      {product.title}
+                    </Link>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {product.options &&
+                        product.options.length > 0 &&
+                        product.options.map((o) => o.title).join(", ")}
+                    </p>
+                    {product.productType === "simple" ? (
+                      <div className="flex items-center gap-2">
+                        {product.discountedPrice !== undefined &&
+                          product.discountedPrice !== null && (
+                            <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">
+                              {VND.format(Number(product.discountedPrice) || 0)}
+                            </p>
+                          )}
+                        <p
+                          className={`text-sm text-gray-600 dark:text-gray-300 ${
+                            product.discountedPrice !== undefined &&
+                            product.discountedPrice !== null
+                              ? "line-through"
+                              : ""
+                          }`}
+                        >
+                          {VND.format(Number(product.price) || 0)}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 font-semibold">
+                        <p>
+                          {VND.format(Number(product.rangePrice?.min) || 0)}
+                        </p>
+                        <p>-</p>
+                        <p>
+                          {VND.format(Number(product.rangePrice?.max) || 0)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };
