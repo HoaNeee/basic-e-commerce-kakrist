@@ -74,7 +74,13 @@ const LayoutLoginWithSuspense = () => {
   return (
     <div className="w-full h-screen flex gap-2 dark:text-white/80">
       <div className="bg-[url(../assets/auth-login.jpg)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
-        <Image alt="LOGO" src={LOGOWHITE} className="mt-5 ml-5" priority />
+        <div
+          onClick={() => (window.location.href = "/")}
+          className="cursor-pointer inline-block"
+        >
+          {" "}
+          <Image alt="LOGO" src={LOGOWHITE} className="mt-5 ml-5" priority />
+        </div>
       </div>
       <div className="flex-1 flex flex-col justify-center px-6">
         <div className="mb-8">

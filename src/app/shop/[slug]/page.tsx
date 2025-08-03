@@ -556,7 +556,7 @@ const ProductDetail = () => {
               </div>
               <div className="text-sm flex items-center gap-2">
                 <p className="">Categories:</p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 xl:flex-nowrap flex-wrap">
                   {productDetail?.categories_info?.map((category) => (
                     <p
                       onClick={() =>

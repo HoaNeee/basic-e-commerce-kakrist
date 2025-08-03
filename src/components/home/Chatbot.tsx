@@ -91,6 +91,10 @@ const Chatbot = () => {
         }, 5000);
       }
     } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "model", content: "Đã có lỗi xảy ra, vui lòng thử lại sau." },
+      ]);
       console.log("Error in Chatbot:", error);
     } finally {
       setIsLoading(false);
@@ -165,7 +169,7 @@ const Chatbot = () => {
                 className="py-2 border-b border-gray-200 dark:border-gray-700"
               >
                 <Link
-                  href={`/blog/${blog.slug}`}
+                  href={`/blogs/${blog.slug}`}
                   className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
                 >
                   {blog.title}
@@ -219,7 +223,10 @@ const Chatbot = () => {
                         product.options.length > 0 &&
                         product.options.map((o) => o.title).join(", ")}
                     </p>
-                    {product.productType === "simple" ? (
+                    {product.productType === "simple" ||
+                    !product.rangePrice ||
+                    (product.rangePrice.min === null &&
+                      product.rangePrice.max === null) ? (
                       <div className="flex items-center gap-2">
                         {product.discountedPrice !== undefined &&
                           product.discountedPrice !== null && (
