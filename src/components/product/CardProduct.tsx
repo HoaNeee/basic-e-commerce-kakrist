@@ -11,6 +11,8 @@ import { VND } from "@/utils/formatCurrency";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Trash } from "lucide-react";
+import { post } from "@/utils/requets";
+import { mutate } from "swr";
 
 interface Props {
   item: ProductModel;
@@ -43,6 +45,19 @@ const CardProduct = ({
         )
       : 0;
 
+  const clickProduct = async () => {
+    try {
+      await post("/suggestions/track", {
+        action: "click",
+        value: item._id,
+        type_track: "product",
+      });
+      mutate("/suggestions");
+    } catch (error) {
+      console.log("Error tracking product:", error);
+    }
+  };
+
   return (
     <Card
       className={
@@ -55,7 +70,11 @@ const CardProduct = ({
       }
     >
       <CardContent className="p-0 relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        <Link href={`/shop/${item.slug}`} className="absolute inset-0 z-10" />
+        <Link
+          href={`/shop/${item.slug}`}
+          className="absolute inset-0 z-10"
+          onClick={clickProduct}
+        />
 
         <div
           className="w-full h-full bg-cover bg-center bg-no-repeat transition-transform duration-300 group-hover:scale-105"
@@ -121,6 +140,7 @@ const CardProduct = ({
             title="Quick view"
             onClick={(e) => {
               e.preventDefault();
+              clickProduct();
               router.push(`/shop/${item.slug}`);
             }}
           >

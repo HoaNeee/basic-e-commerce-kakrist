@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { get, post } from "@/utils/requets";
+import { fetcher, get, post } from "@/utils/requets";
 import { Bot, ChevronDown, Send, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -12,6 +12,8 @@ import { ProductModel } from "@/models/productModel";
 import { VND } from "@/utils/formatCurrency";
 import Link from "next/link";
 import { BlogModel } from "@/models/blogModel";
+import useSWR from "swr";
+import { motion, AnimatePresence } from "motion/react";
 
 interface IMessage {
   role: "user" | "model";
@@ -26,6 +28,14 @@ const Chatbot = () => {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [clientWidth, setClientWidth] = useState<number>(1280);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [dataSuggestion, setDataSuggestion] = useState<any>();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const { data } = useSWR("/suggestions", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const listMessages = useRef<HTMLDivElement>(null);
 
@@ -44,6 +54,31 @@ const Chatbot = () => {
       });
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (data && data.code === 200) {
+      if (data.data && data.data.suggestions) {
+        setSuggestions(data.data.suggestions);
+      }
+      if (data.data && data.data.data) {
+        setDataSuggestion(data.data.data);
+      }
+      console.log(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (showBox) {
+      if (messages.length === 0) {
+        setShowSuggestions(true);
+      }
+      if (dataSuggestion) {
+        setShowSuggestions(true);
+      }
+    } else {
+      setShowSuggestions(false);
+    }
+  }, [showBox]);
 
   const getMessages = async () => {
     try {
@@ -184,6 +219,7 @@ const Chatbot = () => {
       </div>
     );
   };
+
   const renderProducts = (products: ProductModel[]) => {
     return (
       <div className="max-w-9/10 w-full ml-4">
@@ -281,7 +317,7 @@ const Chatbot = () => {
 
   return (
     <>
-      <Popover open={showBox} onOpenChange={setShowBox}>
+      <Popover open={showBox} onOpenChange={setShowBox} modal={false}>
         <PopoverTrigger asChild title="Chatbot">
           <div className="fixed bottom-5 right-2 w-14 h-14 rounded-full overflow-hidden z-50 shadow-lg cursor-pointer ease-in-out flex items-center justify-center">
             <div
@@ -309,7 +345,7 @@ const Chatbot = () => {
           align="end"
           alignOffset={20}
           side={clientWidth < 640 ? "bottom" : "right"}
-          className="lg:w-md w-xs bg-white dark:bg-black dark:text-white/80 shadow p-0"
+          className="lg:w-lg w-xs bg-white dark:bg-black dark:text-white/80 shadow p-0"
         >
           <div className="w-full h-full flex flex-col justify-between relative">
             <div className="py-2 border-b border-gray-200 dark:border-gray-700 px-4">
@@ -330,7 +366,9 @@ const Chatbot = () => {
                 <Button
                   size={"sm"}
                   variant={"outline"}
-                  onClick={() => setShowBox(false)}
+                  onClick={() => {
+                    setShowBox(false);
+                  }}
                   className=""
                 >
                   <X className="h-4 w-4" />
@@ -338,10 +376,49 @@ const Chatbot = () => {
               </div>
             </div>
             <div
-              className="px-4 pt-2 min-h-60 max-h-90 overflow-hidden overflow-y-auto custom-scrollbar relative"
+              className="px-4 pt-2 min-h-68 max-h-105 overflow-hidden overflow-y-auto custom-scrollbar relative"
+              id="list-messages"
               ref={listMessages}
+              style={{
+                WebkitOverflowScrolling: "touch",
+              }}
             >
               {renderMessages()}
+              {suggestions && suggestions.length > 0 && (
+                <AnimatePresence mode="wait">
+                  {showSuggestions && (
+                    <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
+                      {suggestions.map((suggestion, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 40 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: index / 10 + 0.4,
+                            ease: "easeInOut",
+                          }}
+                          className="w-full bg-white dark:bg-black text-xs"
+                        >
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              handleSendMessage(suggestion.value);
+                              setShowSuggestions(false);
+                            }}
+                            className="text-xs max-w-full whitespace-normal"
+                          >
+                            <span className="block max-w-full">
+                              {suggestion.title}
+                            </span>
+                          </Button>{" "}
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
 
             <div className="p-4">
