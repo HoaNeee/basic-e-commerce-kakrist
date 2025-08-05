@@ -31,6 +31,7 @@ const Chatbot = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [dataSuggestion, setDataSuggestion] = useState<any>();
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSuggestionsBegin, setShowSuggestionsBegin] = useState(false);
 
   const { data } = useSWR("/suggestions", fetcher, {
     revalidateOnFocus: false,
@@ -61,20 +62,18 @@ const Chatbot = () => {
         setSuggestions(data.data.suggestions);
       }
       if (data.data && data.data.data) {
-        setDataSuggestion(data.data.data);
+        setDataSuggestion({
+          type: data.data.data_type,
+          data: data.data.data,
+        });
       }
       console.log(data);
     }
   }, [data]);
 
   useEffect(() => {
-    if (showBox) {
-      if (messages.length === 0) {
-        setShowSuggestions(true);
-      }
-      if (dataSuggestion) {
-        setShowSuggestions(true);
-      }
+    if (showBox && dataSuggestion) {
+      setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
     }
@@ -83,8 +82,12 @@ const Chatbot = () => {
   const getMessages = async () => {
     try {
       const response = await get("/chatbot/history");
-      if (response.data && Array.isArray(response.data)) {
-        setMessages(response.data);
+      if (response.data && Array.isArray(response.data.chats)) {
+        setMessages(response.data.chats);
+      }
+
+      if (response.data && response.data.show_suggestion_begin) {
+        setShowSuggestionsBegin(response.data.show_suggestion_begin);
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -125,6 +128,11 @@ const Chatbot = () => {
           window.location.href = response.data.redirect_url;
         }, 5000);
       }
+      await post("/suggestions/track", {
+        action: "chat",
+        value: content,
+        type_track: intent,
+      });
     } catch (error) {
       setMessages((prev) => [
         ...prev,
@@ -315,6 +323,61 @@ const Chatbot = () => {
     );
   };
 
+  const renderDataSuggestion = (data: any) => {
+    if (data.type === "product") {
+      const product = data.data as ProductModel;
+      return (
+        <div className="shadow text-sm rounded-md p-3 my-2">
+          <p className="mb-2 text-xs text-gray-500">Bạn vừa xem</p>
+          <div className="flex items-center gap-2">
+            <div className="w-16 h-16 rounded-xs bg-muted">
+              <img
+                src={product.thumbnail}
+                alt={product.title}
+                className="h-full w-full object-cover rounded-xs"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <Link
+                href={`/shop/${product.slug}`}
+                className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
+              >
+                {product.title}
+              </Link>
+
+              {product.productType === "simple" ? (
+                <div className="flex items-center gap-2">
+                  {product.discountedPrice !== undefined &&
+                    product.discountedPrice !== null && (
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">
+                        {VND.format(Number(product.discountedPrice) || 0)}
+                      </p>
+                    )}
+                  <p
+                    className={`text-sm text-gray-600 dark:text-gray-300 ${
+                      product.discountedPrice !== undefined &&
+                      product.discountedPrice !== null
+                        ? "line-through"
+                        : ""
+                    }`}
+                  >
+                    {VND.format(Number(product.price) || 0)}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm text-gray-600/90 dark:text-gray-300 font-semibold">
+                  <p>{VND.format(Number(product.rangePrice?.min) || 0)}</p>
+                  <p>-</p>
+                  <p>{VND.format(Number(product.rangePrice?.max) || 0)}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  };
+
   return (
     <>
       <Popover open={showBox} onOpenChange={setShowBox} modal={false}>
@@ -377,6 +440,14 @@ const Chatbot = () => {
             </div>
             <div
               className="px-4 pt-2 min-h-68 max-h-105 overflow-hidden overflow-y-auto custom-scrollbar relative"
+              onLoad={() => {
+                if (listMessages.current) {
+                  listMessages.current.scrollTo({
+                    top: listMessages.current.scrollHeight,
+                    // behavior: "smooth",
+                  });
+                }
+              }}
               id="list-messages"
               ref={listMessages}
               style={{
@@ -384,17 +455,18 @@ const Chatbot = () => {
               }}
             >
               {renderMessages()}
+              {dataSuggestion && renderDataSuggestion(dataSuggestion)}
               {suggestions && suggestions.length > 0 && (
                 <AnimatePresence mode="wait">
-                  {showSuggestions && (
+                  {(showSuggestions || showSuggestionsBegin) && (
                     <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
                       {suggestions.map((suggestion, index) => (
                         <motion.div
                           key={index}
-                          initial={{ opacity: 0, y: 40 }}
+                          initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{
-                            duration: index / 10 + 0.4,
+                            duration: ((index + 1) / 10) * 2,
                             ease: "easeInOut",
                           }}
                           className="w-full bg-white dark:bg-black text-xs"
@@ -405,7 +477,9 @@ const Chatbot = () => {
                             size="sm"
                             onClick={() => {
                               handleSendMessage(suggestion.value);
+                              setShowSuggestionsBegin(false);
                               setShowSuggestions(false);
+                              setDataSuggestion(undefined);
                             }}
                             className="text-xs max-w-full whitespace-normal"
                           >
