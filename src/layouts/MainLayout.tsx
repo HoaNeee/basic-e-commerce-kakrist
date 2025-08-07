@@ -1,7 +1,5 @@
 "use client";
 
-import FooterComponent from "@/components/footer/FooterComponent";
-import Header from "@/components/header/Header";
 import { changeTheme } from "@/redux/reducer/settingReducer";
 import { RootState } from "@/redux/store";
 import { usePathname } from "next/navigation";
@@ -9,8 +7,17 @@ import React, { ReactNode, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
+import Header from "@/components/header/Header";
+import FooterComponent from "@/components/footer/FooterComponent";
+import { SystemSettingModel } from "@/models/settingSystem";
 
-const MainLayout = ({ children }: { children: ReactNode }) => {
+const MainLayout = ({
+  children,
+  system_settings,
+}: {
+  children: ReactNode;
+  system_settings: SystemSettingModel;
+}) => {
   const setting = useSelector((state: RootState) => state.setting.setting);
   const pathName = usePathname();
 
@@ -29,7 +36,9 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
         className="dark:text-white/80"
         theme={setting.theme === "dark" ? "dark" : "light"}
       />
-      <Header />
+      {!pathName.startsWith("/auth") && !pathName.startsWith("/error") && (
+        <Header system_settings={system_settings} />
+      )}
       {pathName.startsWith("/profile") || pathName === "/" ? (
         children
       ) : (
@@ -44,7 +53,9 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
           </motion.main>
         </AnimatePresence>
       )}
-      <FooterComponent />
+      {!pathName.startsWith("/auth") && !pathName.startsWith("/error") && (
+        <FooterComponent system_settings={system_settings} />
+      )}
     </>
   );
 };

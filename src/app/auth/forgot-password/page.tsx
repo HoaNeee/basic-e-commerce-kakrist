@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import LOGO from "../../../assets/logo.png";
 import { ChevronLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Label } from "@radix-ui/react-label";
 import ButtonLoading from "@/components/ButtonLoading";
 import { useRouter } from "next/navigation";
 import { post } from "@/utils/requets";
+import { SystemSettingContext } from "@/context/systemSettingContext";
 
 const ForgotPassword = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,6 +18,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
   const router = useRouter();
+  const { system_settings } = useContext(SystemSettingContext);
 
   const handleCheckEmail = async (email: string) => {
     try {
@@ -65,7 +67,14 @@ const ForgotPassword = () => {
             className="cursor-pointer inline-block"
           >
             {" "}
-            <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
+            <Image
+              alt="LOGO"
+              src={system_settings?.logoDark || LOGO}
+              width={142}
+              height={58}
+              className="mt-5 ml-5"
+              priority
+            />
           </div>
         </div>
         <div className="flex-1 flex flex-col justify-center px-6">

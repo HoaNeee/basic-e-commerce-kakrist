@@ -34,7 +34,7 @@ export const get = async (path: string, token?: string, config?: any) => {
     }
     return result;
   } catch (error: any) {
-    throw new Error(error.message || error);
+    throw Error(error.message || error);
   }
 };
 
@@ -60,7 +60,7 @@ export const post = async (path: string, options: any, token?: string) => {
     }
     return result;
   } catch (error: any) {
-    throw new Error(error.message || error);
+    throw Error(error.message || error);
   }
 };
 
@@ -87,7 +87,7 @@ export const patch = async function (
     }
     return result;
   } catch (error: any) {
-    throw new Error(error.message || error);
+    throw Error(error.message || error);
   }
 };
 
@@ -109,7 +109,7 @@ export const del = async function (path: string, id: string, token?: string) {
     }
     return result;
   } catch (error: any) {
-    throw new Error(error.message || error);
+    throw Error(error.message || error);
   }
 };
 
@@ -135,7 +135,7 @@ export const postImage = async (key: string, options: any, token?: string) => {
     }
     return result;
   } catch (error: any) {
-    throw new Error(error.message || error);
+    throw Error(error.message || error);
   }
 };
 
@@ -166,7 +166,7 @@ export const postImageMulti = async (
     }
     return result;
   } catch (error: any) {
-    throw new Error(error.message || error);
+    throw Error(error.message || error);
   }
 };
 

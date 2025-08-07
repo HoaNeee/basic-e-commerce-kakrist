@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useContext, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +26,7 @@ import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircleIcon } from "lucide-react";
+import { SystemSettingContext } from "@/context/systemSettingContext";
 
 const formSchema = z.object({
   firstName: z.any(),
@@ -48,6 +49,8 @@ const LayoutRegisterWithSuspense = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [timeInterval, setTimeInterval] = useState(5);
+
+  const { system_settings } = useContext(SystemSettingContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -94,7 +97,14 @@ const LayoutRegisterWithSuspense = () => {
           className="cursor-pointer inline-block"
         >
           {" "}
-          <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
+          <Image
+            alt="LOGO"
+            src={system_settings?.logoDark || LOGO}
+            width={142}
+            height={58}
+            className="mt-5 ml-5"
+            priority
+          />
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-center px-6 transition-all duration-300">

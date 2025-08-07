@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useContext, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,6 +28,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { RootState } from "@/redux/store";
 import LoadingComponent from "@/components/LoadingComponent";
 import GoogleLogin from "@/components/GoogleLogin";
+import { SystemSettingContext } from "@/context/systemSettingContext";
 
 const formSchema = z.object({
   email: z
@@ -45,6 +46,7 @@ const LayoutLoginWithSuspense = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const setting = useSelector((state: RootState) => state.setting.setting);
+  const { system_settings } = useContext(SystemSettingContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,7 +81,14 @@ const LayoutLoginWithSuspense = () => {
           className="cursor-pointer inline-block"
         >
           {" "}
-          <Image alt="LOGO" src={LOGOWHITE} className="mt-5 ml-5" priority />
+          <Image
+            alt="LOGO"
+            src={system_settings?.logoLight || LOGOWHITE}
+            className="mt-5 ml-5"
+            priority
+            width={142}
+            height={58}
+          />
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-center px-6">

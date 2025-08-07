@@ -94,13 +94,24 @@ const Chatbot = () => {
     }
   };
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (
+    content: string,
+    action = "ask",
+    type_suggest?: string
+  ) => {
     try {
       if (content.trim() === "" || isLoading) return;
       setIsLoading(true);
       setContent("");
       setMessages([...messages, { role: "user", content }]);
-      const response = await post("/chatbot", { message: content });
+      setShowSuggestionsBegin(false);
+      setShowSuggestions(false);
+      setDataSuggestion(undefined);
+      const response = await post("/chatbot", {
+        message: content,
+        action,
+        type: type_suggest,
+      });
       console.log(response);
       const { intent, response: botResponse } = response.data;
 
@@ -476,10 +487,11 @@ const Chatbot = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              handleSendMessage(suggestion.value);
-                              setShowSuggestionsBegin(false);
-                              setShowSuggestions(false);
-                              setDataSuggestion(undefined);
+                              handleSendMessage(
+                                suggestion.value,
+                                "suggest",
+                                suggestion.type || undefined
+                              );
                             }}
                             className="text-xs max-w-full whitespace-normal"
                           >

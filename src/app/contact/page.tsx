@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Phone,
   Mail,
@@ -16,6 +16,8 @@ import {
   Youtube,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SystemSettingModel } from "@/models/settingSystem";
+import { get } from "@/utils/requets";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -25,6 +27,25 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [systemSettings, setSystemSettings] =
+    useState<SystemSettingModel | null>(null);
+
+  useEffect(() => {
+    const fetchSystemSettings = async () => {
+      try {
+        const response = await get("/settings");
+        if (response && response.data) {
+          setSystemSettings(response.data);
+        } else {
+          console.error("No system settings found");
+        }
+      } catch (error) {
+        console.error("Error fetching system settings:", error);
+      }
+    };
+
+    fetchSystemSettings();
+  }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
@@ -47,7 +68,6 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setSubmitStatus("success");
@@ -70,20 +90,20 @@ const Contact = () => {
     {
       icon: MapPin,
       title: "Địa chỉ",
-      content: "123 Đường ABC, HN",
+      content: systemSettings?.address || "123 Đường ABC, Quận 1, TP.HCM",
       link: "https://maps.google.com",
     },
     {
       icon: Phone,
       title: "Số điện thoại",
-      content: "+84 393911183",
+      content: systemSettings?.phone || "+84 393911183",
       link: "tel:+84393911183",
     },
     {
       icon: Mail,
       title: "Email",
-      content: "contact@kakrist.com",
-      link: "mailto:contact@kakrist.com",
+      content: systemSettings?.email || "contact@kakrist.com",
+      link: `mailto:contact@${systemSettings?.email || "kakrist.com"}`,
     },
     {
       icon: Clock,

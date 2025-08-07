@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "./provider";
 import MainLayout from "@/layouts/MainLayout";
+import { get } from "@/utils/requets";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,9 +15,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Home",
-  description: "This page is home page",
+export const generateMetadata = async (): Promise<Metadata> => {
+  const setting = await getSetting();
+  return {
+    title: "Home",
+    description:
+      setting?.description || "This is a basic e-commerce application",
+    keywords: setting?.keywords || "e-commerce, shop, online store",
+  };
+};
+
+const getSetting = async () => {
+  try {
+    const res = await get(`/settings`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching settings:", error);
+    return null;
+  }
 };
 
 export default async function RootLayout({
@@ -24,7 +40,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const token = (await cookies()).get("jwt_token");
+  const system_settings = await getSetting();
+
   return (
     <html lang="en">
       <head>
@@ -45,7 +62,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
-          <MainLayout>{children}</MainLayout>
+          <MainLayout system_settings={system_settings}>{children}</MainLayout>
         </ReduxProvider>
       </body>
       <script src="https://accounts.google.com/gsi/client" async defer></script>
