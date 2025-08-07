@@ -478,11 +478,11 @@ const Chatbot = () => {
                             key={index}
                             initial={{
                               opacity: 0,
-                              y: index * 10,
+                              y: (index * 10) / 2,
                             }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{
-                              duration: ((index + 1) / 10) * 4,
+                              duration: ((index + 1) / 10) * 2,
                               ease: "easeInOut",
                             }}
                             className="w-full bg-white dark:bg-black text-xs"

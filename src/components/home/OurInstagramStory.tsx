@@ -6,12 +6,28 @@ import STORY3 from "../../assets/story2.jpg";
 import STORY4 from "../../assets/story3.jpg";
 import { FaInstagram } from "react-icons/fa6";
 import { Button } from "../ui/button";
+import { get } from "@/utils/requets";
+import Link from "next/link";
 
-const OurInstagramStory = () => {
+const getSettings = async () => {
+  try {
+    const response = await get("/settings");
+    if (response && response.data) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching settings:", error);
+    return null;
+  }
+};
+
+const OurInstagramStory = async () => {
+  const settings = await getSettings();
+
   return (
     <div className="w-full py-16">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Simple Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Follow Us on Instagram
@@ -21,7 +37,6 @@ const OurInstagramStory = () => {
           </p>
         </div>
 
-        {/* Clean Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <div className="aspect-square relative group overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
             <Image
@@ -76,12 +91,17 @@ const OurInstagramStory = () => {
           </div>
         </div>
 
-        {/* Simple Follow Button */}
         <div className="text-center mt-12">
-          <Button className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 px-8 py-3 rounded-lg font-medium">
-            <FaInstagram className="mr-2" />
-            Follow @Kakrist
-          </Button>
+          <Link
+            href={settings?.instagramLink || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 px-8 py-3 rounded-lg font-medium">
+              <FaInstagram className="mr-2" />
+              Follow @Kakrist
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
