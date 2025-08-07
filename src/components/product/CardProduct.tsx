@@ -35,7 +35,6 @@ const CardProduct = ({
 }: Props) => {
   const router = useRouter();
 
-  // Calculate discount percentage
   const discountPercentage =
     item.discountedPrice && item.price
       ? Math.round(
@@ -73,7 +72,11 @@ const CardProduct = ({
         <Link
           href={`/shop/${item.slug}`}
           className="absolute inset-0 z-10"
-          onClick={clickProduct}
+          onClick={() => {
+            if (!isListFavorite) {
+              clickProduct();
+            }
+          }}
         />
 
         <div
@@ -140,7 +143,9 @@ const CardProduct = ({
             title="Quick view"
             onClick={(e) => {
               e.preventDefault();
-              clickProduct();
+              if (!isListFavorite) {
+                clickProduct();
+              }
               router.push(`/shop/${item.slug}`);
             }}
           >
@@ -153,6 +158,9 @@ const CardProduct = ({
               size="sm"
               className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0"
               title="Compare"
+              onClick={() =>
+                router.push(`/shop?filter_cats=${item.categories.join(",")}`)
+              }
             >
               <TbSwitchHorizontal className="w-4 h-4 text-gray-600" />
             </Button>
@@ -165,6 +173,9 @@ const CardProduct = ({
             onClick={(e) => {
               e.preventDefault();
               if (item.productType === "variations") {
+                if (!isListFavorite) {
+                  clickProduct();
+                }
                 router.push(`/shop/${item.slug}`);
               } else {
                 onAddToCart?.(item);
@@ -176,36 +187,43 @@ const CardProduct = ({
         </div>
       </CardContent>
 
-      {/* Product Info */}
       <CardFooter className="p-4 space-y-3">
-        <Link href={`/shop/${item.slug}`} className="block">
-          {/* Supplier Name */}
+        <Link
+          href={`/shop/${item.slug}`}
+          className="block"
+          onClick={() => {
+            if (!isListFavorite) {
+              clickProduct();
+            }
+          }}
+        >
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
               {item.supplierName}
             </span>
-            {/* Rating Stars */}
-            {/* <div className="flex items-center gap-1">
+          </div>
+          {item.review && (
+            <div className="flex items-center gap-1 mb-2">
               {[...Array(5)].map((_, i) => (
                 <FaStar
                   key={i}
                   className={`w-3 h-3 ${
-                    i < 4
+                    i < Number(item.review?.average)
                       ? "text-yellow-400"
                       : "text-gray-300 dark:text-gray-600"
                   }`}
                 />
               ))}
-              <span className="text-xs text-gray-500 ml-1">(4.0)</span>
-            </div> */}
-          </div>
+              <span className="text-xs text-gray-500 ml-1">
+                ({Number(item.review?.average).toFixed(1)})
+              </span>
+            </div>
+          )}
 
-          {/* Product Title */}
           <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight line-clamp-2 mb-3 hover:text-blue-600 transition-colors">
             {item.title}
           </h3>
 
-          {/* Price Section */}
           <div className="flex items-center gap-2 flex-wrap">
             {item.productType === "simple" ? (
               <>
@@ -233,7 +251,6 @@ const CardProduct = ({
             )}
           </div>
 
-          {/* Stock Status */}
           <div className="mt-2">
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
               In Stock

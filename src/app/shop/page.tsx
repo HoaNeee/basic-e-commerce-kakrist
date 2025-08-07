@@ -399,7 +399,6 @@ const ProductList = (props: ProductListProps) => {
               ))}
             </div>
           ) : (
-            // No products found
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
                 <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">

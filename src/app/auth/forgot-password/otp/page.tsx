@@ -4,7 +4,7 @@
 import ButtonLoading from "@/components/ButtonLoading";
 import { ChevronLeft, CircleCheckBig } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LOGO from "../../../../assets/logo.png";
 import {
   InputOTP,
@@ -14,6 +14,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { post } from "@/utils/requets";
 import DialogCheckoutSuccess from "@/components/dialog/DialogCheckoutSuccess";
+import { SystemSettingContext } from "@/context/systemSettingContext";
 
 const EnterOTP = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +27,8 @@ const EnterOTP = () => {
   const [email, setEmail] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isResend, setIsResend] = useState(false);
+
+  const { system_settings } = useContext(SystemSettingContext);
 
   useEffect(() => {
     const existEmailWithTime = sessionStorage.getItem("forgot_email_time");
@@ -142,7 +145,12 @@ const EnterOTP = () => {
             className="cursor-pointer inline-block"
           >
             {" "}
-            <Image alt="LOGO" src={LOGO} className="mt-5 ml-5" priority />
+            <Image
+              alt="LOGO"
+              src={system_settings?.logoDark || LOGO}
+              className="mt-5 ml-5"
+              priority
+            />
           </div>
         </div>
         <div className="flex-1 flex flex-col justify-center px-6">

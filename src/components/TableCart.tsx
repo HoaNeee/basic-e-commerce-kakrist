@@ -131,9 +131,12 @@ export function TableCart(props: Props) {
               />
             </div>
             <div className="flex flex-col gap-2 flex-1">
-              <p className="font-bold text-ellipsis line-clamp-1">
+              <Link
+                href={"/shop/" + product.slug}
+                className="font-bold text-ellipsis line-clamp-1 hover:text-blue-400 transition-all duration-300"
+              >
                 {product.title}
-              </p>
+              </Link>
               {product.productType === "variations" ? (
                 <p>
                   Options:{" "}
@@ -321,7 +324,7 @@ export function TableCart(props: Props) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
-                      className="hover:bg-muted"
+                      className="hover:bg-muted bg-white/60 dark:bg-neutral-800/60"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id} className="dark:text-white/80">

@@ -219,13 +219,16 @@ const HeaderClient = ({
             <Link className="w-30 h-12 md:block hidden" href="/">
               <Image
                 alt="LOGO"
-                src={system_settings.logoDark || LOGOAPP}
+                src={system_settings?.logoDark || LOGOAPP}
                 width={142}
                 height={58}
                 priority
                 className="w-full h-full"
               />
             </Link>
+            <div className="md:hidden block">
+              <FaBars size={20} />
+            </div>
           </div>
           <div className="hidden md:block md:visible invisible">
             <MenuNav />
@@ -253,8 +256,8 @@ const HeaderClient = ({
               alt="LOGO"
               src={
                 setting.theme === "dark"
-                  ? system_settings.logoLight || LOGOAPP
-                  : system_settings.logoDark || LOGOWHITE
+                  ? system_settings?.logoLight || LOGOAPP
+                  : system_settings?.logoDark || LOGOWHITE
               }
               priority
               width={142}
@@ -276,8 +279,14 @@ const HeaderClient = ({
                     <Link className="w-20 h-9 block" href="/">
                       <Image
                         alt="LOGO"
-                        src={setting.theme === "dark" ? LOGOWHITE : LOGOAPP}
+                        src={
+                          setting.theme === "dark"
+                            ? system_settings?.logoLight || LOGOWHITE
+                            : system_settings?.logoDark || LOGOAPP
+                        }
                         priority
+                        width={142}
+                        height={58}
                         className="w-full h-full"
                       />
                     </Link>

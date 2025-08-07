@@ -103,6 +103,7 @@ const Chatbot = () => {
       if (content.trim() === "" || isLoading) return;
       setIsLoading(true);
       setContent("");
+      setSuggestions([]);
       setMessages([...messages, { role: "user", content }]);
       setShowSuggestionsBegin(false);
       setShowSuggestions(false);
@@ -468,42 +469,47 @@ const Chatbot = () => {
               {renderMessages()}
               {dataSuggestion && renderDataSuggestion(dataSuggestion)}
               {suggestions && suggestions.length > 0 && (
-                <AnimatePresence mode="wait">
-                  {(showSuggestions || showSuggestionsBegin) && (
-                    <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
-                      {suggestions.map((suggestion, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: ((index + 1) / 10) * 2,
-                            ease: "easeInOut",
-                          }}
-                          className="w-full bg-white dark:bg-black text-xs"
-                        >
-                          <Button
+                <div className="h-35">
+                  <AnimatePresence>
+                    {(showSuggestions || showSuggestionsBegin) && (
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
+                        {suggestions.map((suggestion, index) => (
+                          <motion.div
                             key={index}
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              handleSendMessage(
-                                suggestion.value,
-                                "suggest",
-                                suggestion.type || undefined
-                              );
+                            initial={{
+                              opacity: 0,
+                              y: index * 10,
                             }}
-                            className="text-xs max-w-full whitespace-normal"
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: ((index + 1) / 10) * 4,
+                              ease: "easeInOut",
+                            }}
+                            className="w-full bg-white dark:bg-black text-xs"
                           >
-                            <span className="block max-w-full">
-                              {suggestion.title}
-                            </span>
-                          </Button>{" "}
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </AnimatePresence>
+                            <Button
+                              key={index}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                handleSendMessage(
+                                  suggestion.value,
+                                  "suggest",
+                                  suggestion.type || undefined
+                                );
+                              }}
+                              className="text-xs max-w-full whitespace-normal"
+                            >
+                              <span className="block max-w-full">
+                                {suggestion.title}
+                              </span>
+                            </Button>{" "}
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
             </div>
 

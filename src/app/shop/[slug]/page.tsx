@@ -259,7 +259,7 @@ const ProductDetail = () => {
                             ? "default"
                             : "outline"
                         }
-                        className="text-sm cursor-pointer"
+                        className="text-sm cursor-pointer capitalize"
                         key={option.value}
                         onClick={() => {
                           const options = [...optionsChoosed];
@@ -430,7 +430,7 @@ const ProductDetail = () => {
                 return (
                   <div
                     key={idx}
-                    className="w-full h-full bg-[#F1F1F3] dark:bg-neutral-600 cursor-pointer"
+                    className="w-full md:h-40 h-25 bg-[#F1F1F3] dark:bg-neutral-600 cursor-pointer overflow-hidden"
                     onClick={() => {
                       setThumbnail(img);
                     }}
@@ -438,7 +438,7 @@ const ProductDetail = () => {
                     <img
                       src={img}
                       alt=""
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain hover:scale-105 transition-all duration-300"
                     />
                   </div>
                 );
@@ -573,7 +573,7 @@ const ProductDetail = () => {
               <div
                 className="text-sm tracking-wider"
                 dangerouslySetInnerHTML={{
-                  __html: productDetail?.content || "",
+                  __html: productDetail?.shortDescription || "",
                 }}
               />
 
@@ -692,14 +692,24 @@ const ProductDetail = () => {
                   ? tabSelected.offsetWidth
                   : tabInitRef.current
                   ? tabInitRef.current.offsetWidth
-                  : "",
+                  : "60px",
                 left: tabSelected
                   ? tabSelected.offsetLeft
                   : tabInitRef.current
                   ? tabInitRef.current.offsetLeft
-                  : "",
+                  : "0px",
               }}
             ></div>
+            <TabsTrigger
+              ref={tabInitRef}
+              value="reviews"
+              className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
+              onClick={(e) => {
+                setTabSelected(e.target);
+              }}
+            >
+              Reviews
+            </TabsTrigger>
             <TabsTrigger
               value="description"
               className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
@@ -718,18 +728,11 @@ const ProductDetail = () => {
             >
               Additional Information
             </TabsTrigger>
-            <TabsTrigger
-              ref={tabInitRef}
-              value="reviews"
-              className="data-[state=active]:font-bold data-[state=active]:text-[15px] data-[state=active]:-translate-y-1 transition-transform duration-300"
-              onClick={(e) => {
-                setTabSelected(e.target);
-              }}
-            >
-              Reviews
-            </TabsTrigger>
           </TabsList>
           <div className="min-h-25">
+            <TabsContent value="reviews">
+              <RatingTab product={productDetail} />
+            </TabsContent>
             <TabsContent value="description">
               <div
                 className="w-full h-full py-5 text-sm tracking-wider"
@@ -748,9 +751,6 @@ const ProductDetail = () => {
                   {productDetail?.shortDescription || "No more information"}
                 </div>
               )}
-            </TabsContent>
-            <TabsContent value="reviews">
-              <RatingTab product={productDetail} />
             </TabsContent>
           </div>
         </Tabs>

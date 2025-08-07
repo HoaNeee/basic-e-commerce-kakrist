@@ -105,7 +105,7 @@ const Cart = () => {
             </p>
           </div>
 
-          {cart.carts.length === 0 ? (
+          {cart?.carts?.length === 0 ? (
             /* Empty Cart */
             <div className="text-center py-16">
               <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
@@ -138,7 +138,6 @@ const Cart = () => {
             </div>
           ) : (
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Cart Items */}
               <div className="lg:w-2/3">
                 <div className="w-full h-full p-2">
                   <TableCart

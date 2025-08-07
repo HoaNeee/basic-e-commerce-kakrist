@@ -27,6 +27,12 @@ export const get = async (path: string, token?: string, config?: any) => {
       headers: myHeaders,
       ...config,
     });
+
+    if (response.status === 429 || response.status === 404) {
+      window.location.href = `/error/${response.status}`;
+      return;
+    }
+
     const result = await response.json();
 
     if (result.code > 300) {
@@ -51,8 +57,8 @@ export const post = async (path: string, options: any, token?: string) => {
       headers: myHeaders,
       body: JSON.stringify(options),
     });
-    if (response.status === 429) {
-      window.location.href = "/error/429";
+    if (response.status === 429 || response.status === 404) {
+      window.location.href = `/error/${response.status}`;
     }
     const result = await response.json();
     if (result.code > 300) {
@@ -81,6 +87,12 @@ export const patch = async function (
       headers: myHeaders,
       body: JSON.stringify(options),
     });
+
+    if (response.status === 429 || response.status === 404) {
+      window.location.href = `/error/${response.status}`;
+      return;
+    }
+
     const result = await response.json();
     if (result.code > 300) {
       throw Error(result.message);
@@ -103,6 +115,12 @@ export const del = async function (path: string, id: string, token?: string) {
       method: "DELETE",
       headers: myHeaders,
     });
+
+    if (response.status === 429 || response.status === 404) {
+      window.location.href = `/error/${response.status}`;
+      return;
+    }
+
     const result = await response.json();
     if (result.code > 300) {
       throw Error(result.message);
