@@ -16,7 +16,7 @@ export const revalidate = 3600;
 async function getCategories() {
   try {
     const res = await get("/categories");
-    if (res && res.data.length > 0) {
+    if (res && res.data && res.data.length > 0) {
       return res.data.filter((item: CategoryModel) => item.parent_id === "");
     }
     return [];
@@ -38,7 +38,6 @@ const getBestSeller = async () => {
   try {
     const api = `/products/best-seller?page=1&limit=8`;
     const response = await get(api);
-
     return response.data;
   } catch (error) {
     console.log(error);
