@@ -43,6 +43,7 @@ import { LogOut, User } from "lucide-react";
 import LOGOWHITE from "@/assets/logo-white.png";
 import LOGOAPP from "@/assets/logo.png";
 import { SystemSettingModel } from "@/models/settingSystem";
+import { Skeleton } from "../ui/skeleton";
 
 const routePrivate = ["/profile", "/cart"];
 
@@ -213,7 +214,7 @@ const HeaderClient = ({
       return <></>;
     }
     return (
-      <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white drop-shadow-md h-22 dark:bg-black">
+      <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 h-20">
         <div className="container w-full py-5 flex justify-between items-center bg-white xl:px-4 md:px-0 px-2 dark:bg-black">
           <div className="items-center gap-4 md:block flex">
             <Link className="w-30 h-12 md:block hidden" href="/">
@@ -233,8 +234,11 @@ const HeaderClient = ({
           <div className="hidden md:block md:visible invisible">
             <MenuNav />
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-500">Loading...</span>
+          <div className="flex items-center gap-3">
+            <Skeleton className="w-10 h-10 rounded-lg" />
+            <Skeleton className="w-10 h-10 rounded-lg" />
+            <Skeleton className="w-10 h-10 rounded-lg" />
+            <Skeleton className="w-10 h-10 rounded-full" />
           </div>
         </div>
       </div>
@@ -244,14 +248,21 @@ const HeaderClient = ({
   return (
     <>
       {isLogouting && (
-        <div className="h-screen w-screen justify-center items-center flex flex-col fixed top-0 left-0 z-50 bg-black/20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80 mx-auto mb-4"></div>
-          <p className="text-white/80">Loading...</p>
+        <div className="h-screen w-screen justify-center items-center flex flex-col fixed top-0 left-0 z-50 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-700 dark:text-gray-300 font-medium">
+              Logging out...
+            </p>
+          </div>
         </div>
       )}
-      <div className="container w-full py-5 flex items-center gap-4 bg-white dark:bg-black dark:text-white/80 xl:px-4 md:px-0 px-2">
-        <div className="flex items-center md:gap-10 gap-4 flex-1">
-          <Link className="w-30 h-12 md:block hidden" href="/">
+      <div className="container w-full py-4 flex items-center md:gap-1 bg-transparent xl:px-6 lg:px-4 md:px-3 px-4 mx-auto">
+        <div className="flex items-center lg:gap-12 md:gap-8 sm:gap-6 gap-2 flex-1">
+          <Link
+            className="w-32 h-10 lg:block hidden transition-all duration-300 hover:scale-105"
+            href="/"
+          >
             <Image
               alt="LOGO"
               src={
@@ -262,21 +273,26 @@ const HeaderClient = ({
               priority
               width={142}
               height={58}
-              className="w-full h-full"
+              className="w-full h-full object-contain"
             />
           </Link>
-          <div className="md:hidden md:invisible flex items-center justify-center">
+          <div className="lg:hidden lg:invisible flex items-center justify-center visible">
             <Sheet>
-              <SheetTrigger>
-                <FaBars size={20} />
+              <SheetTrigger asChild>
+                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                  <FaBars
+                    size={20}
+                    className="text-gray-600 dark:text-gray-300"
+                  />
+                </button>
               </SheetTrigger>
               <SheetContent
                 side="left"
-                className="w-2/3 bg-white dark:bg-black text-black dark:text-white/80"
+                className="w-80 bg-white dark:bg-gray-900 text-black dark:text-white border-r border-gray-200 dark:border-gray-700"
               >
-                <SheetHeader>
+                <SheetHeader className="pb-6">
                   <SheetTitle asChild>
-                    <Link className="w-20 h-9 block" href="/">
+                    <Link className="w-24 h-8 block" href="/">
                       <Image
                         alt="LOGO"
                         src={
@@ -287,29 +303,38 @@ const HeaderClient = ({
                         priority
                         width={142}
                         height={58}
-                        className="w-full h-full"
+                        className="w-full h-full object-contain"
                       />
                     </Link>
                   </SheetTitle>
                   <SheetDescription />
                 </SheetHeader>
-
                 <MenuNavMobile />
               </SheetContent>
             </Sheet>
           </div>
-          <div className="flex items-center gap-8 flex-1">
-            <div className="hidden md:block md:visible invisible">
+          <div className="flex items-center gap-10 flex-1">
+            <div className="hidden lg:block">
               <MenuNav />
             </div>
-            <Suspense fallback={<></>}>
+            <Suspense
+              fallback={
+                <div className="w-full max-w-2xl">
+                  <div className="relative">
+                    <div className="w-full h-12 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gray-300 dark:bg-gray-600 rounded animate-pulse"></div>
+                  </div>
+                </div>
+              }
+            >
               <SearchComponent />
             </Suspense>
           </div>
         </div>
-        <div className="flex gap-4 items-center">
-          <IoIosHeartEmpty
-            className="lg:text-2xl text-xl cursor-pointer"
+
+        <div className="flex items-center gap-3">
+          <button
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 relative group"
             onClick={() => {
               if (!auth.isLogin) {
                 window.location.href = `/auth/login?next=${encodeURIComponent(
@@ -319,56 +344,59 @@ const HeaderClient = ({
               }
               router.push("/profile/wishlists");
             }}
-          />
+          >
+            <IoIosHeartEmpty className="lg:text-2xl text-xl text-gray-600 dark:text-gray-300 group-hover:text-red-500 transition-colors" />
+          </button>
 
-          {/* mini cart */}
           <MiniCart />
-          {auth.isLogin ? (
-            <>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none focus:ring-[2px] focus:ring-offset-2 focus:ring-primary rounded-full">
-                  <Avatar className="h-9 w-9">
-                    {auth.avatar && (
-                      <AvatarImage src={auth.avatar} alt="avatar" />
-                    )}
-                    <AvatarFallback>
-                      <User />
-                    </AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      router.replace("/profile");
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <User className="h-4 w-4" /> Profile
-                  </DropdownMenuItem>
 
-                  <DropdownMenuItem
-                    className="text-destructive group"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="h-4 w-4 text-destructive" />{" "}
-                    <span className="group-hover:text-destructive text-destructive">
-                      Logout
-                    </span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
+          {auth.isLogin ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 rounded-full transition-all duration-200">
+                <Avatar className="h-10 w-10 border-2 border-transparent hover:border-primary/20 transition-all duration-200">
+                  {auth.avatar && (
+                    <AvatarImage
+                      src={auth.avatar}
+                      alt="avatar"
+                      className="object-cover"
+                    />
+                  )}
+                  <AvatarFallback className="bg-gradient-to-br from-primary/10 to-primary/20 text-primary font-semibold">
+                    <User className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48 p-2" align="end">
+                <DropdownMenuLabel className="font-semibold text-gray-700 dark:text-gray-200">
+                  My Account
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    router.replace("/profile");
+                  }}
+                  className="cursor-pointer rounded-md px-3 py-2 hover:bg-primary/5 transition-colors"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  className="text-red-600 dark:text-red-400 cursor-pointer rounded-md px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <div>
-              <a
-                className="inline-block py-2 px-4 rounded-md text-sm font-medium text-white bg-black hover:bg-neutral-800 transition-colors"
-                href="/auth/login"
-              >
-                Login
-              </a>
-            </div>
+            <Link
+              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
+              href="/auth/login"
+            >
+              Login
+            </Link>
           )}
         </div>
       </div>

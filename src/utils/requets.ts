@@ -28,9 +28,17 @@ export const get = async (path: string, token?: string, config?: any) => {
       ...config,
     });
 
-    if (response.status === 429 || response.status === 404) {
+    if (
+      response.status === 429 ||
+      response.status === 404 ||
+      response.status === 500
+    ) {
       window.location.href = `/error/${response.status}`;
       return;
+    }
+
+    if (!response.ok) {
+      throw Error("Failed to fetch");
     }
 
     const result = await response.json();
@@ -57,9 +65,18 @@ export const post = async (path: string, options: any, token?: string) => {
       headers: myHeaders,
       body: JSON.stringify(options),
     });
-    if (response.status === 429 || response.status === 404) {
+    if (
+      response.status === 429 ||
+      response.status === 404 ||
+      response.status === 500
+    ) {
       window.location.href = `/error/${response.status}`;
     }
+
+    if (!response.ok) {
+      throw Error("Failed to fetch");
+    }
+
     const result = await response.json();
     if (result.code > 300) {
       throw Error(result.message);
@@ -88,9 +105,17 @@ export const patch = async function (
       body: JSON.stringify(options),
     });
 
-    if (response.status === 429 || response.status === 404) {
+    if (
+      response.status === 429 ||
+      response.status === 404 ||
+      response.status === 500
+    ) {
       window.location.href = `/error/${response.status}`;
       return;
+    }
+
+    if (!response.ok) {
+      throw Error("Failed to fetch");
     }
 
     const result = await response.json();
@@ -119,6 +144,10 @@ export const del = async function (path: string, id: string, token?: string) {
     if (response.status === 429 || response.status === 404) {
       window.location.href = `/error/${response.status}`;
       return;
+    }
+
+    if (!response.ok) {
+      throw Error("Failed to fetch");
     }
 
     const result = await response.json();

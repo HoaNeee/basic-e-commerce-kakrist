@@ -68,17 +68,17 @@ const FooterComponent = ({
   const socialLinks = [
     {
       icon: <FaFacebookF size={18} />,
-      href: system_settings.facebook || "https://facebook.com",
+      href: system_settings?.facebook || "https://facebook.com",
       label: "Facebook",
     },
     {
       icon: <FaInstagram size={18} />,
-      href: system_settings.instagram || "https://instagram.com",
+      href: system_settings?.instagram || "https://instagram.com",
       label: "Instagram",
     },
     {
       icon: <BsTwitterX size={18} />,
-      href: system_settings.twitter || "https://twitter.com",
+      href: system_settings?.twitter || "https://twitter.com",
       label: "Twitter",
     },
   ];
@@ -110,18 +110,18 @@ const FooterComponent = ({
                 className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
               >
                 <BiPhoneCall size={18} />
-                <span>{system_settings.phone || "+84 393 911 183"}</span>
+                <span>{system_settings?.phone || "+84 393 911 183"}</span>
               </Link>
               <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
                 <MdOutlineMailOutline size={18} />
-                <span>{system_settings.email || "contact@kakrist.com"}</span>
+                <span>{system_settings?.email || "contact@kakrist.com"}</span>
               </div>
               <Link
                 href={"https://www.google.com/maps?q=Hanoi,+Vietnam"}
                 className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
               >
                 <FaMapMarkerAlt size={18} />
-                <span>{system_settings.address || "Hanoi, Vietnam"}</span>
+                <span>{system_settings?.address || "Hanoi, Vietnam"}</span>
               </Link>
             </div>
           </div>

@@ -38,7 +38,7 @@ import {
 import { RootState } from "@/redux/store";
 import { createTree } from "@/utils/createTree";
 import { fetcher, post } from "@/utils/requets";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
@@ -75,14 +75,7 @@ interface ProductListProps {
 }
 
 const ProductList = (props: ProductListProps) => {
-  const {
-    createQueryString,
-    deleteQueryString,
-    filter_cats,
-    min_price,
-    max_price,
-    supplier_id,
-  } = props;
+  const { createQueryString, deleteQueryString } = props;
 
   const [sortBy, setSortBy] = useState("createdAt-desc");
   const [keyword, setKeyword] = useState("");
@@ -277,24 +270,6 @@ const ProductList = (props: ProductListProps) => {
                 No products found
               </p>
             )}
-
-            {(filter_cats ||
-              max_price ||
-              min_price ||
-              supplier_id ||
-              keySearch) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setKeyword("");
-                  router.push(pathName, { scroll: false });
-                }}
-                className="text-red-600 border-red-200 hover:bg-red-50"
-              >
-                Clear All Filter
-              </Button>
-            )}
           </div>
 
           <div className="flex lg:items-center gap-3 lg:flex-row flex-col">
@@ -458,11 +433,13 @@ const LayoutShopWithSuspense = ({
   suppliers,
   variations,
   maxPrice,
+  categories_full,
 }: {
   categories: CategoryModel[];
   suppliers: Supplier[];
   variations: VariationModel[];
   maxPrice: number;
+  categories_full: CategoryModel[];
 }) => {
   const [rangePrice, setRangePrice] = useState<number[]>([0, 0]);
 
@@ -598,7 +575,6 @@ const LayoutShopWithSuspense = ({
             size={"sm"}
             className="px-2 h-6 py-0 text-xs"
             onClick={() => {
-              // router.push(`${pathName}?`)
               let newQuery: any = deleteQueryString("page");
               newQuery = createQueryString(
                 `min_price`,
@@ -612,7 +588,6 @@ const LayoutShopWithSuspense = ({
               );
               router.push(`${pathName}?${newQuery}`, { scroll: false });
             }}
-            // disabled={rangePrice[0] === 0 && rangePrice[1] === 0}
           >
             Filter
           </Button>
@@ -735,6 +710,141 @@ const LayoutShopWithSuspense = ({
     });
   };
 
+  const renderFilterTags = () => {
+    const exist_variations = variations.some((item) => {
+      return searchParams.get(item.key);
+    });
+
+    if (
+      !filter_cats &&
+      !min_price &&
+      !max_price &&
+      !supplier_id &&
+      !exist_variations
+    ) {
+      return null;
+    }
+
+    const supplier = suppliers.find((sup) => sup._id === supplier_id);
+
+    return (
+      <div className="p-4 bg-white dark:bg-neutral-800 rounded shadow mb-4 text-sm">
+        <p className="mb-2 font-semibold">Filter Tags</p>
+        <div className="flex flex-col gap-2 flex-wrap">
+          {filter_cats && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <p>Categories: </p>
+              {filter_cats.split(",").map((item) => {
+                const cat = categories_full.find((cat) => cat._id === item);
+
+                return (
+                  <div
+                    key={item}
+                    className="bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm capitalize flex items-center gap-2 "
+                  >
+                    {cat?.title}
+                    <X
+                      className="w-4 h-4 text-gray-500 dark:text-white/80 cursor-pointer"
+                      onClick={() => {
+                        let newQuery: any = createQueryString(
+                          "filter_cats",
+                          filter_cats
+                            .split(",")
+                            .filter((id) => id !== item)
+                            .join(",")
+                        );
+
+                        if (newQuery.includes("page")) {
+                          newQuery = deleteQueryString("page", newQuery);
+                        }
+
+                        router.push(`${pathName}?${newQuery}`, {
+                          scroll: false,
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {supplier_id && (
+            <div className="flex items-center gap-2">
+              <p>Supplier: </p>
+              <div
+                key={supplier_id}
+                className="bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm capitalize flex items-center gap-2"
+              >
+                {supplier?.name}
+                <X
+                  className="w-4 h-4 text-gray-500 dark:text-white/80 cursor-pointer"
+                  onClick={() => {
+                    let newQuery: any = deleteQueryString("page");
+                    newQuery = deleteQueryString("supplier_id", newQuery);
+                    router.push(`${pathName}?${newQuery}`, { scroll: false });
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          {(min_price || max_price) && (
+            <div className="flex items-center gap-2">
+              <p>Price Range: </p>
+              <div className="bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm flex items-center gap-2">
+                {min_price || 0} - {max_price || 0}
+                <X
+                  className="w-4 h-4 text-gray-500 dark:text-white/80 cursor-pointer"
+                  onClick={() => {
+                    let newQuery: any = deleteQueryString("page");
+                    newQuery = deleteQueryString("min_price", newQuery);
+                    newQuery = deleteQueryString("max_price", newQuery);
+                    router.push(`${pathName}?${newQuery}`, { scroll: false });
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          {variations.map((item) => {
+            if (searchParams.get(item.key)) {
+              return (
+                <div className="flex items-center gap-2" key={item.key}>
+                  <p>{item.title}: </p>
+                  <div className="bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm flex items-center gap-2 capitalize">
+                    {searchParams.get(item.key)}
+                    <X
+                      className="w-4 h-4 text-gray-500 dark:text-white/80 cursor-pointer"
+                      onClick={() => {
+                        let newQuery: any = deleteQueryString("page");
+                        newQuery = deleteQueryString(item.key, newQuery);
+                        router.push(`${pathName}?${newQuery}`, {
+                          scroll: false,
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            }
+          })}
+        </div>
+        <div className="mt-4">
+          {(filter_cats || max_price || min_price || supplier_id) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                router.push(pathName, { scroll: false });
+              }}
+              className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+            >
+              Clear All Filter
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section className="min-h-screen bg-gray-50 dark:bg-black/90">
       <div className="container w-full xl:px-4 py-8 mx-auto px-2 md:px-0">
@@ -754,8 +864,9 @@ const LayoutShopWithSuspense = ({
           </Breadcrumb>
         </div>
 
+        {renderFilterTags()}
+
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
           <div className="lg:w-1/4 w-full md:relative sticky top-25 md:top-0 z-30 md:z-auto">
             <Collapsible
               defaultOpen={window?.innerWidth < 768 ? false : true}
@@ -824,7 +935,6 @@ const LayoutShopWithSuspense = ({
             </Collapsible>
           </div>
 
-          {/* Main Content */}
           <ProductList
             createQueryString={createQueryString}
             deleteQueryString={deleteQueryString}
@@ -910,6 +1020,7 @@ const Shop = () => {
         suppliers={supplierResponse?.data?.suppliers || []}
         variations={variationResponse?.data?.variations || []}
         maxPrice={priceResponse?.data?.max || Infinity}
+        categories_full={categoryResponse?.data || []}
       />
     </Suspense>
   );

@@ -43,7 +43,7 @@ const WhatOurCustomerSay = () => {
 
   const getTopReviews = async () => {
     try {
-      const response = await get("/reviews/top-reviews?page=1&limit=3");
+      const response = await get("/reviews/top-reviews?page=1&limit=5");
       setReviews(response.data.reviews);
     } catch (error) {
       console.log(error);

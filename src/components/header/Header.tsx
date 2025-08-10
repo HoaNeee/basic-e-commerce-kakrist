@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SystemSettingModel } from "@/models/settingSystem";
 import HeaderClient from "./HeaderClient";
+import { HeaderGradient } from "./HeaderAnimations";
 
 const Header = ({
   system_settings,
@@ -9,8 +9,10 @@ const Header = ({
 }) => {
   return (
     <>
-      <header className="flex items-center justify-center w-full z-40 sticky top-0 bg-white dark:bg-black dark:text-white/80 drop-shadow-md">
-        <HeaderClient system_settings={system_settings} />
+      <header className="flex items-center justify-center w-full z-40 sticky top-0 border-b border-gray-100 dark:border-gray-800 transition-all duration-300">
+        <HeaderGradient>
+          <HeaderClient system_settings={system_settings} />
+        </HeaderGradient>
       </header>
     </>
   );

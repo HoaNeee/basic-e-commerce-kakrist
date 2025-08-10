@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { CarouselPromotion } from "@/components/home/CarouselPromotion";
 import CategoryComponent from "@/components/category/CategoryComponent";
 import OurBestSeller from "@/components/product/OurBestSeller";

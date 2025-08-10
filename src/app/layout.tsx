@@ -15,16 +15,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const generateMetadata = async (): Promise<Metadata> => {
-  const setting = await getSetting();
-  return {
-    title: "Home",
-    description:
-      setting?.description || "This is a basic e-commerce application",
-    keywords: setting?.keywords || "e-commerce, shop, online store",
-  };
-};
-
 const getSetting = async () => {
   try {
     const res = await get(`/settings`);
@@ -33,6 +23,16 @@ const getSetting = async () => {
     console.error("Error fetching settings:", error);
     return null;
   }
+};
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const setting = await getSetting();
+  return {
+    title: "Home",
+    description:
+      setting?.description || "This is a basic e-commerce application",
+    keywords: setting?.keywords || "e-commerce, shop, online store",
+  };
 };
 
 export default async function RootLayout({

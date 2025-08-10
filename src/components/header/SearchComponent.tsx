@@ -14,6 +14,7 @@ const SearchComponent = () => {
   const [keywordStrong, setKeywordStrong] = useState<string>("");
   const [isSuggestWithKeywordEmpty, setisSuggestWithKeywordEmpty] =
     useState(false);
+  const [suggestSelected, setSuggestSelected] = useState<number | null>(null);
 
   const searchParams = useSearchParams();
   const pathName = usePathname();
@@ -30,7 +31,6 @@ const SearchComponent = () => {
     if (pathName === "/search") {
       const url = new URL(window.location.href);
       url.searchParams.set("keyword", keyword.trim());
-      // already on search page
       router.push(url.toString());
     } else {
       const href = `/search?keyword=${keyword.trim().replace(/\s+/g, "+")}`;
@@ -54,14 +54,11 @@ const SearchComponent = () => {
   const debounceSuggest = useRef(
     lodash.debounce((keyword: string) => {
       if (keyword.trim() === "") {
-        //   setSuggests([]);
-        //   setOpenPopover(false);
-        //   setIsLoading(false);
-        //   return;
         setisSuggestWithKeywordEmpty(true);
       } else {
         setisSuggestWithKeywordEmpty(false);
       }
+      setSuggestSelected(null);
       setKeywordStrong(keyword);
       setIsLoading(true);
       setOpenPopover(true);
@@ -71,100 +68,137 @@ const SearchComponent = () => {
 
   const handleSolveSuggest = (suggest: string) => {
     const index = convertStr(suggest).indexOf(convertStr(keywordStrong));
-    if (index !== -1) {
+    if (index !== -1 && keywordStrong.trim() !== "") {
       return (
         <>
           {suggest.slice(0, index)}
-          <span className="text-black font-semibold">
+          <span className="text-primary dark:text-primary font-semibold bg-gray-100 px-1 rounded">
             {suggest.slice(index, index + keywordStrong.length)}
           </span>
           {suggest.slice(index + keywordStrong.length)}
         </>
       );
     }
-    return <p>{suggest}</p>;
+    return <span className="text-gray-700 dark:text-gray-200">{suggest}</span>;
   };
 
   return (
-    <div className="flex items-center gap-2 flex-1 relative z-1">
+    <div className="flex items-center gap-3 flex-1 relative z-20 max-w-2xl">
       {openPopover && (
         <div
-          className="fixed w-full h-screen bg-transparent z-9 left-0 top-0"
+          className="fixed w-full h-screen bg-transparent z-10 left-0 top-0"
           onClick={() => setOpenPopover(false)}
         ></div>
       )}
 
-      <div className="w-full relative z-10 transition-all duration-300 ease-in-out">
-        <Input
-          placeholder="Enter products, blog,..."
-          className="w-full relative z-10 py-5"
-          autoComplete="off"
-          value={keyword}
-          onChange={(e) => {
-            setKeyword(e.target.value);
-            // if (e.target.value.trim() === "") {
-            //   setSuggests([]);
-            //   setOpenPopover(false);
-            //   setIsLoading(false);
-            // }
-            debounceSuggest(e.target.value);
-          }}
-          onKeyUp={(e) => {
-            if (e.key === "Enter") {
-              debounceSuggest.cancel();
-              setOpenPopover(false);
-              setSuggests([]);
-              handleSearch(keyword);
-            }
-          }}
-        />
+      <div className="w-full relative z-20 transition-all duration-300 ease-in-out">
+        <div className="relative">
+          <Input
+            placeholder="Search products, blogs..."
+            className="w-full pl-4 pr-4 py-5 text-sm bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:focus:bg-gray-800 focus:border-primary/30 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:shadow-md"
+            autoComplete="off"
+            value={keyword}
+            onChange={(e) => {
+              setKeyword(e.target.value);
+              debounceSuggest(e.target.value);
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                debounceSuggest.cancel();
+                setOpenPopover(false);
+                setSuggests([]);
+                handleSearch(keyword);
+                return;
+              }
+
+              if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault();
+                const index = suggestSelected;
+
+                if (index === null || index === undefined) {
+                  setSuggestSelected(0);
+                  setKeyword(suggests[0]);
+                  return;
+                }
+                if (e.key === "ArrowDown") {
+                  setKeyword(
+                    suggests[Math.min(suggests.length - 1, index + 1)] || ""
+                  );
+                  setSuggestSelected(Math.min(suggests.length - 1, index + 1));
+                } else {
+                  setKeyword(suggests[Math.max(0, index - 1)] || "");
+                  setSuggestSelected(Math.max(0, index - 1));
+                }
+              }
+            }}
+          />
+        </div>
       </div>
+
       {openPopover && (
         <>
-          <div className="absolute min-h-10 z-40 w-9/10 xl:w-25/26 bg-white p-2 top-11 shadow-2xl left-0 rounded-sm border border-gray-200">
+          <div className="absolute min-h-16 z-30 w-full bg-white dark:bg-gray-800 p-3 top-12 shadow-2xl left-0 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
             {!isLoading ? (
-              <div className="flex flex-col gap-0">
+              <div className="flex flex-col gap-1">
                 {isSuggestWithKeywordEmpty && (
-                  <div className="text-gray-500 text-sm p-2">
-                    Suggestions for you:
+                  <div className="text-gray-500 dark:text-gray-400 text-sm px-3 py-2 font-medium">
+                    💡 Suggestions for you:
                   </div>
                 )}
                 {suggests.length > 0 ? (
                   suggests.map((item, index) => (
                     <div
                       key={index}
-                      className="cursor-pointer hover:bg-gray-100 p-2 rounded-sm text-sm"
+                      className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
+                        suggestSelected === index
+                          ? "bg-primary/5 dark:bg-primary/10 border border-primary/20"
+                          : ""
+                      }`}
                       onClick={() => {
                         setKeyword(item);
                         setOpenPopover(false);
                         handleSearch(item);
                       }}
                     >
-                      {handleSolveSuggest(item)}
+                      <div className="flex items-center gap-2">
+                        <LuSearch className="text-gray-400 text-xs flex-shrink-0" />
+                        <span>{handleSolveSuggest(item)}</span>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-gray-500 text-sm p-2">
-                    No suggestions found
+                  <div className="text-gray-500 dark:text-gray-400 text-sm px-3 py-8 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-8 h-8 text-gray-300 dark:text-gray-600">
+                        <LuSearch className="w-full h-full" />
+                      </div>
+                      <span>No suggestions found</span>
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="w-full h-full py-12 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+              <div className="w-full h-20 py-8 flex items-center justify-center">
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  <span className="text-gray-500 dark:text-gray-400 text-sm">
+                    Searching...
+                  </span>
+                </div>
               </div>
             )}
           </div>
         </>
       )}
-      <div className="relative z-10 transition-all duration-300 ease-in-out">
-        <LuSearch
-          className={`lg:text-2xl text-xl`}
-          onClick={() => {
-            handleSearch(keyword);
-          }}
-        />
-      </div>
+
+      <button
+        className="p-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-600 dark:text-gray-300 hover:text-primary flex-shrink-0"
+        onClick={() => {
+          handleSearch(keyword);
+        }}
+      >
+        <LuSearch className="text-xl" />
+      </button>
     </div>
   );
 };

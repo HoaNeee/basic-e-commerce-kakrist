@@ -101,6 +101,7 @@ const Chatbot = () => {
   ) => {
     try {
       if (content.trim() === "" || isLoading) return;
+
       setIsLoading(true);
       setContent("");
       setSuggestions([]);
@@ -115,6 +116,11 @@ const Chatbot = () => {
       });
       console.log(response);
       const { intent, response: botResponse } = response.data;
+      await post("/suggestions/track", {
+        action: "chat",
+        value: content,
+        type_track: intent,
+      });
 
       if (intent === "search_product" || intent === "search_blog") {
         const products = response.data.data;
@@ -140,11 +146,6 @@ const Chatbot = () => {
           window.location.href = response.data.redirect_url;
         }, 5000);
       }
-      await post("/suggestions/track", {
-        action: "chat",
-        value: content,
-        type_track: intent,
-      });
     } catch (error) {
       setMessages((prev) => [
         ...prev,
@@ -468,49 +469,52 @@ const Chatbot = () => {
             >
               {renderMessages()}
               {dataSuggestion && renderDataSuggestion(dataSuggestion)}
-              {suggestions && suggestions.length > 0 && (
-                <div className="h-35">
-                  <AnimatePresence>
-                    {(showSuggestions || showSuggestionsBegin) && (
-                      <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
-                        {suggestions.map((suggestion, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{
-                              opacity: 0,
-                              y: (index * 10) / 2,
-                            }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: ((index + 1) / 10) * 2,
-                              ease: "easeInOut",
-                            }}
-                            className="w-full bg-white dark:bg-black text-xs"
-                          >
-                            <Button
-                              key={index}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                handleSendMessage(
-                                  suggestion.value,
-                                  "suggest",
-                                  suggestion.type || undefined
-                                );
-                              }}
-                              className="text-xs max-w-full whitespace-normal"
-                            >
-                              <span className="block max-w-full">
-                                {suggestion.title}
-                              </span>
-                            </Button>{" "}
-                          </motion.div>
-                        ))}
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
+              {suggestions &&
+                suggestions.length > 0 &&
+                (showSuggestions || showSuggestionsBegin) && (
+                  <div className="h-35">
+                    <AnimatePresence>
+                      {(showSuggestions || showSuggestionsBegin) &&
+                        suggestions.length > 0 && (
+                          <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
+                            {suggestions.map((suggestion, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{
+                                  opacity: 0,
+                                  y: (index * 10) / 2,
+                                }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                  duration: ((index + 1) / 10) * 2,
+                                  ease: "easeInOut",
+                                }}
+                                className="w-full bg-white dark:bg-black text-xs"
+                              >
+                                <Button
+                                  key={index}
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    handleSendMessage(
+                                      suggestion.value,
+                                      "suggest",
+                                      suggestion.type || undefined
+                                    );
+                                  }}
+                                  className="text-xs max-w-full whitespace-normal"
+                                >
+                                  <span className="block max-w-full">
+                                    {suggestion.title}
+                                  </span>
+                                </Button>{" "}
+                              </motion.div>
+                            ))}
+                          </div>
+                        )}
+                    </AnimatePresence>
+                  </div>
+                )}
             </div>
 
             <div className="p-4">
