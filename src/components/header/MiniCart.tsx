@@ -238,7 +238,7 @@ const MiniCart = () => {
           />
         )}
         {cart && cart?.carts?.length > 0 && (
-          <div className="absolute h-3.5 w-3.5 md:h-4 md:w-4.5 lg:-top-1.5 lg:-right-1 text-[10px] p-0 px-1 -right-0 -top-0 flex items-center justify-center bg-red-500 text-white rounded-full font-bold">
+          <div className="absolute h-3.5 w-3.5 md:h-4 md:w-4.5 lg:-top-1.5 lg:-right-1 text-[10px] p-0 px-1 -right-2 -top-2 flex items-center justify-center bg-red-500 text-white rounded-full font-bold">
             <span className="transition-all duration-300 ease-in-out transform translate-y-[1px]">
               {cart?.carts?.reduce((value, item) => value + item.quantity, 0)}
             </span>

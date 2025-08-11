@@ -57,6 +57,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
         },
       ],
     },
+    // metadataBase: setting?.domain ? new URL(setting.domain) : undefined,
   };
 };
 

@@ -62,8 +62,11 @@ const Cart = () => {
   const checkTransactionExist = async () => {
     try {
       setIsLoading(true);
+      const transactionExists = localStorage.getItem("transaction");
+      if (transactionExists) {
+        localStorage.removeItem("transaction");
+      }
       const response = await get("/transaction/detail");
-
       if (response && response.data) {
         window.location.href = "/cart/checkout";
         localStorage.setItem("transaction", JSON.stringify(response.data));

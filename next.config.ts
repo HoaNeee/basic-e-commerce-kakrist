@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/dlogl1cn7/**",
+      },
+      {
         protocol: "http",
         hostname: "res.cloudinary.com",
         port: "",
