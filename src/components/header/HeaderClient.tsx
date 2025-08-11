@@ -44,6 +44,7 @@ import LOGOWHITE from "@/assets/logo-white.png";
 import LOGOAPP from "@/assets/logo.png";
 import { SystemSettingModel } from "@/models/settingSystem";
 import { Skeleton } from "../ui/skeleton";
+import { ButtonTransition } from "../ui/button";
 
 const routePrivate = ["/profile", "/cart"];
 
@@ -267,8 +268,8 @@ const HeaderClient = ({
               alt="LOGO"
               src={
                 setting.theme === "dark"
-                  ? system_settings?.logoLight || LOGOAPP
-                  : system_settings?.logoDark || LOGOWHITE
+                  ? system_settings?.logoLight || LOGOWHITE
+                  : system_settings?.logoDark || LOGOAPP
               }
               priority
               width={142}
@@ -290,9 +291,9 @@ const HeaderClient = ({
                 side="left"
                 className="w-80 bg-white dark:bg-gray-900 text-black dark:text-white border-r border-gray-200 dark:border-gray-700"
               >
-                <SheetHeader className="pb-6">
+                <SheetHeader className="pb-3">
                   <SheetTitle asChild>
-                    <Link className="w-24 h-8 block" href="/">
+                    <Link className="w-30 h-10 block" href="/">
                       <Image
                         alt="LOGO"
                         src={
@@ -309,7 +310,7 @@ const HeaderClient = ({
                   </SheetTitle>
                   <SheetDescription />
                 </SheetHeader>
-                <MenuNavMobile />
+                <MenuNavMobile onLogout={handleLogout} />
               </SheetContent>
             </Sheet>
           </div>
@@ -333,26 +334,28 @@ const HeaderClient = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 relative group"
-            onClick={() => {
-              if (!auth.isLogin) {
-                window.location.href = `/auth/login?next=${encodeURIComponent(
-                  "/profile/wishlists"
-                )}`;
-                return;
-              }
-              router.push("/profile/wishlists");
-            }}
-          >
-            <IoIosHeartEmpty className="lg:text-2xl text-xl text-gray-600 dark:text-gray-300 group-hover:text-red-500 transition-colors" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 relative group hidden lg:block"
+              onClick={() => {
+                if (!auth.isLogin) {
+                  window.location.href = `/auth/login?next=${encodeURIComponent(
+                    "/profile/wishlists"
+                  )}`;
+                  return;
+                }
+                router.push("/profile/wishlists");
+              }}
+            >
+              <IoIosHeartEmpty className="lg:text-2xl text-xl text-gray-600 dark:text-gray-300 group-hover:text-red-500 transition-colors" />
+            </button>
 
-          <MiniCart />
+            <MiniCart />
+          </div>
 
           {auth.isLogin ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 rounded-full transition-all duration-200">
+              <DropdownMenuTrigger className="focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 rounded-full transition-all duration-200 lg:block hidden lg:visible invisible">
                 <Avatar className="h-10 w-10 border-2 border-transparent hover:border-primary/20 transition-all duration-200">
                   {auth.avatar && (
                     <AvatarImage
@@ -385,18 +388,15 @@ const HeaderClient = ({
                   className="text-red-600 dark:text-red-400 cursor-pointer rounded-md px-3 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   onClick={handleLogout}
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  <span>Logout</span>
+                  <LogOut className="h-4 w-4 mr-2 text-red-600" />
+                  <span className="text-red-600">Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
-              href="/auth/login"
-            >
-              Login
-            </Link>
+            <a className="inline-block" href="/auth/login">
+              <ButtonTransition>Login</ButtonTransition>
+            </a>
           )}
         </div>
       </div>

@@ -56,4 +56,22 @@ function Button({
   );
 }
 
-export { Button, buttonVariants };
+const ButtonTransition = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"button">) => {
+  return (
+    <button
+      className={cn(
+        "inline-flex items-center cursor-pointer dark:text-neutral-800/80 justify-center px-6 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+export { Button, buttonVariants, ButtonTransition };

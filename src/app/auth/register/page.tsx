@@ -152,7 +152,7 @@ const LayoutRegisterWithSuspense = () => {
                     <FormControl>
                       <Input
                         placeholder="Your First Name"
-                        className={`py-5 ${setting.theme}`}
+                        className={`py-5 ${setting.theme}  dark:autofill:text-white`}
                         name="firstName"
                       />
                     </FormControl>
@@ -189,7 +189,7 @@ const LayoutRegisterWithSuspense = () => {
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input
-                        className={`py-5 ${setting.theme}`}
+                        className={`py-5 ${setting.theme}  dark:autofill:text-white`}
                         placeholder="Your Email Address"
                         name="email"
                         onChange={() => {
@@ -211,7 +211,7 @@ const LayoutRegisterWithSuspense = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        className={`py-5 ${setting.theme}`}
+                        className={`py-5 ${setting.theme} dark:autofill:text-white`}
                         placeholder="Your Password"
                         name="password"
                         type="password"

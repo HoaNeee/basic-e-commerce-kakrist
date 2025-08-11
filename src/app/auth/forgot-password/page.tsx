@@ -97,7 +97,7 @@ const ForgotPassword = () => {
             <Input
               type="email"
               placeholder="Email"
-              className="py-5"
+              className="py-5  dark:autofill:text-white"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);

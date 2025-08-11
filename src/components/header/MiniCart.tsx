@@ -37,15 +37,21 @@ const MiniCart = () => {
             modal
           >
             <PopoverTrigger asChild>
-              <PiShoppingBag
-                className="lg:text-2xl text-xl cursor-pointer"
-                title="open mini cart"
-              />
+              <button
+                className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                  auth.isLogin ? "" : "lg:block hidden"
+                }`}
+              >
+                <PiShoppingBag
+                  className="text-gray-600 dark:text-gray-300 lg:text-2xl text-xl transition-colors duration-200 cursor-pointer"
+                  title="open mini cart"
+                />
+              </button>
             </PopoverTrigger>
 
             <PopoverContent
               sideOffset={10}
-              className="bg-white dark:bg-black dark:text-white/80 sm:w-[340px] w-[280px] p-0 py-3 absolute sm:-left-64 -left-60 min-h-40 rounded-sm text-sm shadow-2xl z-41"
+              className="bg-white dark:bg-black dark:text-white/80 sm:w-[340px] w-[280px] p-0 py-3 absolute sm:-left-64 -left-65 min-h-40 rounded-sm text-sm shadow-2xl z-41"
             >
               {auth.isLogin ? (
                 <>
@@ -227,12 +233,12 @@ const MiniCart = () => {
           </Popover>
         ) : (
           <PiShoppingBag
-            className="lg:text-2xl text-xl cursor-pointer"
+            className="lg:text-2xl text-xl text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer"
             title="open mini cart"
           />
         )}
         {cart && cart?.carts?.length > 0 && (
-          <div className="absolute h-3.5 w-3.5 md:h-4 md:w-4.5 lg:-top-1.5 text-[10px] p-0 px-1 lg:-right-1 -right-2 -top-2 flex items-center justify-center bg-red-500 text-white rounded-full font-bold">
+          <div className="absolute h-3.5 w-3.5 md:h-4 md:w-4.5 lg:-top-1.5 lg:-right-1 text-[10px] p-0 px-1 -right-0 -top-0 flex items-center justify-center bg-red-500 text-white rounded-full font-bold">
             <span className="transition-all duration-300 ease-in-out transform translate-y-[1px]">
               {cart?.carts?.reduce((value, item) => value + item.quantity, 0)}
             </span>

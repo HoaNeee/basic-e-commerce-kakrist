@@ -72,7 +72,7 @@ const SearchComponent = () => {
       return (
         <>
           {suggest.slice(0, index)}
-          <span className="text-primary dark:text-primary font-semibold bg-gray-100 px-1 rounded">
+          <span className="text-primary dark:text-primary font-semibold bg-gray-100 dark:bg-neutral-600/70 px-1 rounded">
             {suggest.slice(index, index + keywordStrong.length)}
           </span>
           {suggest.slice(index + keywordStrong.length)}
@@ -95,7 +95,7 @@ const SearchComponent = () => {
         <div className="relative">
           <Input
             placeholder="Search products, blogs..."
-            className="w-full pl-4 pr-4 py-5 text-sm bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:focus:bg-gray-800 focus:border-primary/30 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:shadow-md"
+            className="w-full pl-4 pr-4 py-5 text-sm bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:focus:bg-neutral-800 focus:border-primary/30 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:shadow-md"
             autoComplete="off"
             value={keyword}
             onChange={(e) => {
@@ -137,7 +137,7 @@ const SearchComponent = () => {
 
       {openPopover && (
         <>
-          <div className="absolute min-h-16 z-30 w-full bg-white dark:bg-gray-800 p-3 top-12 shadow-2xl left-0 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+          <div className="absolute min-h-16 z-30 w-full bg-white dark:bg-neutral-800 p-3 top-12 shadow-2xl left-0 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
             {!isLoading ? (
               <div className="flex flex-col gap-1">
                 {isSuggestWithKeywordEmpty && (

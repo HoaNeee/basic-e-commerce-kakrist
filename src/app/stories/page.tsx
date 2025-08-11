@@ -129,8 +129,7 @@ const Stories = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-r from-neutral-800 via-neutral-600 to-black/40 text-white overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
@@ -284,7 +283,6 @@ const Stories = () => {
         </div>
       </section>
 
-      {/* Team */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -326,8 +324,7 @@ const Stories = () => {
         </div>
       </section>
 
-      {/* Achievements */}
-      <section className="py-20 bg-gradient-to-r from-neutral-700 to-black/40 text-white">
+      <section className="py-20 bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Thành Tựu Của Chúng Tôi</h2>
@@ -352,11 +349,10 @@ const Stories = () => {
         </div>
       </section>
 
-      {/* Vision */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-gradient-to-r from-neutral-600 to-black/40 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8">
+            <div className="bg-gradient-to-r from-primary/80 to-primary/60 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8">
               <Target className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">

@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Card } from "../ui/card";
-import { Button } from "../ui/button";
+import { ButtonTransition } from "../ui/button";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import Image from "next/image";
 import IMAGETEST from "../../assets/dayofthemonth2.png";
@@ -119,9 +119,9 @@ const DealOfTheMonth = () => {
         {renderTime(intervalToDate)}
         <div>
           <Link href={"/shop"}>
-            <Button className="py-7 px-5">
+            <ButtonTransition className="py-4 px-5">
               View All Products <FaLongArrowAltRight />
-            </Button>
+            </ButtonTransition>
           </Link>
         </div>
       </div>

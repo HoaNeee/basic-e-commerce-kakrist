@@ -21,14 +21,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { post } from "@/utils/requets";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { RootState } from "@/redux/store";
 import LoadingComponent from "@/components/LoadingComponent";
 import GoogleLogin from "@/components/GoogleLogin";
 import { SystemSettingContext } from "@/context/systemSettingContext";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const formSchema = z.object({
   email: z
@@ -44,8 +44,6 @@ const formSchema = z.object({
 
 const LayoutLoginWithSuspense = () => {
   const [isLoading, setIsLoading] = useState(false);
-
-  const setting = useSelector((state: RootState) => state.setting.setting);
   const { system_settings } = useContext(SystemSettingContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,6 +55,7 @@ const LayoutLoginWithSuspense = () => {
 
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const setting = useSelector((state: RootState) => state.setting.setting);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -110,7 +109,7 @@ const LayoutLoginWithSuspense = () => {
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input
-                        className={`py-5 ${setting.theme}`}
+                        className={`py-5 ${setting?.theme} dark:autofill:text-white`}
                         placeholder="Your Email Address"
                         name="email"
                       />
@@ -129,7 +128,7 @@ const LayoutLoginWithSuspense = () => {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        className={`py-5 ${setting.theme}`}
+                        className={`py-5 ${setting?.theme}  dark:autofill:text-white`}
                         placeholder="Your Password"
                         name="password"
                         type="password"

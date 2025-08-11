@@ -4,6 +4,7 @@ import "./globals.css";
 import ReduxProvider from "./provider";
 import MainLayout from "@/layouts/MainLayout";
 import { get } from "@/utils/requets";
+import { SystemSettingModel } from "@/models/settingSystem";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,7 @@ const geistMono = Geist_Mono({
 const getSetting = async () => {
   try {
     const res = await get(`/settings`);
+
     return res.data;
   } catch (error) {
     console.error("Error fetching settings:", error);
@@ -26,12 +28,35 @@ const getSetting = async () => {
 };
 
 export const generateMetadata = async (): Promise<Metadata> => {
-  const setting = await getSetting();
+  const setting: SystemSettingModel = await getSetting();
   return {
     title: "Home",
     description:
-      setting?.description || "This is a basic e-commerce application",
+      setting?.metaDescription || "This is a basic e-commerce application",
     keywords: setting?.keywords || "e-commerce, shop, online store",
+    openGraph: {
+      title: setting?.metaTitle || "Home",
+      description:
+        setting?.metaDescription || "This is a basic e-commerce application",
+      url: setting?.domain || "https://yourdomain.com",
+      siteName: setting?.siteName || "My e-commerce Store",
+      images: [
+        {
+          url: setting?.ogImage || "/og-image.jpg",
+          alt: setting?.metaTitle || "Home",
+        },
+      ],
+    },
+    icons: {
+      icon: setting?.siteFavicon || "/favicon.ico",
+      apple: setting?.siteFavicon || "/favicon.ico",
+      other: [
+        {
+          rel: "icon",
+          url: setting?.siteFavicon || "/favicon.ico",
+        },
+      ],
+    },
   };
 };
 

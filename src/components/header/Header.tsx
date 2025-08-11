@@ -9,7 +9,7 @@ const Header = ({
 }) => {
   return (
     <>
-      <header className="flex items-center justify-center w-full z-40 sticky top-0 border-b border-gray-100 dark:border-gray-800 transition-all duration-300">
+      <header className="flex items-center justify-center w-full z-40 sticky top-0 border-b border-gray-100 dark:border-gray-800 transition-all duration-300 dark:text-white/80">
         <HeaderGradient>
           <HeaderClient system_settings={system_settings} />
         </HeaderGradient>

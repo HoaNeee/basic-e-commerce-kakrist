@@ -1,6 +1,6 @@
 import * as React from "react";
 import { CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { Button } from "../ui/button";
+import { ButtonTransition } from "../ui/button";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { CarouselComponent } from "../CarouselComponent";
 import { PromotionModel } from "@/models/promotionModel";
@@ -50,13 +50,13 @@ export function CarouselPromotion(props: Props) {
                       {item.promotionType === "percent" ? "%" : ""} OFF
                     </p>
                     <div>
-                      <Button className="py-6" asChild>
-                        <Link href={"/shop"}>
+                      <Link href={"/shop"} className="">
+                        <ButtonTransition className="py-4 flex items-center gap-2">
                           {" "}
                           Shop now
                           <FaLongArrowAltRight />
-                        </Link>
-                      </Button>
+                        </ButtonTransition>
+                      </Link>
                     </div>
                   </div>
                 </section>
@@ -72,10 +72,13 @@ export function CarouselPromotion(props: Props) {
                   </h2>
                   <p className="text-xl font-medium">UPTO 40% OFF</p>
                   <div>
-                    <Button className="py-6">
-                      Shop now
-                      <FaLongArrowAltRight />
-                    </Button>
+                    <Link href={"/shop"} className="">
+                      <ButtonTransition className="py-4 flex items-center gap-2">
+                        {" "}
+                        Shop now
+                        <FaLongArrowAltRight />
+                      </ButtonTransition>
+                    </Link>
                   </div>
                 </div>
               </section>

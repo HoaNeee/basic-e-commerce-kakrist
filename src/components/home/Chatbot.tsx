@@ -457,7 +457,6 @@ const Chatbot = () => {
                 if (listMessages.current) {
                   listMessages.current.scrollTo({
                     top: listMessages.current.scrollHeight,
-                    // behavior: "smooth",
                   });
                 }
               }}
