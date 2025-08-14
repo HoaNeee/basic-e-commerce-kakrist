@@ -137,7 +137,7 @@ const SearchComponent = () => {
 
       {openPopover && (
         <>
-          <div className="absolute min-h-16 z-30 w-full bg-white dark:bg-neutral-800 p-3 top-12 shadow-2xl left-0 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+          <div className="absolute min-h-16 z-30 md:w-full w-xs bg-white dark:bg-neutral-800 p-3 top-12 shadow-2xl -left-8 md:left-0 rounded-xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
             {!isLoading ? (
               <div className="flex flex-col gap-1">
                 {isSuggestWithKeywordEmpty && (

@@ -96,12 +96,12 @@ const CardProduct = ({
           </div>
         )}
 
-        <div className="absolute top-3 right-3 z-20 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+        <div className="absolute top-3 right-3 md:z-20 z-10 flex flex-col gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform md:translate-x-4 md:group-hover:translate-x-0 translate-x-0">
           {!isListFavorite ? (
             <Button
               variant="secondary"
               size="sm"
-              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0 relative transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0 relative transition-all duration-300 md:flex hidden"
               title="Add to wishlist"
               onClick={(e) => {
                 e.preventDefault();
@@ -139,7 +139,7 @@ const CardProduct = ({
           <Button
             variant="secondary"
             size="sm"
-            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0"
+            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0 md:flex hidden"
             title="Quick view"
             onClick={(e) => {
               e.preventDefault();
@@ -156,7 +156,7 @@ const CardProduct = ({
             <Button
               variant="secondary"
               size="sm"
-              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0"
+              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white shadow-md border-0 md:flex hidden"
               title="Compare"
               onClick={() =>
                 router.push(`/shop?filter_cats=${item.categories.join(",")}`)

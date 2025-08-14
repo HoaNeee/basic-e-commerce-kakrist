@@ -23,6 +23,8 @@ const ErrorCodePage = async ({
     switch (code) {
       case "404":
         return <div className="text-start text-sm">Page Not Found (404)</div>;
+      case "403":
+        return <div className="text-start text-sm">Forbidden (403)</div>;
       case "500":
         return (
           <div className="text-start text-sm">Internal Server Error (500)</div>

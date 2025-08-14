@@ -56,7 +56,7 @@ const ItemListComment = (props: Props) => {
   return (
     <div className="w-full">
       <div className={`flex gap-3 ${isComment ? "" : "items-center"}`}>
-        <Avatar className="bg-gray-200 dark:bg-gray-600">
+        <Avatar className="bg-gray-200 dark:bg-gray-600 size-10">
           <AvatarImage src={item.user?.avatar} alt="avatar" />
           <AvatarFallback className="bg-gray-100/50">
             <User size={22} />
@@ -68,9 +68,9 @@ const ItemListComment = (props: Props) => {
               {item.user?.firstName} {item.user?.lastName}
             </p>
           ) : (
-            <p className="text-sm">User</p>
+            <p className="text-sm">Someone</p>
           )}
-          {!isComment && (
+          {!isComment ? (
             <div className={`flex items-center`}>
               <Rating className="" readOnly defaultValue={item.star}>
                 {Array.from({ length: 5 }).map((_, index) => (
@@ -88,6 +88,8 @@ const ItemListComment = (props: Props) => {
                 ))}
               </Rating>
             </div>
+          ) : (
+            <p className="text-xs text-gray-400">Customer</p>
           )}
         </div>
       </div>
@@ -98,8 +100,8 @@ const ItemListComment = (props: Props) => {
           marginLeft: isComment ? "8px" : "",
         }}
       >
-        <p className="font-bold">{item.title}</p>
-        <p className="tracking-wider text-sm">
+        <p className="font-bold break-all">{item.title}</p>
+        <p className="tracking-wider text-sm break-all">
           {item.content ||
             (isComment && (
               <span className="text-neutral-300">This comment no content!</span>
@@ -119,7 +121,7 @@ const ItemListComment = (props: Props) => {
       )}
       <div>
         <div
-          className="text-xs tracking-wider text-muted-foreground flex items-center"
+          className="text-xs tracking-wider text-muted-foreground flex items-center flex-wrap"
           style={{
             marginLeft: isComment ? "8px" : "",
           }}

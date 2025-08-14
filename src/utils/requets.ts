@@ -31,7 +31,8 @@ export const get = async (path: string, token?: string, config?: any) => {
     if (
       response.status === 429 ||
       response.status === 404 ||
-      response.status === 500
+      response.status === 500 ||
+      response.status === 403
     ) {
       window.location.href = `/error/${response.status}`;
       return;
@@ -68,7 +69,8 @@ export const post = async (path: string, options: any, token?: string) => {
     if (
       response.status === 429 ||
       response.status === 404 ||
-      response.status === 500
+      response.status === 500 ||
+      response.status === 403
     ) {
       window.location.href = `/error/${response.status}`;
     }
@@ -108,7 +110,8 @@ export const patch = async function (
     if (
       response.status === 429 ||
       response.status === 404 ||
-      response.status === 500
+      response.status === 500 ||
+      response.status === 403
     ) {
       window.location.href = `/error/${response.status}`;
       return;
@@ -141,7 +144,11 @@ export const del = async function (path: string, id: string, token?: string) {
       headers: myHeaders,
     });
 
-    if (response.status === 429 || response.status === 404) {
+    if (
+      response.status === 429 ||
+      response.status === 404 ||
+      response.status === 403
+    ) {
       window.location.href = `/error/${response.status}`;
       return;
     }

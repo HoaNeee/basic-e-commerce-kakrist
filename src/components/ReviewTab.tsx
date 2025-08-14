@@ -217,21 +217,28 @@ const RatingTab = (props: Props) => {
         {Array.from({ length: limit }).map((_, index) => (
           <div
             key={index}
-            className="border-b-2 border-muted pb-2 transition-all duration-300"
+            className="bg-white dark:bg-gray-800/50 rounded-lg p-6 border border-gray-200 dark:border-gray-700 space-y-4"
           >
-            <div className="flex gap-3 items-center ">
-              <Skeleton className="size-7 rounded-full" />
-              <div className="space-y-1.5">
-                <Skeleton className="h-2 w-30" />
-                <Skeleton className="h-3 w-25" />
+            <div className="flex gap-4 items-start">
+              <Skeleton className="w-12 h-12 rounded-full flex-shrink-0" />
+              <div className="flex-1 space-y-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="w-4 h-4 rounded" />
+                    ))}
+                  </div>
+                </div>
+                <Skeleton className="h-5 w-3/4" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+                <Skeleton className="h-3 w-24" />
               </div>
             </div>
-            <div className="mt-3 space-y-1">
-              <Skeleton className="h-3 lg:w-1/4 sm:w-1/3 my-2" />
-              <Skeleton className="h-2" />
-              <Skeleton className="h-2 w-2/3" />
-            </div>
-            <Skeleton className="mt-3 mb-1 lg:w-1/4 sm:w-1/3 w-full h-2" />
           </div>
         ))}
       </>
@@ -240,109 +247,123 @@ const RatingTab = (props: Props) => {
 
   if (isFirstLoading) {
     return (
-      <div className="w-full h-full py-5">
-        <Skeleton className="h-4 w-1/4 mb-4" />
-        <div className="space-y-3">{renderSkeleton()}</div>
+      <div className="py-8">
+        <div className="mb-8">
+          <Skeleton className="h-6 w-48 mb-6" />
+          <div className="space-y-4">{renderSkeleton()}</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full py-5">
-      <h3 className="font-bold">Customer Reviews</h3>
-      {reviews && reviews?.length > 0 ? (
-        <div className="my-6 flex flex-col gap-3">
-          {reviews.map((item, index) => (
-            <div
-              key={index}
-              className="w-full space-y-2 border-b-2 border-muted pb-2 transition-all duration-300"
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+          Customer Reviews ({totalReviews})
+        </h3>
+
+        {reviews && reviews?.length > 0 ? (
+          <div className="space-y-4">
+            {reviews.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white dark:bg-gray-800/50 rounded-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200"
+              >
+                <ItemListComment
+                  item={item}
+                  onSubmit={async (val: string) => {
+                    await handleSubmitComment(val);
+                  }}
+                  commentAdded={commentAdded}
+                  idShowReply={idShowReply}
+                  idsShowComment={idsShowComment}
+                  onCancelReply={() => setIdShowReply("")}
+                  onShowComment={() => {
+                    const ids = [...(idsShowComment || [])];
+                    if (!ids?.includes(item._id)) {
+                      ids?.push(item._id);
+                    }
+                    setIdsShowComment(ids);
+                  }}
+                  onHideComment={() => {
+                    if (idsShowComment?.includes(item._id)) {
+                      setIdsShowComment(
+                        idsShowComment.filter((it) => it !== item._id)
+                      );
+                    }
+                  }}
+                  onShowReply={() => setIdShowReply(item._id)}
+                  parent_id={""}
+                  review_id={item._id}
+                  isUser={auth.user_id === item.user_id}
+                  onDelete={(val) => {
+                    handleDeleteReview(val);
+                  }}
+                  loading={isDeleting}
+                  isSubmitingComment={isSubmitingComment}
+                />
+              </div>
+            ))}
+
+            {isLoading && <div className="space-y-4">{renderSkeleton()}</div>}
+          </div>
+        ) : (
+          <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-12 text-center">
+            <div className="text-gray-400 text-lg mb-2">No reviews yet</div>
+            <p className="text-gray-500 text-sm">
+              Be the first to share your thoughts about this product!
+            </p>
+          </div>
+        )}
+
+        {reviews && reviews.length > 0 && (
+          <div className="mt-6 flex justify-center">
+            <Button
+              onClick={() => {
+                if (!isLoading) {
+                  setPageReview(pageReview + 1);
+                }
+              }}
+              className="px-8 py-2.5"
+              variant="outline"
+              disabled={
+                pageReview >= Math.ceil(totalReviews / limit) || isLoading
+              }
             >
-              <ItemListComment
-                item={item}
-                onSubmit={async (val: string) => {
-                  await handleSubmitComment(val);
-                }}
-                commentAdded={commentAdded}
-                idShowReply={idShowReply}
-                idsShowComment={idsShowComment}
-                onCancelReply={() => setIdShowReply("")}
-                onShowComment={() => {
-                  const ids = [...(idsShowComment || [])];
-                  if (!ids?.includes(item._id)) {
-                    ids?.push(item._id);
-                  }
-                  setIdsShowComment(ids);
-                }}
-                onHideComment={() => {
-                  if (idsShowComment?.includes(item._id)) {
-                    setIdsShowComment(
-                      idsShowComment.filter((it) => it !== item._id)
-                    );
-                  }
-                }}
-                onShowReply={() => setIdShowReply(item._id)}
-                parent_id={""}
-                review_id={item._id}
-                isUser={auth.user_id === item.user_id}
-                onDelete={(val) => {
-                  handleDeleteReview(val);
-                }}
-                loading={isDeleting}
-                isSubmitingComment={isSubmitingComment}
-              />
-            </div>
-          ))}
-          {isLoading && <div className="w-full">{renderSkeleton()}</div>}
-        </div>
-      ) : (
-        <div className="w-full text-center py-10 text-muted-foreground">
-          <p className="">No reviews yet.</p>
-        </div>
-      )}
+              {isLoading ? "Loading..." : "Show More Reviews"}
+            </Button>
+          </div>
+        )}
+      </div>
 
-      {reviews && reviews.length > 0 && (
-        <div
-          className="md:w-1/3 sm:w-1/2 w-full transition-all duration-300"
-          style={{
-            opacity: !isLoading ? "1" : "0",
-          }}
-        >
-          <ButtonLoading
-            loading={isLoading}
-            onClick={() => {
-              setPageReview(pageReview + 1);
-            }}
-            className="px-10 w-full"
-            disabled={pageReview >= Math.ceil(totalReviews / limit)}
-          >
-            Show More
-          </ButtonLoading>
-        </div>
-      )}
-
-      <div className="w-full py-6">
-        <h3 className="font-bold">Add Your Review</h3>
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+          Write a Review
+        </h3>
 
         {!auth.isLogin ? (
-          <div className="mt-3 text-muted-foreground">
-            Please{" "}
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 text-center">
+            <p className="text-gray-600 dark:text-gray-400 mb-3">
+              Please log in to write a review
+            </p>
             <a
               href={`/auth/login?next=${encodeURIComponent(
                 path + (search ? `?${search}` : ``)
               )}`}
-              className="italic underline text-blue-400"
+              className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-200"
             >
-              login
-            </a>{" "}
-            to write your review.
+              Log In to Review
+            </a>
           </div>
         ) : (
-          <>
-            <div className="mt-4 md:w-1/2 w-full">
-              <p className="text-sm">Your Rating</p>
-              <div className="text-center">
+          <div className="bg-white dark:bg-gray-800/50 rounded-lg p-6 border border-gray-200 dark:border-gray-700 space-y-6">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">
+                Your Rating *
+              </Label>
+              <div className="flex items-center justify-center sm:justify-start">
                 <Rating
-                  className="mt-3"
                   onValueChange={(e) => {
                     setRateScore(e);
                   }}
@@ -351,9 +372,18 @@ const RatingTab = (props: Props) => {
                   {Array.from({ length: 5 }).map((_, idx) => (
                     <RatingButton
                       key={idx}
-                      size={40}
-                      className="text-yellow-500"
-                      icon={<StarIcon strokeWidth={1} />}
+                      size={32}
+                      className={`${
+                        idx < rateScore
+                          ? "text-yellow-500 hover:text-yellow-600"
+                          : "text-gray-300 hover:text-yellow-400"
+                      } transition-colors duration-200`}
+                      icon={
+                        <StarIcon
+                          strokeWidth={1}
+                          fill={idx < rateScore ? "currentColor" : "none"}
+                        />
+                      }
                       index={idx}
                     />
                   ))}
@@ -361,109 +391,127 @@ const RatingTab = (props: Props) => {
               </div>
             </div>
 
-            <div className="mt-4 md:w-1/2 w-full">
-              <div className="space-y-1">
-                <Label htmlFor="title" className="text-xs">
-                  Title
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="title"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Review Title
                 </Label>
                 <Input
-                  id="content"
-                  placeholder="Your title review"
+                  id="title"
+                  placeholder="Summarize your experience"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  className="border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-primary"
                 />
               </div>
-              <div className="space-y-1 mt-4">
-                <Label htmlFor="content" className="text-xs">
-                  Your Reviews
-                </Label>
-                <Textarea
-                  id="content"
-                  placeholder="Write something here..."
-                  className="min-h-50"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
-              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="content"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Your Review
+              </Label>
+              <Textarea
+                id="content"
+                placeholder="Share your thoughts about this product..."
+                className="min-h-32 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-primary resize-none"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Add Photos (Optional)
+              </Label>
               <FileUpload
                 value={files}
                 onValueChange={setFiles}
                 accept="image/*"
                 maxFiles={5}
-                className="w-full max-w-xs mt-6"
+                className="w-full"
                 multiple
               >
-                <FileUploadDropzone>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="flex items-center justify-center rounded-full border p-2.5">
-                      <Upload className="size-6 text-muted-foreground" />
+                <FileUploadDropzone className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary transition-colors duration-200">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-600">
+                      <Upload className="w-6 h-6 text-gray-500" />
                     </div>
-                    <p className="font-medium text-sm">
-                      Drag & drop files here
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      Or click to browse (max 5 files)
-                    </p>
+                    <div>
+                      <p className="font-medium text-gray-700 dark:text-gray-300">
+                        Drag & drop photos here
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        or click to browse (max 5 images)
+                      </p>
+                    </div>
+                    <FileUploadTrigger asChild>
+                      <Button variant="outline" size="sm" className="mt-2">
+                        Choose Files
+                      </Button>
+                    </FileUploadTrigger>
                   </div>
-                  <FileUploadTrigger asChild>
-                    <Button variant="outline" size="sm" className="mt-2 w-fit">
-                      Browse files
-                    </Button>
-                  </FileUploadTrigger>
                 </FileUploadDropzone>
-                <FileUploadList orientation="horizontal" className="gap-3">
-                  {files.map((file, index) => (
-                    <FileUploadItem
-                      key={index}
-                      value={file}
-                      className="p-0 border-none relative"
-                    >
-                      <FileUploadItemPreview
-                        className="h-20 w-20"
-                        render={() => {
-                          return (
-                            <div className="relative w-full h-full">
+
+                {files.length > 0 && (
+                  <FileUploadList
+                    orientation="horizontal"
+                    className="gap-4 mt-4"
+                  >
+                    {files.map((file, index) => (
+                      <FileUploadItem
+                        key={index}
+                        value={file}
+                        className="relative group"
+                      >
+                        <div className="relative w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-600">
+                          <FileUploadItemPreview
+                            className="w-full h-full"
+                            render={() => (
                               <img
                                 src={URL.createObjectURL(file)}
-                                alt="this is image"
+                                alt="Review image"
                                 className="w-full h-full object-cover"
                               />
-                            </div>
-                          );
-                        }}
-                      />
-                      <div className="absolute -top-2.5 -right-3 bg-muted rounded-full">
-                        <FileUploadItemDelete
-                          asChild
-                          className="hover:rounded-full"
-                          title="Remove this file"
-                        >
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-7"
+                            )}
+                          />
+                          <FileUploadItemDelete
+                            asChild
+                            className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                           >
-                            <X />
-                          </Button>
-                        </FileUploadItemDelete>
-                      </div>
-                    </FileUploadItem>
-                  ))}
-                </FileUploadList>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="w-6 h-6 rounded-full"
+                              title="Remove image"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </FileUploadItemDelete>
+                        </div>
+                      </FileUploadItem>
+                    ))}
+                  </FileUploadList>
+                )}
               </FileUpload>
             </div>
-            <div className="lg:w-xs sm:w-1/2 w-full mt-6">
+
+            <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
               <ButtonLoading
                 loading={isPosting}
                 disabled={!rateScore}
-                className="px-10 py-6 w-full"
-                typeLoading={1}
+                className="px-8 py-2.5 min-w-32"
                 onClick={handleSubmitReview}
               >
-                Submit
+                {isPosting ? "Publishing..." : "Publish Review"}
               </ButtonLoading>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

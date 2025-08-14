@@ -132,50 +132,52 @@ const ListComment = (props: Props) => {
           <Skeleton className="mt-3 mb-1 lg:w-1/4 sm:w-1/3 w-full h-2" />
         </div>
       )}
-      {!isLoading &&
-        comments &&
-        comments.map((item, index: number) => (
-          <div key={index} className="ml-8 mt-3">
-            <ItemListComment
-              isComment
-              item={item}
-              onSubmit={async (val: string) => {
-                await handleSubmitComment(
-                  item._id,
-                  item.product_id,
-                  item.review_id,
-                  val
-                );
-              }}
-              commentAdded={commentAddedChild}
-              idShowReply={idShowReply}
-              idsShowComment={idsShowComment}
-              onCancelReply={() => setIdShowReply("")}
-              onShowComment={() => {
-                const ids = [...(idsShowComment || [])];
-                if (!ids?.includes(item._id)) {
-                  ids?.push(item._id);
-                }
-                setIdsShowComment(ids);
-              }}
-              onHideComment={() => {
-                if (idsShowComment?.includes(item._id)) {
-                  setIdsShowComment(
-                    idsShowComment.filter((it) => it !== item._id)
+      <div className="md:ml-8 ml-4 border-l-2 border-gray-200 dark:border-gray-700">
+        {!isLoading &&
+          comments &&
+          comments.map((item, index: number) => (
+            <div key={index} className="md:ml-8 ml-4 mt-3">
+              <ItemListComment
+                isComment
+                item={item}
+                onSubmit={async (val: string) => {
+                  await handleSubmitComment(
+                    item._id,
+                    item.product_id,
+                    item.review_id,
+                    val
                   );
-                }
-              }}
-              onShowReply={() => setIdShowReply(item._id)}
-              parent_id={item._id}
-              review_id={review_id}
-              isUser={auth.user_id === item.user_id}
-              onDelete={(val) => {
-                handleDeleteComment(val);
-              }}
-              loading={isDeleting}
-            />
-          </div>
-        ))}
+                }}
+                commentAdded={commentAddedChild}
+                idShowReply={idShowReply}
+                idsShowComment={idsShowComment}
+                onCancelReply={() => setIdShowReply("")}
+                onShowComment={() => {
+                  const ids = [...(idsShowComment || [])];
+                  if (!ids?.includes(item._id)) {
+                    ids?.push(item._id);
+                  }
+                  setIdsShowComment(ids);
+                }}
+                onHideComment={() => {
+                  if (idsShowComment?.includes(item._id)) {
+                    setIdsShowComment(
+                      idsShowComment.filter((it) => it !== item._id)
+                    );
+                  }
+                }}
+                onShowReply={() => setIdShowReply(item._id)}
+                parent_id={item._id}
+                review_id={review_id}
+                isUser={auth.user_id === item.user_id}
+                onDelete={(val) => {
+                  handleDeleteComment(val);
+                }}
+                loading={isDeleting}
+              />
+            </div>
+          ))}
+      </div>
     </div>
   );
 };

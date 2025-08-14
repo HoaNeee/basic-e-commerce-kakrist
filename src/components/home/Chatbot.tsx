@@ -259,8 +259,8 @@ const Chatbot = () => {
                   href={`/shop/${product.slug}`}
                   className="absolute inset-0 md:hidden block"
                 />
-                <div className="flex items-center gap-2">
-                  <div className="max-w-2/6">
+                <div className="flex items-center gap-2 w-full">
+                  <div className="md:w-2/12 w-2/8">
                     <div className="w-15 h-15 rounded-xs bg-muted">
                       <img
                         src={product.thumbnail}
@@ -279,10 +279,11 @@ const Chatbot = () => {
                     <p className="text-xs text-gray-600 dark:text-gray-400">
                       {product?.options && (product?.options as string)}
                     </p>
-                    {product.productType === "simple" ||
-                    !product.rangePrice ||
-                    (product.rangePrice.min === null &&
-                      product.rangePrice.max === null) ? (
+                    {!product?.rangePrice ||
+                    ((product.rangePrice.min === null ||
+                      product.rangePrice.min === undefined) &&
+                      (product.rangePrice.max === null ||
+                        product.rangePrice.max === undefined)) ? (
                       <div className="flex items-center gap-2">
                         {product.discountedPrice !== undefined &&
                           product.discountedPrice !== null && (
@@ -456,6 +457,7 @@ const Chatbot = () => {
                 if (listMessages.current) {
                   listMessages.current.scrollTo({
                     top: listMessages.current.scrollHeight,
+                    behavior: "smooth",
                   });
                 }
               }}
