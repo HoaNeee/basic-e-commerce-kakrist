@@ -32,7 +32,7 @@ export interface ProductModel {
     numberPeople: number;
     average: number;
   };
-  options: Option[];
+  options: string | Option[];
 }
 
 export interface Option {

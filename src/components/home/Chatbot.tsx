@@ -193,7 +193,8 @@ const Chatbot = () => {
             dangerouslySetInnerHTML={{ __html: message.content }}
           />
         </div>
-        {message.intent === "search_product" &&
+        {(message.intent === "search_product" ||
+          message.intent === "similar_product") &&
           message.data &&
           message.data.length > 0 && (
             <div className="mt-2 w-full">
@@ -276,9 +277,7 @@ const Chatbot = () => {
                       {product.title}
                     </Link>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {product.options &&
-                        product.options.length > 0 &&
-                        product.options.map((o) => o.title).join(", ")}
+                      {product?.options && (product?.options as string)}
                     </p>
                     {product.productType === "simple" ||
                     !product.rangePrice ||

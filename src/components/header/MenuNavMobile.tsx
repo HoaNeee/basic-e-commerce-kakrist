@@ -116,7 +116,7 @@ const MenuNavMobile = (props: Props) => {
               </li>
               <li
                 onClick={onLogout}
-                className="flex items-center gap-2 cursor-pointer py-1 hover:bg-gray-100 dark:hover:bg-gray-800 px-3 mt-2 rounded-md transition-all duration-300 active:bg-gray-100 dark:active:bg-gray-800 text-red-600"
+                className="flex items-center gap-2 cursor-pointer py-1 hover:bg-gray-100 dark:hover:bg-gray-800 px-3.5 mt-3 rounded-md transition-all duration-300 active:bg-gray-100 dark:active:bg-gray-800 text-red-600"
               >
                 <Power className="text-red-600 dark:text-red-600 size-5" />{" "}
                 Logout
