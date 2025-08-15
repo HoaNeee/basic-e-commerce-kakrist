@@ -129,14 +129,14 @@ const Stories = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="relative py-20 bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative container mx-auto px-4 text-center">
+      <section className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 relative py-20 overflow-hidden text-white">
+        <div className="bg-black/20 absolute inset-0"></div>
+        <div className="container relative px-4 mx-auto text-center">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="md:text-6xl mb-6 text-5xl font-bold">
               Câu Chuyện Của Chúng Tôi
             </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90">
+            <p className="md:text-2xl opacity-90 mb-8 text-xl">
               Hành trình từ một ước mơ nhỏ đến thương hiệu thời trang được yêu
               thích
             </p>
@@ -149,16 +149,15 @@ const Stories = () => {
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section className="bg-gray-50 py-20">
+        <div className="container px-4 mx-auto">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="lg:grid-cols-2 grid items-center gap-12">
               <div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="mb-6 text-4xl font-bold text-gray-900">
                   Hành Trình Của Chúng Tôi
                 </h2>
-                <div className="space-y-6 text-gray-700 leading-relaxed">
+                <div className="space-y-6 leading-relaxed text-gray-700">
                   <p className="text-lg">
                     Bắt đầu từ năm 2019, chúng tôi khởi nghiệp với một cửa hàng
                     nhỏ và niềm đam mê mãnh liệt với thời trang. Ước mơ của
@@ -179,17 +178,18 @@ const Stories = () => {
                 </div>
               </div>
               <div className="relative">
-                <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
+                <div className="h-96 rounded-2xl relative overflow-hidden shadow-2xl">
                   <Image
                     src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop"
                     alt="Our Story"
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="object-cover"
                   />
                 </div>
-                <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-xl shadow-lg">
+                <div className="-bottom-6 -right-6 rounded-xl absolute p-6 bg-white shadow-lg">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">
+                    <div className="mb-1 text-3xl font-bold text-blue-600">
                       5+
                     </div>
                     <div className="text-sm text-gray-600">Năm kinh nghiệm</div>
@@ -201,21 +201,19 @@ const Stories = () => {
         </div>
       </section>
 
-      {/* Timeline */}
       <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="container px-4 mx-auto">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold text-gray-900">
               Cột Mốc Phát Triển
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="max-w-3xl mx-auto text-xl text-gray-600">
               Những khoảnh khắc đáng nhớ trong hành trình xây dựng thương hiệu
             </p>
           </div>
 
           <div className="max-w-4xl mx-auto">
             <div className="relative">
-              {/* Timeline line */}
               <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-blue-200 md:block hidden"></div>
 
               {milestones.map((milestone, index) => (
@@ -230,11 +228,11 @@ const Stories = () => {
                       index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"
                     }`}
                   >
-                    <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-                      <div className="text-blue-600 font-bold text-lg mb-2">
+                    <div className="rounded-xl hover:shadow-xl p-6 transition-shadow bg-white shadow-lg">
+                      <div className="mb-2 text-lg font-bold text-blue-600">
                         {milestone.year}
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      <h3 className="mb-3 text-xl font-semibold text-gray-900">
                         {milestone.title}
                       </h3>
                       <p className="text-gray-600">{milestone.description}</p>
@@ -242,7 +240,7 @@ const Stories = () => {
                   </div>
 
                   {/* Timeline dot */}
-                  <div className="absolute left-1/2 md:block hidden transform -translate-x-1/2 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow-md"></div>
+                  <div className="left-1/2 md:block absolute hidden w-4 h-4 transform -translate-x-1/2 bg-blue-600 border-4 border-white rounded-full shadow-md"></div>
                 </div>
               ))}
             </div>
@@ -250,30 +248,29 @@ const Stories = () => {
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      <section className="bg-gray-50 py-20">
+        <div className="container px-4 mx-auto">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold text-gray-900">
               Giá Trị Cốt Lõi
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="max-w-3xl mx-auto text-xl text-gray-600">
               Những nguyên tắc định hướng mọi hoạt động của chúng tôi
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="md:grid-cols-2 lg:grid-cols-4 grid gap-8">
             {values.map((value, index) => (
               <div
                 key={index}
-                className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition-shadow text-center"
+                className="rounded-xl hover:shadow-lg p-8 text-center transition-shadow bg-white shadow-sm"
               >
                 <div
                   className={`w-16 h-16 rounded-2xl ${value.color} flex items-center justify-center mx-auto mb-6`}
                 >
                   <value.icon className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <h3 className="mb-4 text-xl font-semibold text-gray-900">
                   {value.title}
                 </h3>
                 <p className="text-gray-600">{value.description}</p>
@@ -284,39 +281,40 @@ const Stories = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="container px-4 mx-auto">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold text-gray-900">
               Đội Ngũ Của Chúng Tôi
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="max-w-3xl mx-auto text-xl text-gray-600">
               Những con người tài năng và đam mê đằng sau thành công của thương
               hiệu
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="md:grid-cols-2 lg:grid-cols-4 grid gap-8">
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
+                className="rounded-xl hover:shadow-lg overflow-hidden transition-shadow bg-white shadow-sm"
               >
                 <div className="relative h-64">
                   <Image
                     src={member.image}
                     alt={member.name}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="object-cover"
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                  <h3 className="mb-1 text-xl font-semibold text-gray-900">
                     {member.name}
                   </h3>
-                  <p className="text-blue-600 font-medium mb-3">
+                  <p className="mb-3 font-medium text-blue-600">
                     {member.role}
                   </p>
-                  <p className="text-gray-600 text-sm">{member.description}</p>
+                  <p className="text-sm text-gray-600">{member.description}</p>
                 </div>
               </div>
             ))}
@@ -324,25 +322,25 @@ const Stories = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Thành Tựu Của Chúng Tôi</h2>
-            <p className="text-xl opacity-90">
+      <section className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 py-20 text-white">
+        <div className="container px-4 mx-auto">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold">Thành Tựu Của Chúng Tôi</h2>
+            <p className="opacity-90 text-xl">
               Những con số biết nói về hành trình phát triển
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="md:grid-cols-2 lg:grid-cols-4 grid gap-8">
             {achievements.map((achievement, index) => (
               <div key={index} className="text-center">
-                <div className="bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="bg-white/10 rounded-2xl flex items-center justify-center w-16 h-16 mx-auto mb-4">
                   <achievement.icon className="w-8 h-8" />
                 </div>
-                <div className="text-4xl font-bold mb-2">
+                <div className="mb-2 text-4xl font-bold">
                   {achievement.number}
                 </div>
-                <div className="text-lg opacity-90">{achievement.label}</div>
+                <div className="opacity-90 text-lg">{achievement.label}</div>
               </div>
             ))}
           </div>
@@ -350,15 +348,15 @@ const Stories = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container px-4 mx-auto">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-gradient-to-r from-primary/80 to-primary/60 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8">
+            <div className="bg-gradient-to-r from-primary/80 to-primary/60 rounded-2xl flex items-center justify-center w-16 h-16 mx-auto mb-8">
               <Target className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="mb-6 text-4xl font-bold text-gray-900">
               Tầm Nhìn Tương Lai
             </h2>
-            <p className="text-xl text-gray-700 leading-relaxed mb-8">
+            <p className="mb-8 text-xl leading-relaxed text-gray-700">
               Chúng tôi hướng đến việc trở thành thương hiệu thời trang hàng đầu
               Việt Nam, không chỉ về chất lượng sản phẩm mà còn về trách nhiệm
               xã hội và môi trường. Mục tiêu của chúng tôi là tạo ra một cộng

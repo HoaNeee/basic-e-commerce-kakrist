@@ -347,7 +347,6 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 lg:px-6 xl:px-8 py-6 max-w-7xl">
-          {/* Breadcrumb Skeleton */}
           <div className="mb-8">
             <div className="flex items-center gap-2">
               <Skeleton className="h-4 w-16" />
@@ -358,11 +357,9 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Product Detail Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
-            {/* Image Section */}
             <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 overflow-hidden">
                 <Skeleton className="aspect-square lg:h-[600px] h-[500px] rounded-lg" />
               </div>
               <div className="grid grid-cols-4 gap-3">
@@ -372,7 +369,6 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* Info Section */}
             <div className="space-y-6">
               <div className="flex justify-end">
                 <Skeleton className="h-6 w-20 rounded-full" />
@@ -676,7 +672,7 @@ const ProductDetail = () => {
 
                 <Button
                   size="lg"
-                  className="flex-1 h-12 font-semibold"
+                  className="md:flex-1 h-12 font-semibold"
                   onClick={handleCart}
                   disabled={
                     productDetail?.productType === "variations"

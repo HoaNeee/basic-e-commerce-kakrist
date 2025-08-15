@@ -18,6 +18,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { SystemSettingModel } from "@/models/settingSystem";
 import { get } from "@/utils/requets";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -70,6 +79,9 @@ const Contact = () => {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      console.log(formData);
+
       setSubmitStatus("success");
       setFormData({
         name: "",
@@ -159,15 +171,14 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Hero Section */}
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        <div className="container px-4 py-16 mx-auto">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="md:text-5xl mb-6 text-4xl font-bold text-gray-900">
               Liên Hệ Với Chúng Tôi
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
+            <p className="text-xl leading-relaxed text-gray-600">
               Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy liên hệ với
               chúng tôi qua bất kỳ kênh nào dưới đây hoặc gửi tin nhắn trực
               tiếp.
@@ -176,13 +187,12 @@ const Contact = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Form */}
+      <div className="container px-4 py-12 mx-auto">
+        <div className="lg:grid-cols-3 grid gap-12">
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="rounded-2xl p-8 bg-white shadow-lg">
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                <h2 className="mb-4 text-3xl font-bold text-gray-900">
                   Gửi Tin Nhắn
                 </h2>
                 <p className="text-gray-600">
@@ -192,24 +202,24 @@ const Contact = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="md:grid-cols-2 grid gap-6">
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Họ và tên *
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
+                      <User className="left-3 top-1/2 absolute w-5 h-5 text-gray-400 transform -translate-y-1/2" />
+                      <Input
                         type="text"
                         id="name"
                         name="name"
                         required
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        className="py-5.5 pl-10 pr-4"
                         placeholder="Nhập họ và tên của bạn"
                       />
                     </div>
@@ -218,43 +228,43 @@ const Contact = () => {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Email *
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
+                      <Mail className="left-3 top-1/2 absolute w-5 h-5 text-gray-400 transform -translate-y-1/2" />
+                      <Input
                         type="email"
                         id="email"
                         name="email"
                         required
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        className="py-5.5 pl-10 pr-4"
                         placeholder="your@email.com"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="md:grid-cols-2 grid gap-6">
                   <div>
                     <label
                       htmlFor="phone"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Số điện thoại
                     </label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
+                      <Phone className="left-3 top-1/2 absolute w-5 h-5 text-gray-400 transform -translate-y-1/2" />
+                      <Input
                         type="tel"
                         id="phone"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        className="py-5.5 pl-10 pr-4"
                         placeholder="+84 123 456 789"
                       />
                     </div>
@@ -263,37 +273,44 @@ const Contact = () => {
                   <div>
                     <label
                       htmlFor="subject"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Chủ đề *
                     </label>
-                    <select
-                      id="subject"
-                      name="subject"
-                      required
+                    <Select
                       value={formData.subject}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      onValueChange={(e) => {
+                        const form = { ...formData, subject: e };
+                        setFormData(form);
+                      }}
                     >
-                      <option value="">Chọn chủ đề</option>
-                      <option value="product">Hỏi về sản phẩm</option>
-                      <option value="order">Đơn hàng</option>
-                      <option value="return">Đổi trả</option>
-                      <option value="complaint">Khiếu nại</option>
-                      <option value="other">Khác</option>
-                    </select>
+                      <SelectTrigger className="w-full py-5.5">
+                        <SelectValue placeholder="Chọn chủ đề" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="product">
+                            Hỏi về sản phẩm
+                          </SelectItem>
+                          <SelectItem value="order">Đơn hàng</SelectItem>
+                          <SelectItem value="return">Đổi trả</SelectItem>
+                          <SelectItem value="complaint">Khiếu nại</SelectItem>
+                          <SelectItem value="other">Khác</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block mb-2 text-sm font-medium text-gray-700"
                   >
                     Tin nhắn *
                   </label>
                   <div className="relative">
-                    <MessageSquare className="absolute left-3 top-4 text-gray-400 w-5 h-5" />
+                    <MessageSquare className="left-3 top-4 absolute w-5 h-5 text-gray-400" />
                     <textarea
                       id="message"
                       name="message"
@@ -301,15 +318,14 @@ const Contact = () => {
                       rows={6}
                       value={formData.message}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                      className="focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full py-3 pl-10 pr-4 transition-colors border border-gray-300 rounded-lg resize-none"
                       placeholder="Nhập tin nhắn của bạn..."
                     />
                   </div>
                 </div>
 
-                {/* Submit Status */}
                 {submitStatus === "success" && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="bg-green-50 p-4 border border-green-200 rounded-lg">
                     <div className="flex">
                       <div className="text-green-600">
                         <svg
@@ -325,10 +341,10 @@ const Contact = () => {
                         </svg>
                       </div>
                       <div className="ml-3">
-                        <p className="text-green-800 font-medium">
+                        <p className="font-medium text-green-800">
                           Tin nhắn đã được gửi thành công!
                         </p>
-                        <p className="text-green-700 text-sm mt-1">
+                        <p className="mt-1 text-sm text-green-700">
                           Chúng tôi sẽ phản hồi sớm nhất có thể.
                         </p>
                       </div>
@@ -337,7 +353,7 @@ const Contact = () => {
                 )}
 
                 {submitStatus === "error" && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="bg-red-50 p-4 border border-red-200 rounded-lg">
                     <div className="flex">
                       <div className="text-red-600">
                         <svg
@@ -353,10 +369,10 @@ const Contact = () => {
                         </svg>
                       </div>
                       <div className="ml-3">
-                        <p className="text-red-800 font-medium">
+                        <p className="font-medium text-red-800">
                           Có lỗi xảy ra!
                         </p>
-                        <p className="text-red-700 text-sm mt-1">
+                        <p className="mt-1 text-sm text-red-700">
                           Vui lòng thử lại sau.
                         </p>
                       </div>
@@ -367,11 +383,11 @@ const Contact = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full text-white font-semibold py-7 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  className="py-7 flex items-center justify-center w-full gap-2 px-6 font-semibold text-white transition-colors rounded-lg"
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
                           cx="12"
@@ -400,30 +416,28 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Contact Info & Map */}
           <div className="space-y-8">
-            {/* Contact Info Cards */}
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              <h3 className="mb-6 text-2xl font-bold text-gray-900">
                 Thông Tin Liên Hệ
               </h3>
               {contactInfo.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+                  className="rounded-xl hover:shadow-md p-6 transition-shadow bg-white shadow-sm"
                 >
                   <div className="flex items-start">
-                    <div className="bg-black rounded-lg p-3 mr-4">
+                    <div className="p-3 mr-4 bg-black rounded-lg">
                       <item.icon className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">
+                      <h4 className="mb-1 font-semibold text-gray-900">
                         {item.title}
                       </h4>
                       {item.link ? (
                         <a
                           href={item.link}
-                          className="text-gray-600 hover:text-blue-600 transition-colors"
+                          className="hover:text-blue-600 text-gray-600 transition-colors"
                         >
                           {item.content}
                         </a>
@@ -437,8 +451,8 @@ const Contact = () => {
             </div>
 
             {/* Social Links */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h4 className="font-semibold text-gray-900 mb-4">
+            <div className="rounded-xl p-6 bg-white shadow-sm">
+              <h4 className="mb-4 font-semibold text-gray-900">
                 Theo Dõi Chúng Tôi
               </h4>
               <div className="flex space-x-4">
@@ -458,14 +472,14 @@ const Contact = () => {
             </div>
 
             {/* Map */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+            <div className="rounded-xl overflow-hidden bg-white shadow-sm">
               <div className="p-6 border-b">
-                <h4 className="font-semibold text-gray-900 flex items-center">
+                <h4 className="flex items-center font-semibold text-gray-900">
                   <Building className="w-5 h-5 mr-2" />
                   Vị Trí Cửa Hàng
                 </h4>
               </div>
-              <div className="h-64 bg-gray-100 relative">
+              <div className="relative h-64 bg-gray-100">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4609464140937!2d106.69830451411816!3d10.776530192318793!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4b3330bcc9%3A0x92a00fd8994b8bd!2zTmd1eeG7hW4gSHXhu4csIEJlbiBOZ2hlLCBRdeG6rW4gMSwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1642597234567!5m2!1svi!2s"
                   width="100%"
@@ -483,11 +497,11 @@ const Contact = () => {
 
         {/* FAQ Section */}
         <div className="mt-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">
               Câu Hỏi Thường Gặp
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="max-w-2xl mx-auto text-gray-600">
               Tìm câu trả lời nhanh chóng cho những thắc mắc phổ biến
             </p>
           </div>
@@ -495,14 +509,14 @@ const Contact = () => {
           <div className="max-w-4xl mx-auto">
             <div className="space-y-4">
               {faqItems.map((item, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-sm">
+                <div key={index} className="rounded-xl bg-white shadow-sm">
                   <details className="group">
-                    <summary className="flex justify-between items-center p-6 cursor-pointer hover:bg-gray-50 rounded-xl">
+                    <summary className="hover:bg-gray-50 rounded-xl flex items-center justify-between p-6 cursor-pointer">
                       <h3 className="font-semibold text-gray-900">
                         {item.question}
                       </h3>
                       <svg
-                        className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                        className="group-open:rotate-180 w-5 h-5 text-gray-500 transition-transform"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -516,7 +530,7 @@ const Contact = () => {
                       </svg>
                     </summary>
                     <div className="px-6 pb-6">
-                      <p className="text-gray-600 leading-relaxed">
+                      <p className="leading-relaxed text-gray-600">
                         {item.answer}
                       </p>
                     </div>

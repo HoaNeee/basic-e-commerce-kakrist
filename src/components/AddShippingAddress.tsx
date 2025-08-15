@@ -61,9 +61,16 @@ interface Props {
   address?: AddressModel;
   onClose?: () => void;
   isModal?: boolean;
+  setIsUpdatingProp?: (val: boolean) => void;
 }
 
-const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
+const AddShippingAddress = ({
+  onAddNew,
+  address,
+  onClose,
+  isModal,
+  setIsUpdatingProp,
+}: Props) => {
   const [dataSelect, setDataSelect] = useState<{
     cities: SelectModel[];
     districts?: SelectModel[];
@@ -172,6 +179,7 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
     payload.isDefault = payload.isDefault || false;
 
     setIsUpdating(true);
+    setIsUpdatingProp?.(true);
     try {
       if (address) {
         const response = await patch("/address/edit/" + address?._id, payload);
@@ -215,10 +223,12 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
         position: "top-center",
       });
 
-      window.scroll({
-        top: 0,
-        behavior: "smooth",
-      });
+      if (!isModal) {
+        window.scroll({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
       if (onAddNew) {
         onAddNew(response.data);
       }
@@ -226,6 +236,7 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
       toast.error(error.message);
     } finally {
       setIsUpdating(false);
+      setIsUpdatingProp?.(false);
     }
   };
 
@@ -234,9 +245,9 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-6 w-full"
+          className="flex flex-col w-full gap-6"
         >
-          <div className="grid md:grid-cols-2 grid-cols-1 items-center gap-2 w-full">
+          <div className="md:grid-cols-2 grid items-center w-full grid-cols-1 gap-2">
             <FormField
               control={form.control}
               name="name"
@@ -494,7 +505,7 @@ const AddShippingAddress = ({ onAddNew, address, onClose, isModal }: Props) => {
             name="isDefault"
             render={({ field }) => {
               return (
-                <FormItem {...field} className="flex gap-2 items-center">
+                <FormItem {...field} className="flex items-center gap-2">
                   <FormControl>
                     <Checkbox
                       defaultChecked={field.value}

@@ -17,10 +17,11 @@ interface Props {
   setOpen?: (val: boolean) => void;
   onCancel?: () => void;
   address?: AddressModel;
+  setIsUpdating?: (val: boolean) => void;
 }
 
 const DialogEditAddress = (props: Props) => {
-  const { onOK, open, setOpen, onCancel, address } = props;
+  const { onOK, open, setOpen, onCancel, address, setIsUpdating } = props;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -39,6 +40,7 @@ const DialogEditAddress = (props: Props) => {
             address={address}
             onClose={onCancel}
             isModal
+            setIsUpdatingProp={setIsUpdating}
           />
         </div>
       </DialogContent>

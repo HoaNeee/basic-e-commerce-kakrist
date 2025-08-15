@@ -43,7 +43,7 @@ const MiniCart = () => {
                 }`}
               >
                 <PiShoppingBag
-                  className="text-gray-600 dark:text-gray-300 lg:text-2xl text-xl transition-colors duration-200 cursor-pointer"
+                  className="dark:text-gray-300 lg:text-2xl text-xl text-gray-600 transition-colors duration-200 cursor-pointer"
                   title="open mini cart"
                 />
               </button>
@@ -55,7 +55,7 @@ const MiniCart = () => {
             >
               {auth.isLogin ? (
                 <>
-                  <p className="pt-2 px-4">
+                  <p className="px-4 pt-2">
                     You have{" "}
                     {cart?.carts?.reduce(
                       (value, item) => value + item.quantity,
@@ -68,12 +68,12 @@ const MiniCart = () => {
                       cart?.carts && cart.carts?.length > 0 ? "h-80" : ""
                     } w-full`}
                   >
-                    <div className="mt-6 flex flex-col gap-4 px-4">
+                    <div className="flex flex-col gap-4 px-4 mt-6">
                       {cart && cart?.carts?.length > 0 ? (
                         cart.carts.map((item, index) => (
                           <div
                             key={index}
-                            className="w-full h-full relative flex gap-4 items-center pb-4 border-b-2 border-muted"
+                            className="border-muted relative flex items-center w-full h-full gap-4 pb-4 border-b-2"
                           >
                             <div className="w-17 h-17 object-cover bg-[#F1F1F3]">
                               <img
@@ -83,18 +83,18 @@ const MiniCart = () => {
                                     : item.thumbnail_product
                                 }
                                 alt="image"
-                                className="w-full h-full object-cover rounded-xs"
+                                className="rounded-xs object-cover w-full h-full"
                               />
                             </div>
-                            <div className="flex flex-col gap-1 items-start justify-self-start">
+                            <div className="justify-self-start flex flex-col items-start gap-1">
                               <Link
                                 href={`/shop/${item.slug}`}
-                                className="text-ellipsis line-clamp-1 transition-all hover:text-blue-500"
+                                className="text-ellipsis line-clamp-1 hover:text-blue-500 transition-all"
                                 onClick={() => setOpenPopoverCart(false)}
                               >
                                 {item.title}
                               </Link>
-                              <p className="font-bold text-base">
+                              <p className="text-base font-bold">
                                 {item.quantity} x{" "}
                                 {item.discountedPrice !== null &&
                                 item.discountedPrice !== undefined
@@ -112,7 +112,7 @@ const MiniCart = () => {
                                 <div className="h-2"></div>
                               )}
                             </div>
-                            <div className="absolute bottom-4 right-0">
+                            <div className="bottom-4 absolute right-0">
                               <DialogConfirm
                                 onConfirm={async () => {
                                   try {
@@ -160,8 +160,8 @@ const MiniCart = () => {
                       )}
                     </div>
                   </ScrollArea>
-                  <div className="mt-6 px-4">
-                    <div className="flex justify-between items-center text-base font-bold">
+                  <div className="px-4 mt-6">
+                    <div className="flex items-center justify-between text-base font-bold">
                       <p>Subtotal</p>
                       <p>
                         {VND.format(
@@ -198,7 +198,7 @@ const MiniCart = () => {
                           onClick={() => {
                             localStorage.setItem(
                               "cart_checkout",
-                              JSON.stringify(cart)
+                              JSON.stringify(cart.carts)
                             );
                             router.push("/cart/checkout");
                           }}
@@ -211,7 +211,7 @@ const MiniCart = () => {
                   </div>
                 </>
               ) : (
-                <div className="px-4 flex w-full h-40 items-center justify-center">
+                <div className="flex items-center justify-center w-full h-40 px-4">
                   <div className="text-muted-foreground text-base">
                     Please{" "}
                     <PopoverClose>
@@ -220,7 +220,7 @@ const MiniCart = () => {
                         onClick={() => {
                           setOpenPopoverCart(false);
                         }}
-                        className="italic underline text-blue-400"
+                        className="italic text-blue-400 underline"
                       >
                         login
                       </a>
@@ -233,7 +233,7 @@ const MiniCart = () => {
           </Popover>
         ) : (
           <PiShoppingBag
-            className="lg:text-2xl text-xl text-gray-600 dark:text-gray-300 transition-colors duration-200 cursor-pointer"
+            className="lg:text-2xl dark:text-gray-300 text-xl text-gray-600 transition-colors duration-200 cursor-pointer"
             title="open mini cart"
           />
         )}
@@ -246,7 +246,7 @@ const MiniCart = () => {
         )}
       </div>{" "}
       {openPopoverCart && (
-        <div className="fixed w-screen h-screen left-0 top-0 bg-black opacity-20 z-40" />
+        <div className="opacity-20 fixed top-0 left-0 z-40 w-screen h-screen bg-black" />
       )}
     </>
   );

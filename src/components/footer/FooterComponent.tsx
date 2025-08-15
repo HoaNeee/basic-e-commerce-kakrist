@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -21,6 +22,7 @@ import Link from "next/link";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { SystemSettingModel } from "@/models/settingSystem";
+import { post } from "@/utils/requets";
 
 const payment = [AMEX, GOOGLE, PAYPAL, MASTER, VISA];
 
@@ -87,10 +89,34 @@ const FooterComponent = ({
     return <></>;
   }
 
+  const handleSubscribe = async (e: any) => {
+    e.preventDefault();
+
+    const email = e.target[0].value;
+    if (!email) {
+      return;
+    }
+    try {
+      const response = await post("/subscribers", { email });
+      toast.success(response.message, {
+        description: "You have successfully subscribed to our newsletter.",
+        position: "top-center",
+      });
+      e.target[0].value = "";
+      window.scroll({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to subscribe");
+    }
+  };
+
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-16">
+    <footer className="text-white bg-gray-900">
+      <div className="max-w-7xl px-4 mx-auto">
+        <div className="md:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-8 py-16">
           <div className="lg:col-span-1">
             <Image
               alt="Company Logo"
@@ -99,7 +125,7 @@ const FooterComponent = ({
               height={58}
               className="mb-6"
             />
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <p className="mb-6 leading-relaxed text-gray-400">
               Your trusted partner for premium fashion and lifestyle products.
               Quality guaranteed, customer satisfaction first.
             </p>
@@ -107,18 +133,18 @@ const FooterComponent = ({
             <div className="space-y-3">
               <Link
                 href={"tel:+84393911183"}
-                className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
+                className="hover:text-white flex items-center gap-3 text-gray-300 transition-colors"
               >
                 <BiPhoneCall size={18} />
                 <span>{system_settings?.phone || "+84 393 911 183"}</span>
               </Link>
-              <div className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+              <div className="hover:text-white flex items-center gap-3 text-gray-300 transition-colors">
                 <MdOutlineMailOutline size={18} />
                 <span>{system_settings?.email || "contact@kakrist.com"}</span>
               </div>
               <Link
                 href={"https://www.google.com/maps?q=Hanoi,+Vietnam"}
-                className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
+                className="hover:text-white flex items-center gap-3 text-gray-300 transition-colors"
               >
                 <FaMapMarkerAlt size={18} />
                 <span>{system_settings?.address || "Hanoi, Vietnam"}</span>
@@ -127,13 +153,13 @@ const FooterComponent = ({
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-6">Account</h3>
+            <h3 className="mb-6 text-lg font-semibold">Account</h3>
             <ul className="space-y-3">
               {footerLinks.information.map((link, index) => (
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="hover:text-white text-gray-400 transition-colors duration-200"
                   >
                     {link.title}
                   </Link>
@@ -143,13 +169,13 @@ const FooterComponent = ({
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-6">Company</h3>
+            <h3 className="mb-6 text-lg font-semibold">Company</h3>
             <ul className="space-y-3">
               {footerLinks.service.map((link, index) => (
                 <li key={index}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                    className="hover:text-white text-gray-400 transition-colors duration-200"
                   >
                     {link.title}
                   </Link>
@@ -159,21 +185,21 @@ const FooterComponent = ({
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-6">Stay Updated</h3>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <h3 className="mb-6 text-lg font-semibold">Stay Updated</h3>
+            <p className="mb-6 leading-relaxed text-gray-400">
               Subscribe to get updates on new collections and exclusive offers.
             </p>
 
-            <form className="space-y-4">
-              <div className="flex relative">
+            <form className="space-y-4" onSubmit={handleSubscribe}>
+              <div className="relative flex">
                 <Input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex-1 px-4 py-6 pr-10 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-gray-500 text-white placeholder-gray-400"
+                  className="focus:outline-none focus:border-gray-500 flex-1 px-4 py-6 pr-10 text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded-l-lg"
                 />
                 <Button
                   type="submit"
-                  className="bg-white text-gray-900 hover:bg-gray-100 px-6 absolute right-2 top-1/2 transform -translate-y-1/2"
+                  className="hover:bg-gray-100 right-2 top-1/2 absolute px-6 text-gray-900 transform -translate-y-1/2 bg-white"
                 >
                   <FaLongArrowAltRight />
                 </Button>
@@ -181,7 +207,7 @@ const FooterComponent = ({
             </form>
 
             <div className="mt-6">
-              <p className="text-sm font-medium mb-3">Follow Us</p>
+              <p className="mb-3 text-sm font-medium">Follow Us</p>
               <div className="flex gap-3">
                 {socialLinks.map((social, index) => (
                   <a
@@ -190,7 +216,7 @@ const FooterComponent = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-200"
+                    className="hover:bg-gray-700 hover:text-white flex items-center justify-center w-10 h-10 text-gray-400 transition-colors duration-200 bg-gray-800 rounded-full"
                   >
                     {social.icon}
                   </a>
@@ -200,13 +226,13 @@ const FooterComponent = ({
           </div>
         </div>
 
-        <div className="border-t border-gray-800 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="py-6 border-t border-gray-800">
+          <div className="md:flex-row flex flex-col items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               {payment.map((item, index) => (
                 <div
                   key={index}
-                  className="w-10 h-6 bg-white rounded flex items-center justify-center p-1"
+                  className="flex items-center justify-center w-10 h-6 p-1 bg-white rounded"
                 >
                   <Image
                     src={item}

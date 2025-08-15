@@ -49,14 +49,21 @@ import { RiImageEditLine } from "react-icons/ri";
 import Link from "next/link";
 
 const formSchema = z.object({
-  firstName: z.any(),
-  lastName: z.any(),
+  firstName: z.string().nonempty({
+    message: "Please enter this field!",
+  }),
+  lastName: z.string().nonempty({
+    message: "Please enter this field!",
+  }),
   email: z
-    .string({
+    .string()
+    .min(1, {
       message: "Please enter this field!",
     })
-    .email(),
-  phone: z.string().min(1, {
+    .email({
+      message: "Please enter a valid email address!",
+    }),
+  phone: z.string().nonempty({
     message: "Please enter this field!",
   }),
 });
@@ -229,9 +236,9 @@ const Profile = () => {
                         type="button"
                         variant={"default"}
                         size={"sm"}
-                        className="h-6 w-6 rounded-sm flex items-center justify-center relative"
+                        className="relative flex items-center justify-center w-6 h-6 rounded-sm"
                       >
-                        <div className="absolute w-full h-full justify-center items-center flex">
+                        <div className="absolute flex items-center justify-center w-full h-full">
                           <BiEdit size={12} className="size-4" />
                         </div>
                       </Button>
@@ -277,7 +284,7 @@ const Profile = () => {
               </ButtonLoading>
             </div>
           </div>
-          <div className="mt-8 flex flex-col gap-0">
+          <div className="flex flex-col gap-0 mt-8">
             <div className="flex items-center gap-4">
               <FormField
                 disabled={auth.provider === "google"}
@@ -286,7 +293,7 @@ const Profile = () => {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full gap-0.5">
-                      <FormLabel className="tracking-wider text-xs">
+                      <FormLabel className="text-xs tracking-wider">
                         First Name
                       </FormLabel>
                       <FormControl>
@@ -309,7 +316,7 @@ const Profile = () => {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full gap-0.5">
-                      <FormLabel className="tracking-wider text-xs">
+                      <FormLabel className="text-xs tracking-wider">
                         Last Name
                       </FormLabel>
                       <FormControl>
@@ -326,14 +333,14 @@ const Profile = () => {
                 }}
               />
             </div>
-            <div className="flex gap-4 items-center mt-4">
+            <div className="flex items-center gap-4 mt-4">
               <FormField
                 control={form.control}
                 name="phone"
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full gap-0.5">
-                      <FormLabel className="tracking-wider text-xs">
+                      <FormLabel className="text-xs tracking-wider">
                         Phone Number
                       </FormLabel>
                       <FormControl>
@@ -359,7 +366,7 @@ const Profile = () => {
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full gap-0.5">
-                      <FormLabel className="tracking-wider text-xs">
+                      <FormLabel className="text-xs tracking-wider">
                         Email Address
                       </FormLabel>
                       <FormControl>
@@ -380,7 +387,7 @@ const Profile = () => {
             </div>
             <div className="flex flex-col gap-0.5 mt-3">
               <Label className="text-xs tracking-wider">Address</Label>
-              <div className="flex items-center relative">
+              <div className="relative flex items-center">
                 <Input
                   placeholder="Your address default"
                   className="py-5 pr-10"
@@ -392,7 +399,7 @@ const Profile = () => {
                   }
                 />
                 <GrMap
-                  className="absolute top-1/2 right-3 -translate-y-1/2 size-5 cursor-pointer"
+                  className="top-1/2 right-3 size-5 absolute -translate-y-1/2 cursor-pointer"
                   title="Change address default"
                   onClick={() => {
                     console.log("change");
