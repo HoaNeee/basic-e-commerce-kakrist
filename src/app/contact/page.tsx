@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SystemSettingModel } from "@/models/settingSystem";
-import { get } from "@/utils/requets";
+import { get, post } from "@/utils/requets";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -78,10 +78,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      console.log(formData);
-
+      await post("/subscribers/create-contact", formData);
       setSubmitStatus("success");
       setFormData({
         name: "",
@@ -94,7 +91,9 @@ const Contact = () => {
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
-      setTimeout(() => setSubmitStatus("idle"), 5000);
+      setTimeout(() => {
+        setSubmitStatus("idle");
+      }, 5000);
     }
   };
 
