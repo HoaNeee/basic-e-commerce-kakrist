@@ -48,15 +48,6 @@ const Chatbot = () => {
   }, []);
 
   useEffect(() => {
-    if (listMessages.current) {
-      listMessages.current.scrollTo({
-        top: listMessages.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages]);
-
-  useEffect(() => {
     if (data && data.code === 200) {
       if (data.data && data.data.suggestions) {
         setSuggestions(data.data.suggestions);
@@ -159,9 +150,9 @@ const Chatbot = () => {
 
   const renderMessages = () => {
     return (
-      <div className="flex flex-col gap-4 relative">
-        <div className="bg-gray-100 dark:bg-neutral-600 p-3 rounded-lg rounded-tl-none max-w-9/10">
-          <p className="text-sm text-gray-700 dark:text-gray-200 max-w-full break-all">
+      <div className="relative flex flex-col gap-4">
+        <div className="dark:bg-neutral-600 max-w-9/10 p-3 bg-gray-100 rounded-lg rounded-tl-none">
+          <p className="dark:text-gray-200 max-w-full text-sm text-gray-700 break-all">
             Xin chào! Tôi là trợ lý ảo của trang web này. Bạn cần giúp đỡ gì?
           </p>
         </div>
@@ -186,10 +177,10 @@ const Chatbot = () => {
 
   const renderMessageModel = (message: IMessage, key: string) => {
     return (
-      <div className="flex items-start flex-col gap-3" key={key}>
-        <div className="bg-gray-100 dark:bg-neutral-600 p-3 rounded-lg rounded-tl-none max-w-9/10">
+      <div className="flex flex-col items-start gap-3" key={key}>
+        <div className="dark:bg-neutral-600 max-w-9/10 p-3 bg-gray-100 rounded-lg rounded-tl-none">
           <p
-            className="text-sm text-gray-700 dark:text-gray-200 max-w-full break-all"
+            className="dark:text-gray-200 max-w-full text-sm text-gray-700 break-all"
             dangerouslySetInnerHTML={{ __html: message.content }}
           />
         </div>
@@ -197,14 +188,14 @@ const Chatbot = () => {
           message.intent === "similar_product") &&
           message.data &&
           message.data.length > 0 && (
-            <div className="mt-2 w-full">
+            <div className="w-full mt-2">
               {renderProducts(message.data as ProductModel[])}
             </div>
           )}
         {message.intent === "search_blog" &&
           message.data &&
           message.data.length > 0 && (
-            <div className="mt-2 w-full">
+            <div className="w-full mt-2">
               {renderBlogs(message.data as BlogModel[])}
             </div>
           )}
@@ -215,7 +206,7 @@ const Chatbot = () => {
   const renderBlogs = (blogs: BlogModel[]) => {
     return (
       <div className="max-w-9/10 w-full ml-4">
-        <h3 className="my-1 text-gray-600 dark:text-gray-200 text-sm">
+        <h3 className="dark:text-gray-200 my-1 text-sm text-gray-600">
           Bài viết phù hợp cho bạn:
         </h3>
         <div className="flex flex-col gap-2">
@@ -223,15 +214,15 @@ const Chatbot = () => {
             return (
               <div
                 key={blog._id}
-                className="py-2 border-b border-gray-200 dark:border-gray-700"
+                className="dark:border-gray-700 py-2 border-b border-gray-200"
               >
                 <Link
                   href={`/blogs/${blog.slug}`}
-                  className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
+                  className="hover:text-blue-500 dark:hover:text-blue-400 line-clamp-1 text-ellipsis text-sm font-semibold text-gray-800 transition-all duration-300"
                 >
                   {blog.title}
                 </Link>
-                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 text-ellipsis">
+                <p className="dark:text-gray-400 line-clamp-3 text-ellipsis text-xs text-gray-600">
                   {blog.excerpt}
                 </p>
               </div>
@@ -245,7 +236,7 @@ const Chatbot = () => {
   const renderProducts = (products: ProductModel[]) => {
     return (
       <div className="max-w-9/10 w-full ml-4">
-        <h3 className="my-1 text-gray-600 dark:text-gray-200 text-sm">
+        <h3 className="dark:text-gray-200 my-1 text-sm text-gray-600">
           Sản phẩm phù hợp cho bạn:
         </h3>
         <div className="flex flex-col gap-2">
@@ -253,30 +244,30 @@ const Chatbot = () => {
             return (
               <div
                 key={product._id}
-                className="py-2 border-b border-gray-200 dark:border-gray-700 flex items-center w-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all duration-300 md:active:bg-none active:bg-gray-100 relative"
+                className="dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-neutral-700 md:active:bg-none active:bg-gray-100 relative flex items-center w-full py-2 transition-all duration-300 border-b border-gray-200"
               >
                 <Link
                   href={`/shop/${product.slug}`}
-                  className="absolute inset-0 md:hidden block"
+                  className="md:hidden absolute inset-0 block"
                 />
-                <div className="flex items-center gap-2 w-full">
+                <div className="flex items-center w-full gap-2">
                   <div className="md:w-2/12 w-2/8">
                     <div className="w-15 h-15 rounded-xs bg-muted">
                       <img
                         src={product.thumbnail}
                         alt={product.title}
-                        className="h-full w-full object-cover rounded-xs"
+                        className="rounded-xs object-cover w-full h-full"
                       />
                     </div>
                   </div>
                   <div className="flex flex-col gap-0.5 text-sm flex-1">
                     <Link
                       href={`/shop/${product.slug}`}
-                      className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
+                      className="hover:text-blue-500 dark:hover:text-blue-400 line-clamp-1 text-ellipsis text-sm font-semibold text-gray-800 transition-all duration-300"
                     >
                       {product.title}
                     </Link>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                    <p className="dark:text-gray-400 text-xs text-gray-600">
                       {product?.options && (product?.options as string)}
                     </p>
                     {!product?.rangePrice ||
@@ -287,7 +278,7 @@ const Chatbot = () => {
                       <div className="flex items-center gap-2">
                         {product.discountedPrice !== undefined &&
                           product.discountedPrice !== null && (
-                            <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">
+                            <p className="dark:text-gray-300 text-sm font-semibold text-gray-600">
                               {VND.format(Number(product.discountedPrice) || 0)}
                             </p>
                           )}
@@ -303,7 +294,7 @@ const Chatbot = () => {
                         </p>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 font-semibold">
+                      <div className="dark:text-gray-300 flex items-center gap-2 text-sm font-semibold text-gray-600">
                         <p>
                           {VND.format(Number(product.rangePrice?.min) || 0)}
                         </p>
@@ -327,9 +318,9 @@ const Chatbot = () => {
     return (
       <div
         key={key}
-        className="bg-pink-100 dark:bg-pink-800 p-3 rounded-lg self-end max-w-9/10 rounded-tr-none"
+        className="dark:bg-pink-800 max-w-9/10 self-end p-3 bg-pink-100 rounded-lg rounded-tr-none"
       >
-        <p className="text-sm text-pink-700 dark:text-pink-100 break-all">
+        <p className="dark:text-pink-100 text-sm text-pink-700 break-all">
           {message}
         </p>
       </div>
@@ -340,20 +331,20 @@ const Chatbot = () => {
     if (data.type === "product") {
       const product = data.data as ProductModel;
       return (
-        <div className="shadow text-sm rounded-md p-3 my-2">
+        <div className="p-3 my-2 text-sm rounded-md shadow">
           <p className="mb-2 text-xs text-gray-500">Bạn vừa xem</p>
           <div className="flex items-center gap-2">
-            <div className="w-16 h-16 rounded-xs bg-muted">
+            <div className="rounded-xs bg-muted w-16 h-16">
               <img
                 src={product.thumbnail}
                 alt={product.title}
-                className="h-full w-full object-cover rounded-xs"
+                className="rounded-xs object-cover w-full h-full"
               />
             </div>
             <div className="flex flex-col gap-1">
               <Link
                 href={`/shop/${product.slug}`}
-                className="font-semibold text-sm hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-gray-800 line-clamp-1 text-ellipsis"
+                className="hover:text-blue-500 dark:hover:text-blue-400 line-clamp-1 text-ellipsis text-sm font-semibold text-gray-800 transition-all duration-300"
               >
                 {product.title}
               </Link>
@@ -362,7 +353,7 @@ const Chatbot = () => {
                 <div className="flex items-center gap-2">
                   {product.discountedPrice !== undefined &&
                     product.discountedPrice !== null && (
-                      <p className="text-sm text-gray-600 dark:text-gray-300 font-semibold">
+                      <p className="dark:text-gray-300 text-sm font-semibold text-gray-600">
                         {VND.format(Number(product.discountedPrice) || 0)}
                       </p>
                     )}
@@ -378,7 +369,7 @@ const Chatbot = () => {
                   </p>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-sm text-gray-600/90 dark:text-gray-300 font-semibold">
+                <div className="text-gray-600/90 dark:text-gray-300 flex items-center gap-2 text-sm font-semibold">
                   <p>{VND.format(Number(product.rangePrice?.min) || 0)}</p>
                   <p>-</p>
                   <p>{VND.format(Number(product.rangePrice?.max) || 0)}</p>
@@ -395,7 +386,7 @@ const Chatbot = () => {
     <>
       <Popover open={showBox} onOpenChange={setShowBox} modal={false}>
         <PopoverTrigger asChild title="Chatbot">
-          <div className="fixed bottom-5 right-2 w-14 h-14 rounded-full overflow-hidden z-50 shadow-lg cursor-pointer ease-in-out flex items-center justify-center">
+          <div className="bottom-5 right-2 w-14 h-14 fixed z-50 flex items-center justify-center overflow-hidden ease-in-out rounded-full shadow-lg cursor-pointer">
             <div
               className={`w-full h-full shadow-lg flex items-center justify-center relative text-sm ${
                 showBox
@@ -421,17 +412,17 @@ const Chatbot = () => {
           align="end"
           alignOffset={20}
           side={clientWidth < 640 ? "bottom" : "right"}
-          className="lg:w-lg w-xs bg-white dark:bg-black dark:text-white/80 shadow p-0"
+          className="lg:w-lg w-xs dark:bg-black dark:text-white/80 p-0 bg-white shadow"
         >
-          <div className="w-full h-full flex flex-col justify-between relative">
-            <div className="py-2 border-b border-gray-200 dark:border-gray-700 px-4">
+          <div className="relative flex flex-col justify-between w-full h-full">
+            <div className="dark:border-gray-700 px-4 py-2 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+                  <div className="dark:bg-white dark:text-black flex items-center justify-center w-8 h-8 text-white bg-black rounded-full">
                     <Bot className="w-5 h-5" />
                   </div>
                   <div className="flex flex-col gap-0">
-                    <h2 className="font-semibold text-sm text-black dark:text-white/80">
+                    <h2 className="dark:text-white/80 text-sm font-semibold text-black">
                       Bot
                     </h2>
                     <span className="text-xs text-gray-400">
@@ -447,14 +438,14 @@ const Chatbot = () => {
                   }}
                   className=""
                 >
-                  <X className="h-4 w-4" />
+                  <X className="w-4 h-4" />
                 </Button>
               </div>
             </div>
             <div
-              className="px-4 pt-2 min-h-68 max-h-105 overflow-hidden overflow-y-auto custom-scrollbar relative"
+              className="min-h-68 max-h-105 custom-scrollbar relative px-4 pt-2 overflow-hidden overflow-y-auto"
               onLoad={() => {
-                if (listMessages.current) {
+                if (listMessages.current && showBox) {
                   listMessages.current.scrollTo({
                     top: listMessages.current.scrollHeight,
                     behavior: "smooth",
@@ -476,7 +467,7 @@ const Chatbot = () => {
                     <AnimatePresence>
                       {(showSuggestions || showSuggestionsBegin) &&
                         suggestions.length > 0 && (
-                          <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-4">
+                          <div className="dark:text-gray-300 flex flex-wrap gap-2 mt-4 text-xs text-gray-600">
                             {suggestions.map((suggestion, index) => (
                               <motion.div
                                 key={index}
@@ -489,7 +480,7 @@ const Chatbot = () => {
                                   duration: ((index + 1) / 10) * 2,
                                   ease: "easeInOut",
                                 }}
-                                className="w-full bg-white dark:bg-black text-xs"
+                                className="dark:bg-black w-full text-xs bg-white"
                               >
                                 <Button
                                   key={index}
@@ -502,7 +493,7 @@ const Chatbot = () => {
                                       suggestion.type || undefined
                                     );
                                   }}
-                                  className="text-xs max-w-full whitespace-normal"
+                                  className="max-w-full text-xs whitespace-normal"
                                 >
                                   <span className="block max-w-full">
                                     {suggestion.title}
@@ -518,10 +509,10 @@ const Chatbot = () => {
             </div>
 
             <div className="p-4">
-              <div className="flex items-center gap-2 relative">
+              <div className="relative flex items-center gap-2">
                 <Input
                   placeholder="Type your message..."
-                  className="w-full pr-10 py-5 rounded-full text-black dark:text-white"
+                  className="dark:text-white w-full py-5 pr-10 text-black rounded-full"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onKeyUp={(e) => {

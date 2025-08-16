@@ -48,16 +48,21 @@ export const generateMetadata = async (): Promise<Metadata> => {
       ],
     },
     icons: {
-      icon: setting?.siteFavicon || "/favicon.ico",
-      apple: setting?.siteFavicon || "/favicon.ico",
+      icon: [{ url: setting?.siteFavicon || "/favicon.ico" }],
+      apple: [
+        {
+          url: setting?.siteFavicon || "/favicon.ico",
+        },
+      ],
       other: [
         {
-          rel: "icon",
           url: setting?.siteFavicon || "/favicon.ico",
         },
       ],
     },
-    // metadataBase: setting?.domain ? new URL(setting.domain) : undefined,
+    metadataBase: setting?.domain
+      ? new URL(`https://shop.${setting.domain}`)
+      : undefined,
   };
 };
 
