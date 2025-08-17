@@ -8,9 +8,6 @@ export interface CartModel {
   options?: string[];
   options_info?: OptionsInfo[];
   quantity: number;
-  deleted?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
   thumbnail?: string;
   thumbnail_product?: string;
   cost?: number;

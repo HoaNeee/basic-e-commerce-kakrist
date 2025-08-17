@@ -78,6 +78,19 @@ const ProductDetail = () => {
   const next = encodeURIComponent(path + (search ? `?${search}` : ``));
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      if (hash && !isLoading) {
+        const element = document.getElementById(hash.replace("#", ""));
+        console.log(element);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
     if (slug) {
       getProductDetail();
     }
@@ -244,7 +257,7 @@ const ProductDetail = () => {
       variations.map((item) => {
         return (
           <div key={item._id} className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="sm:flex-row sm:items-center flex flex-col gap-3">
               <label className="font-semibold text-gray-900 dark:text-white min-w-[50px]">
                 {item.title}:
               </label>
@@ -298,7 +311,7 @@ const ProductDetail = () => {
                     })}
                 </div>
               ) : (
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="dark:text-gray-400 text-gray-600">
                   {item.options.map((opt) => opt.title).join(", ")}
                 </div>
               )}
@@ -345,21 +358,21 @@ const ProductDetail = () => {
 
   if (isLoading || !productDetail) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 lg:px-6 xl:px-8 py-6 max-w-7xl">
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="lg:px-6 xl:px-8 max-w-7xl container px-4 py-6 mx-auto">
           <div className="mb-8">
             <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-16" />
+              <Skeleton className="w-16 h-4" />
               <span>/</span>
-              <Skeleton className="h-4 w-12" />
+              <Skeleton className="w-12 h-4" />
               <span>/</span>
-              <Skeleton className="h-4 w-32" />
+              <Skeleton className="w-32 h-4" />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
+          <div className="lg:grid-cols-2 lg:gap-12 grid grid-cols-1 gap-8 mb-16">
             <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 overflow-hidden">
+              <div className="dark:bg-gray-800 rounded-xl dark:border-gray-700 p-4 overflow-hidden bg-white border border-gray-200 shadow-sm">
                 <Skeleton className="aspect-square lg:h-[600px] h-[500px] rounded-lg" />
               </div>
               <div className="grid grid-cols-4 gap-3">
@@ -371,35 +384,35 @@ const ProductDetail = () => {
 
             <div className="space-y-6">
               <div className="flex justify-end">
-                <Skeleton className="h-6 w-20 rounded-full" />
+                <Skeleton className="w-20 h-6 rounded-full" />
               </div>
               <div className="space-y-4">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="w-24 h-5" />
+                <Skeleton className="w-3/4 h-8" />
                 <div className="flex items-center gap-3">
                   <div className="flex gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Skeleton key={i} className="h-4 w-4 rounded" />
+                      <Skeleton key={i} className="w-4 h-4 rounded" />
                     ))}
                   </div>
-                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="w-24 h-4" />
                 </div>
-                <Skeleton className="h-10 w-1/2" />
+                <Skeleton className="w-1/2 h-10" />
                 <div className="flex flex-wrap gap-2">
-                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="w-16 h-4" />
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-6 w-16 rounded-full" />
+                    <Skeleton key={i} className="w-16 h-6 rounded-full" />
                   ))}
                 </div>
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="w-full h-4" />
+                  <Skeleton className="w-5/6 h-4" />
+                  <Skeleton className="w-2/3 h-4" />
                 </div>
                 <div className="flex gap-4 pt-6">
-                  <Skeleton className="h-12 w-32" />
-                  <Skeleton className="h-12 flex-1" />
-                  <Skeleton className="h-12 w-12" />
+                  <Skeleton className="w-32 h-12" />
+                  <Skeleton className="flex-1 h-12" />
+                  <Skeleton className="w-12 h-12" />
                 </div>
               </div>
             </div>
@@ -410,8 +423,8 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
-      <div className="container mx-auto px-4 lg:px-6 xl:px-8 py-6">
+    <div className="bg-gray-50 dark:bg-black min-h-screen">
+      <div className="lg:px-6 xl:px-8 container px-4 py-6 mx-auto">
         <div className="mb-8">
           <Breadcrumb>
             <BreadcrumbList>
@@ -438,7 +451,7 @@ const ProductDetail = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="font-medium text-gray-900 dark:text-white">
+                <BreadcrumbPage className="dark:text-white font-medium text-gray-900">
                   {productDetail?.title}
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -446,21 +459,21 @@ const ProductDetail = () => {
           </Breadcrumb>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
+        <div className="lg:grid-cols-2 lg:gap-12 grid grid-cols-1 gap-8 mb-16">
           <div className="space-y-4">
-            <div className="relative bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="dark:bg-neutral-800 rounded-xl dark:border-gray-700 relative overflow-hidden bg-white border border-gray-200 shadow-sm">
               <div className="aspect-square lg:h-[600px] h-[500px] p-4 w-full">
                 {productDetail?.thumbnail ? (
                   <img
                     src={thumbnail}
                     alt={productDetail.title}
-                    className="w-full h-full object-contain object-center rounded-lg"
+                    className="object-contain object-center w-full h-full rounded-lg"
                   />
                 ) : (
                   <Image
                     alt="product detail"
                     src={IMAGENOTFOUND}
-                    className="w-full h-full object-contain rounded-lg"
+                    className="object-contain w-full h-full rounded-lg"
                     priority
                   />
                 )}
@@ -488,7 +501,7 @@ const ProductDetail = () => {
                     <img
                       src={img}
                       alt={`Product ${idx + 1}`}
-                      className="h-full w-full object-contain p-2 hover:scale-105 transition-transform duration-300"
+                      className="hover:scale-105 object-contain w-full h-full p-2 transition-transform duration-300"
                     />
                   </div>
                 ))}
@@ -511,11 +524,11 @@ const ProductDetail = () => {
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm font-medium text-primary uppercase tracking-wider">
+              <p className="text-primary text-sm font-medium tracking-wider uppercase">
                 {productDetail?.supplierName}
               </p>
 
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+              <h1 className="lg:text-4xl dark:text-white text-3xl font-bold leading-tight text-gray-900">
                 {productDetail?.title}
               </h1>
 
@@ -544,7 +557,7 @@ const ProductDetail = () => {
                     />
                   ))}
                 </Rating>
-                <div className="flex gap-2 items-center text-sm text-gray-600 dark:text-gray-400">
+                <div className="dark:text-gray-400 flex items-center gap-2 text-sm text-gray-600">
                   <span>{productDetail?.review?.average || 0}.0</span>
                   <span>•</span>
                   <span>
@@ -559,7 +572,7 @@ const ProductDetail = () => {
                     {productDetail.discountedPrice !== undefined &&
                     productDetail.discountedPrice !== null ? (
                       <>
-                        <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                        <p className="lg:text-3xl dark:text-white text-2xl font-bold text-gray-900">
                           {VND.format(Number(productDetail.discountedPrice))}
                         </p>
                         <p className="text-lg text-gray-500 line-through">
@@ -567,7 +580,7 @@ const ProductDetail = () => {
                         </p>
                       </>
                     ) : (
-                      <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                      <p className="lg:text-3xl dark:text-white text-2xl font-bold text-gray-900">
                         {VND.format(Number(productDetail.price))}
                       </p>
                     )}
@@ -575,12 +588,12 @@ const ProductDetail = () => {
                 ) : (
                   <>
                     {productDetail && subProductDetail ? (
-                      <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                      <p className="lg:text-3xl dark:text-white text-2xl font-bold text-gray-900">
                         {VND.format(Number(subProductDetail.price))}
                       </p>
                     ) : (
                       productDetail && (
-                        <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                        <p className="lg:text-3xl dark:text-white text-2xl font-bold text-gray-900">
                           {VND.format(productDetail.rangePrice?.min || 0)} -{" "}
                           {VND.format(productDetail.rangePrice?.max || 0)}
                         </p>
@@ -591,7 +604,7 @@ const ProductDetail = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <span className="dark:text-gray-400 text-sm font-medium text-gray-600">
                   Categories:
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -601,7 +614,7 @@ const ProductDetail = () => {
                       onClick={() =>
                         router.push(`/shop?filter_cats=${category._id}`)
                       }
-                      className="px-3 py-1 text-xs font-medium bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-colors duration-200"
+                      className="hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 px-3 py-1 text-xs font-medium text-gray-700 transition-colors duration-200 bg-gray-100 rounded-full"
                     >
                       {category.title}
                     </button>
@@ -610,24 +623,24 @@ const ProductDetail = () => {
               </div>
 
               <div
-                className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400"
+                className="dark:prose-invert max-w-none dark:text-gray-400 prose-sm prose text-gray-600"
                 dangerouslySetInnerHTML={{
                   __html: productDetail?.shortDescription || "",
                 }}
               />
 
               {variations && variations.length > 0 && (
-                <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="dark:border-gray-700 pt-4 space-y-4 border-t border-gray-200">
                   {renderSubproducts(variations)}
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-6">
-                <div className="flex items-center border-2 border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+              <div className="sm:flex-row sm:items-center flex flex-col items-stretch gap-4 pt-6">
+                <div className="dark:border-gray-600 flex items-center overflow-hidden border-2 border-gray-300 rounded-lg">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-12 px-4 rounded-none border-r border-gray-300 dark:border-gray-600"
+                    className="dark:border-gray-600 h-12 px-4 border-r border-gray-300 rounded-none"
                     disabled={count === 1}
                     onClick={() => {
                       if (productDetail?.productType === "variations") {
@@ -649,7 +662,7 @@ const ProductDetail = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-12 px-4 rounded-none border-l border-gray-300 dark:border-gray-600"
+                    className="dark:border-gray-600 h-12 px-4 border-l border-gray-300 rounded-none"
                     onClick={() => {
                       if (productDetail?.productType === "variations") {
                         if (subProductDetail) {
@@ -686,11 +699,11 @@ const ProductDetail = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-12 w-12 relative"
+                  className="relative w-12 h-12"
                   onClick={handleFavorite}
                 >
                   <div
-                    className="transition-all duration-300 absolute inset-0 flex items-center justify-center"
+                    className="absolute inset-0 flex items-center justify-center transition-all duration-300"
                     style={{
                       opacity: listFavorite.includes(productDetail?._id || "")
                         ? "0"
@@ -700,7 +713,7 @@ const ProductDetail = () => {
                     <FaRegHeart size={20} />
                   </div>
                   <div
-                    className="transition-all duration-300 absolute inset-0 flex items-center justify-center text-red-500"
+                    className="absolute inset-0 flex items-center justify-center text-red-500 transition-all duration-300"
                     style={{
                       opacity: listFavorite.includes(productDetail?._id || "")
                         ? "1"
@@ -714,9 +727,9 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-neutral-800 md:rounded-xl md:shadow-sm md:border border-gray-200 dark:border-gray-700 p-4 lg:p-8 mb-16">
+        <div className="dark:bg-neutral-800 md:rounded-xl md:shadow-sm md:border dark:border-gray-700 lg:p-8 p-4 mb-16 bg-white border-gray-200">
           <Tabs defaultValue="reviews">
-            <TabsList className="flex gap-6 items-center border-b border-gray-200 dark:border-gray-700 w-full pb-4 mb-6 relative">
+            <TabsList className="dark:border-gray-700 relative flex items-center w-full gap-6 pb-4 mb-6 border-b border-gray-200">
               <div
                 className="absolute h-0.5 bg-primary -bottom-[1px] transition-all duration-300 rounded-full"
                 style={{
@@ -756,13 +769,13 @@ const ProductDetail = () => {
               </TabsTrigger>
             </TabsList>
 
-            <div className="min-h-[200px]">
+            <div className="min-h-[200px]" id="review">
               <TabsContent value="reviews">
                 <RatingTab product={productDetail} />
               </TabsContent>
               <TabsContent value="description">
                 <div
-                  className="prose prose-gray dark:prose-invert max-w-none"
+                  className="prose-gray dark:prose-invert max-w-none prose"
                   dangerouslySetInnerHTML={{
                     __html:
                       productDetail?.content ||
@@ -773,7 +786,7 @@ const ProductDetail = () => {
               <TabsContent value="additional-information">
                 {productDetail?.productType === "variations" ? (
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg mb-4">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Product Variations
                     </h3>
                     <div className="space-y-3">
@@ -782,7 +795,7 @@ const ProductDetail = () => {
                   </div>
                 ) : (
                   <div
-                    className="prose prose-gray dark:prose-invert max-w-none"
+                    className="prose-gray dark:prose-invert max-w-none prose"
                     dangerouslySetInnerHTML={{
                       __html:
                         productDetail?.shortDescription ||

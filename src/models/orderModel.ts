@@ -40,4 +40,7 @@ interface Product {
   options: string[];
   quantity: number;
   _id: string;
+  product_id: string;
+  SKU: string;
+  reviewed: boolean;
 }

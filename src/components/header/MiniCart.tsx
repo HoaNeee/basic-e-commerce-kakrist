@@ -196,7 +196,7 @@ const MiniCart = () => {
                         <Button
                           className="py-6"
                           onClick={() => {
-                            localStorage.setItem(
+                            sessionStorage.setItem(
                               "cart_checkout",
                               JSON.stringify(cart.carts)
                             );

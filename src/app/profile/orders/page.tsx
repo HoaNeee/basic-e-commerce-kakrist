@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { OrderModel } from "@/models/orderModel";
 import { VND } from "@/utils/formatCurrency";
-import { get, patch } from "@/utils/requets";
+import { get, patch, post, postImageMulti } from "@/utils/requets";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -36,6 +36,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import HeadContent from "@/components/HeadContent";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Dialog,
+} from "@/components/ui/dialog";
+import PostReview from "@/components/PostReview";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ProductModel } from "@/models/productModel";
+import Link from "next/link";
 
 const Order = () => {
   const [orders, setOrders] = useState<OrderModel[]>([]);
@@ -52,6 +63,8 @@ const Order = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [isFilter, setIsFilter] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [openDialogReview, setOpenDialogReview] = useState(false);
+  const [orderSelected, setOrderSelected] = useState<OrderModel | null>(null);
 
   const listRef = useRef<any>(null);
   const router = useRouter();
@@ -102,6 +115,12 @@ const Order = () => {
     }
   }, [keyword, statusFilter]);
 
+  useEffect(() => {
+    if (!openDialogReview && orderSelected) {
+      setOrderSelected(null);
+    }
+  }, [openDialogReview]);
+
   const scrollToBottom = () => {
     if (
       window.scrollY + window.innerHeight - 150 >=
@@ -139,7 +158,7 @@ const Order = () => {
   const debounce = useRef(
     lodash.debounce((page: number, totalPage: number) => {
       handleSetPage(page, totalPage);
-    }, 1000)
+    }, 500)
   ).current;
 
   const debounceSearch = useRef(
@@ -261,18 +280,18 @@ const Order = () => {
 
   const renderSkeleton = (key: number) => {
     return (
-      <div key={key} className="w-full pb-4 border-b-2 border-muted">
-        <div className="flex md:items-center justify-between md:flex-row flex-col gap-4">
-          <div className="flex items-center gap-4 ">
+      <div key={key} className="border-muted w-full pb-4 border-b-2">
+        <div className="md:items-center md:flex-row flex flex-col justify-between gap-4">
+          <div className=" flex items-center gap-4">
             <Skeleton className="w-18 h-18 bg-muted" />
-            <div className="text-sm flex flex-col gap-3">
-              <Skeleton className="h-3 w-40" />
+            <div className="flex flex-col gap-3 text-sm">
+              <Skeleton className="w-40 h-3" />
               <Skeleton className="h-2.5 w-15" />
               <Skeleton className="h-2.5 w-20" />
             </div>
           </div>
           <div className="">
-            <Skeleton className="h-4 w-20" />
+            <Skeleton className="w-20 h-4" />
           </div>
           <div className="space-y-1">
             <Skeleton className="h-9 md:w-30 w-full" />
@@ -280,8 +299,8 @@ const Order = () => {
           </div>
         </div>
         <div className="flex items-center gap-2 mt-4">
-          <Skeleton className="h-5 w-18" />
-          <Skeleton className="h-3 w-38" />
+          <Skeleton className="w-18 h-5" />
+          <Skeleton className="w-38 h-3" />
         </div>
       </div>
     );
@@ -315,19 +334,19 @@ const Order = () => {
     !isFilter
   ) {
     return (
-      <div className="text-center py-16">
-        <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
+      <div className="py-16 text-center">
+        <div className="dark:bg-gray-700 flex items-center justify-center w-24 h-24 mx-auto mb-6 bg-gray-200 rounded-full">
           <ClipboardList className="w-12 h-12 text-gray-400" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        <h3 className="dark:text-white mb-2 text-xl font-semibold text-gray-900">
           Your order is empty
         </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="dark:text-gray-400 mb-6 text-gray-600">
           Add some items to your cart and checkout to get started.
         </p>
         <Button
           onClick={() => router.push("/shop")}
-          className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
+          className="dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 text-white bg-gray-900"
         >
           Shop
         </Button>
@@ -343,13 +362,13 @@ const Order = () => {
         title="My Orders"
         desc="List of all your orders"
         size="large"
-        className="mb-8 md:hidden flex flex-col items-start"
+        className="md:hidden flex flex-col items-start mb-8"
       />
-      <div className="flex items-center gap-3 justify-end mb-6">
+      <div className="flex items-center justify-end gap-3 mb-6">
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2" />
+          <Search className="left-2 top-1/2 absolute -translate-y-1/2" />
           <Input
-            className="pl-10 py-6"
+            className="py-6 pl-10"
             placeholder="Search..."
             name="key-search-order"
             value={keyword}
@@ -362,7 +381,7 @@ const Order = () => {
         <Popover>
           <PopoverTrigger asChild>
             <div className="w-25">
-              <Button className="py-6 w-full">
+              <Button className="w-full py-6">
                 Filter
                 <VscSettings />
               </Button>
@@ -393,7 +412,7 @@ const Order = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex justify-end items-center gap-3 mt-6">
+            <div className="flex items-center justify-end gap-3 mt-6">
               <Button
                 variant={"outline"}
                 onClick={async () => {
@@ -417,7 +436,7 @@ const Order = () => {
         </Popover>
       </div>
       {isLoading ? (
-        <div className="flex flex-col gap-5 w-full mt-5">
+        <div className="flex flex-col w-full gap-5 mt-5">
           {Array.from({ length: 3 }).map((_, index) => renderSkeleton(index))}
         </div>
       ) : orders && orders.length > 0 ? (
@@ -425,10 +444,10 @@ const Order = () => {
           {orders.map((order) => (
             <div
               key={order._id}
-              className="w-full pb-4 border-b-2 border-muted"
+              className="border-muted w-full pb-4 border-b-2"
               id={order.orderNo}
             >
-              <div className="flex md:items-center justify-between md:flex-row flex-col gap-4">
+              <div className="md:items-center md:flex-row flex flex-col justify-between gap-4">
                 <div
                   className={`flex items-center gap-4 ${
                     order.status === "canceled" ? "text-gray-500" : ""
@@ -439,12 +458,12 @@ const Order = () => {
                       <img
                         src={order?.products[0].thumbnail}
                         alt={""}
-                        className="h-full w-full object-cover rounded-xs"
+                        className="rounded-xs object-cover w-full h-full"
                       />
                     </div>
                   </div>
-                  <div className="text-sm flex flex-col gap-1">
-                    <p className="font-bold text-base">
+                  <div className="flex flex-col gap-1 text-sm">
+                    <p className="text-base font-bold">
                       {order.products[0].title}
                       {order.products.length > 1 && (
                         <span className="text-muted-foreground">
@@ -500,7 +519,15 @@ const Order = () => {
                     </Button>
 
                     {order.status === "delivered" ? (
-                      <Button className="py-5">Write A review</Button>
+                      <Button
+                        className="py-5"
+                        onClick={() => {
+                          setOrderSelected(order);
+                          setOpenDialogReview(true);
+                        }}
+                      >
+                        Write A review
+                      </Button>
                     ) : (
                       order.status !== "shipping" &&
                       order.status !== "canceled" && (
@@ -526,7 +553,7 @@ const Order = () => {
                                 ? isUpdating.loading
                                 : false
                             }
-                            className="py-5 bg-red-400 text-white hover:bg-red-500"
+                            className="hover:bg-red-500 py-5 text-white bg-red-400"
                           >
                             Cancel Order
                           </ButtonLoading>
@@ -543,25 +570,225 @@ const Order = () => {
         </div>
       ) : (
         !showSkeleton && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <div className="py-16 text-center">
+            <div className="dark:bg-gray-700 flex items-center justify-center w-24 h-24 mx-auto mb-6 bg-gray-200 rounded-full">
               <Search className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="dark:text-white mb-2 text-xl font-semibold text-gray-900">
               No orders found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="dark:text-gray-400 mb-6 text-gray-600">
               Try searching with different keywords or filters.
             </p>
           </div>
         )
       )}
       {showSkeleton && !isLoading && (
-        <div className="flex flex-col gap-5 w-full mt-5">
+        <div className="flex flex-col w-full gap-5 mt-5">
           {Array.from({ length: 3 }).map((_, index) => renderSkeleton(index))}
         </div>
       )}
+      <DialogReview
+        open={openDialogReview}
+        setOpen={setOpenDialogReview}
+        order={orderSelected}
+      />
     </div>
+  );
+};
+
+interface DialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  order: OrderModel | null;
+}
+
+interface IProductOrder extends ProductModel {
+  reviewed: boolean;
+}
+
+const DialogReview = (props: DialogProps) => {
+  const { open, setOpen, order } = props;
+
+  const [showFastReview, setShowFastReview] = useState(false);
+  const [products, setProducts] = useState<IProductOrder[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [isPosting, setIsPosting] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setProducts([]);
+      setSelectedKeys([]);
+      setShowFastReview(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (order) {
+      getProductInfo(order.orderNo);
+    }
+  }, [order]);
+
+  const getProductInfo = async (order_no: string) => {
+    try {
+      setIsLoading(true);
+      const response = await get(`/orders/products-info/${order_no}`);
+      setProducts(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async (data: {
+    rateScore: number;
+    title: string;
+    content: string;
+    files: File[];
+  }) => {
+    if (
+      !order ||
+      !data.title ||
+      !data.content ||
+      data.rateScore === 0 ||
+      selectedKeys.length === 0
+    ) {
+      return;
+    }
+
+    try {
+      setIsPosting(true);
+      const payload: any = {
+        star: data.rateScore,
+        title: data.title,
+        content: data.content,
+      };
+
+      if (data.files.length > 0) {
+        const res = await postImageMulti("images", data.files);
+        payload.images = res.data;
+      }
+
+      await post(`/orders/review-multi`, {
+        orderNo: order.orderNo,
+        data: payload,
+        ids: selectedKeys,
+      });
+
+      setOpen(false);
+      toast.success("Review submitted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to submit review");
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent
+        className={`dark:text-white/80 max-w-9/10 py-6 pl-6 pr-2 overflow-hidden ${
+          showFastReview ? "h-9/10" : "max-h-9/10"
+        }`}
+      >
+        <DialogHeader>
+          <DialogTitle>Write Review</DialogTitle>
+        </DialogHeader>
+        <DialogDescription />
+        <div className="custom-scrollbar max-h-full overflow-hidden overflow-x-hidden overflow-y-auto">
+          <div className="max-w-19/20 mb-6">
+            {order?.products && order.products.length > 0 ? (
+              <div className="flex flex-col gap-3 text-sm">
+                {isLoading ? (
+                  <div className="flex flex-col gap-3">
+                    {Array.from({ length: 3 }).map((_, index) => {
+                      return (
+                        <div className="flex items-center gap-2" key={index}>
+                          <Skeleton className="w-12 h-12" />
+                          <div className="flex-1 space-y-2">
+                            <Skeleton className="w-full h-3" />
+                            <Skeleton className="w-full h-2" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  products.map((item, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-center justify-between`}
+                        style={{
+                          opacity: item.reviewed ? 0.7 : 1,
+                          pointerEvents: item.reviewed ? "none" : "auto",
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Checkbox
+                            // checked={selectedKeys.includes(item._id)}
+                            onCheckedChange={(e) => {
+                              if (e) {
+                                selectedKeys.push(item._id);
+                              } else {
+                                selectedKeys.splice(
+                                  selectedKeys.indexOf(item._id),
+                                  1
+                                );
+                              }
+                            }}
+                          />
+                          <div className="w-14 h-14 overflow-hidden bg-gray-100 rounded-sm">
+                            <img
+                              src={item.thumbnail}
+                              alt={item.title}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <p>{item.title}</p>
+                            <p className="text-xs text-gray-500">{item.SKU}</p>
+                          </div>
+                        </div>
+                        <Link href={`/shop/${item.slug}#review`}>
+                          <Button size={"sm"} className="text-xs">
+                            {item.reviewed ? "Reviewed" : "Review"}
+                          </Button>
+                        </Link>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ) : null}
+          </div>
+          {order &&
+          order.products &&
+          products.some((item) => !item.reviewed) ? (
+            <p
+              onClick={() => setShowFastReview(!showFastReview)}
+              className="hover:underline inline-block mb-4 text-sm font-medium text-blue-400 transition-all duration-300 cursor-pointer"
+            >
+              Fast Review
+            </p>
+          ) : null}
+          {showFastReview ? (
+            <div className="max-w-19/20 flex flex-col gap-2">
+              <PostReview
+                smaller
+                onSubmit={(data) => {
+                  handleSubmitReview(data);
+                }}
+                isPosting={isPosting}
+              />
+            </div>
+          ) : null}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

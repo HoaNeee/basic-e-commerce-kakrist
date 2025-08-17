@@ -55,7 +55,7 @@ const FooterComponent = ({
   }, []);
 
   const checkIsToastLogin = () => {
-    const isToastLogin = localStorage.getItem("is_toast_login_success");
+    const isToastLogin = sessionStorage.getItem("is_toast_login_success");
     if (isToastLogin && isToastLogin === "true") {
       toast.success("Login successfully, Welcome!", {
         description: "You have successfully logged in.",
@@ -63,7 +63,7 @@ const FooterComponent = ({
           top: "75px",
         },
       });
-      localStorage.removeItem("is_toast_login_success");
+      sessionStorage.removeItem("is_toast_login_success");
     }
   };
 

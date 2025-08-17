@@ -266,16 +266,16 @@ const Checkout = () => {
 
   const renderLoading = () => {
     return (
-      <div className="fixed inset-0 flex top-0 left-0 z-99 items-center justify-center bg-black/30 flex-col gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80 dark:border-neutral-300"></div>
+      <div className="z-99 bg-black/30 fixed inset-0 top-0 left-0 flex flex-col items-center justify-center gap-4">
+        <div className="animate-spin border-white/80 dark:border-neutral-300 w-12 h-12 border-b-2 rounded-full"></div>
         <p className="text-white/80 dark:text-gray-400">Loading...</p>
       </div>
     );
   };
 
   const handleCheckExistTransaction = () => {
-    const transaction = localStorage.getItem("transaction");
-    const toast_transaction_exists = localStorage.getItem(
+    const transaction = sessionStorage.getItem("transaction");
+    const toast_transaction_exists = sessionStorage.getItem(
       "toast_transaction_exists"
     );
     if (toast_transaction_exists) {
@@ -283,7 +283,7 @@ const Checkout = () => {
         description: "Please complete or cancel it before starting a new one.",
         duration: 5000,
       });
-      localStorage.removeItem("toast_transaction_exists");
+      sessionStorage.removeItem("toast_transaction_exists");
     }
     if (transaction) {
       const parsedTransaction = JSON.parse(transaction) as ITransaction;
@@ -302,10 +302,10 @@ const Checkout = () => {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-400 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="animate-spin dark:border-gray-400 w-12 h-12 mx-auto mb-4 border-b-2 border-gray-900 rounded-full"></div>
+          <p className="dark:text-gray-400 text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -313,7 +313,7 @@ const Checkout = () => {
 
   if (cartCheckout.length <= 0 && !isProceed && loaded) {
     return (
-      <div className="text-center py-12 min-h-100 flex items-center justify-center">
+      <div className="min-h-100 flex items-center justify-center py-12 text-center">
         You are accessing unauthorized{" "}
       </div>
     );
@@ -321,25 +321,25 @@ const Checkout = () => {
 
   return (
     <>
-      <section className="min-h-screen bg-gray-50 dark:bg-black/90">
+      <section className="bg-gray-50 dark:bg-black/90 min-h-screen">
         <TagEndTime
           isProceed={isProceed}
           onCancel={handleCancelTransaction}
           currentEndTime={endTimeTransaction}
         />
         {isLoading && renderLoading()}
-        <div className="mx-auto px-4 py-8 pb-12">
+        <div className="px-4 py-8 pb-12 mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="dark:text-white mb-2 text-3xl font-bold text-gray-900">
               Checkout
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="dark:text-gray-400 text-gray-600">
               Review your order and complete your purchase
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-2/3 relative pb-10 h-fit flex overflow-hidden">
+          <div className="lg:flex-row flex flex-col gap-8">
+            <div className="lg:w-2/3 h-fit relative flex pb-10 overflow-hidden">
               <TableOverview
                 cartCheckout={cartCheckout}
                 isProceed={isProceed}
@@ -354,12 +354,12 @@ const Checkout = () => {
                   opacity: isProceed ? 1 : 0,
                 }}
               >
-                <div className="p-4 border-b h-fit border-gray-200 dark:border-gray-700">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="h-fit dark:border-gray-700 p-4 border-b border-gray-200">
+                  <h2 className="dark:text-white text-lg font-semibold text-gray-900">
                     Checkout Information
                   </h2>
                 </div>
-                <div className="px-4 mt-8 h-fit">
+                <div className="h-fit px-4 mt-8">
                   <TransactionSteps
                     transactionExists={transactionExist || undefined}
                     onNextStep={async (step, val) => {
@@ -375,35 +375,34 @@ const Checkout = () => {
             </div>
 
             <div className="lg:w-1/3">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm sticky top-30">
+              <div className="dark:bg-gray-800 top-30 sticky bg-white rounded-lg shadow-sm">
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                  <h2 className="dark:text-white mb-6 text-lg font-semibold text-gray-900">
                     Order Summary
                   </h2>
 
-                  <div className="space-y-4 mb-6">
+                  <div className="mb-6 space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">
+                      <span className="dark:text-gray-400 text-gray-600">
                         Subtotal
                       </span>
-                      <span className="text-gray-900 dark:text-white font-medium">
+                      <span className="dark:text-white font-medium text-gray-900">
                         {VND.format(subTotal)}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">
+                      <span className="dark:text-gray-400 text-gray-600">
                         Shipping
                       </span>
-                      <span className="text-gray-900 dark:text-white font-medium">
+                      <span className="dark:text-white font-medium text-gray-900">
                         Free
                       </span>
                     </div>
                   </div>
 
-                  {/* Discount Code */}
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                  <div className="dark:border-gray-700 pt-6 mb-6 border-t border-gray-200">
+                    <h3 className="dark:text-white mb-3 text-sm font-medium text-gray-900">
                       Discount Code
                     </h3>
                     <div className="flex gap-2">
@@ -428,17 +427,17 @@ const Checkout = () => {
                     </div>
 
                     {errorCode && (
-                      <p className="text-red-500 text-sm mt-2">{errorCode}</p>
+                      <p className="mt-2 text-sm text-red-500">{errorCode}</p>
                     )}
 
                     {discount?.title && (
-                      <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                        <div className="flex justify-between items-start">
+                      <div className="bg-green-50 dark:bg-green-900/20 p-3 mt-3 rounded-lg">
+                        <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-green-800 dark:text-green-400">
+                            <p className="dark:text-green-400 text-sm font-medium text-green-800">
                               {discount.title}
                             </p>
-                            <p className="text-sm text-green-600 dark:text-green-500">
+                            <p className="dark:text-green-500 text-sm text-green-600">
                               -
                               {VND.format(
                                 discount.type === "percent"
@@ -455,7 +454,7 @@ const Checkout = () => {
                               setGrandTotal(subTotal);
                               setCODE("");
                             }}
-                            className="text-green-600 hover:text-green-700 p-1 h-auto"
+                            className="hover:text-green-700 h-auto p-1 text-green-600"
                           >
                             ×
                           </Button>
@@ -464,19 +463,17 @@ const Checkout = () => {
                     )}
                   </div>
 
-                  {/* Total */}
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+                  <div className="dark:border-gray-700 pt-6 mb-6 border-t border-gray-200">
                     <div className="flex justify-between">
-                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <span className="dark:text-white text-lg font-semibold text-gray-900">
                         Total
                       </span>
-                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <span className="dark:text-white text-lg font-semibold text-gray-900">
                         {VND.format(grandTotal)}
                       </span>
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="space-y-3">
                     {currentStep === "3" ? (
                       <ButtonLoading
@@ -504,7 +501,7 @@ const Checkout = () => {
                               router.replace("/cart");
                               localStorage.removeItem("cart_checkout");
                             }}
-                            className="w-full border-gray-300 py-6 dark:text-white/80"
+                            className="dark:text-white/80 w-full py-6 border-gray-300"
                           >
                             Back to Cart
                           </Button>
@@ -520,7 +517,7 @@ const Checkout = () => {
                       >
                         <Button
                           variant="outline"
-                          className="w-full border-gray-300 py-6 dark:text-white/80"
+                          className="dark:text-white/80 w-full py-6 border-gray-300"
                           disabled={isLoading}
                         >
                           Cancel Checkout
@@ -529,9 +526,8 @@ const Checkout = () => {
                     )}
                   </div>
 
-                  {/* Trust Indicators */}
-                  <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="dark:border-gray-700 pt-6 mt-6 border-t border-gray-200">
+                    <div className="dark:text-gray-400 flex items-center justify-center gap-4 text-xs text-gray-500">
                       <div className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <span>Secure SSL</span>

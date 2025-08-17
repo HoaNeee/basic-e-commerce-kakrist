@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { Badge } from "./ui/badge";
 import { FiCalendar, FiUser, FiX } from "react-icons/fi";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import ButtonLoading from "./ButtonLoading";
+import LoadingComponent from "./LoadingComponent";
 
 interface Props {
   order_no: string;
@@ -17,6 +20,7 @@ const OrderDetail = (props: Props) => {
   const { order_no } = props;
 
   const [order, setOrder] = useState<OrderModel>();
+  const [reordering, setReordering] = useState(false);
 
   const router = useRouter();
 
@@ -88,15 +92,32 @@ const OrderDetail = (props: Props) => {
 
   if (!order) {
     return (
-      <div className="text-gray-500 min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen text-gray-500">
         Loading...
       </div>
     );
   }
 
+  const handleReorder = async () => {
+    try {
+      setReordering(true);
+      const response = await get(
+        `/orders/reorder/get-products-and-create-cart/${order.orderNo}`
+      );
+      localStorage.setItem("cart_checkout", JSON.stringify(response.data));
+      router.push("/cart/checkout", { scroll: true });
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to reorder");
+    } finally {
+      setReordering(false);
+    }
+  };
+
   return (
     <div className="w-full min-h-screen">
-      <div className="sticky top-0 z-10 bg-white dark:bg-neutral-800 shadow-sm border-b px-4 py-3">
+      {reordering && <LoadingComponent type="superScreen" />}
+      <div className="dark:bg-neutral-800 sticky top-0 z-10 px-4 py-3 bg-white border-b shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -105,15 +126,21 @@ const OrderDetail = (props: Props) => {
               className="flex items-center gap-2"
             >
               <IoArrowBack />
-              <span className="hidden sm:inline">Back</span>
+              <span className="sm:inline hidden">Back</span>
             </Button>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-white/80">
+            <h1 className="dark:text-white/80 text-lg font-semibold text-gray-900">
               Order Details - #{order_no}
             </h1>
           </div>
-          {order.status === "canceled" && (
+          {(order.status === "canceled" || order.status === "delivered") && (
             <div>
-              <Button className="py-5">Reorder</Button>
+              <ButtonLoading
+                typeLoading={1}
+                className="py-5"
+                onClick={handleReorder}
+              >
+                Reorder
+              </ButtonLoading>
             </div>
           )}
         </div>
@@ -143,7 +170,7 @@ const OrderDetail = (props: Props) => {
               </p>
             </div>
 
-            <div className="flex flex-col gap-1 items-end">
+            <div className="flex flex-col items-end gap-1">
               <Badge
                 className={`${statusColor(order.status).bgDeep} ${
                   statusColor(order.status).textDeep
@@ -151,7 +178,7 @@ const OrderDetail = (props: Props) => {
               >
                 Order #{order.orderNo || "Processing"}
               </Badge>
-              <span className="text-gray-600 text-xs">
+              <span className="text-xs text-gray-600">
                 {format(order.createdAt, "PP")}
               </span>
             </div>
@@ -162,8 +189,8 @@ const OrderDetail = (props: Props) => {
         <div>
           {" "}
           {order?.status === "canceled" && order.cancel && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-red-700 font-medium mb-2">
+            <div className="bg-red-50 p-4 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-2 font-medium text-red-700">
                 <FiX className="w-4 h-4" />
                 Order Canceled
               </div>
@@ -172,21 +199,21 @@ const OrderDetail = (props: Props) => {
                   <div className="flex items-center gap-2">
                     <FiCalendar className="w-3 h-3 text-red-500" />
                     <span className="text-red-600">Canceled at:</span>
-                    <span className="text-red-900 font-medium">
+                    <span className="font-medium text-red-900">
                       {format(order.cancel.canceledAt || new Date(), "PP")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <FiUser className="w-3 h-3 text-red-500" />
                     <span className="text-red-600">Canceled by:</span>
-                    <span className="text-red-900 font-medium">
+                    <span className="font-medium text-red-900">
                       {order.cancel.canceledBy === "admin" ? "shop" : "you"}
                     </span>
                   </div>
                 </div>
                 <div className="mt-2">
                   <span className="text-red-600">Reason:</span>
-                  <p className="text-red-900 mt-1">
+                  <p className="mt-1 text-red-900">
                     {order.cancel.reasonCancel || "Canceled by system"}
                   </p>
                 </div>
@@ -195,7 +222,7 @@ const OrderDetail = (props: Props) => {
           )}
         </div>
       }
-      <div className="w-full mx-auto pb-6">
+      <div className="w-full pb-6 mx-auto">
         <ReviewOrder order={order} />
       </div>
     </div>

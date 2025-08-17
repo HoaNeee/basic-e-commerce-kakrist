@@ -31,11 +31,11 @@ const TableOverview = (props: Props) => {
         opacity: !isProceed ? 1 : 0,
       }}
     >
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="dark:border-gray-700 p-6 border-b border-gray-200">
+        <h2 className="dark:text-white text-lg font-semibold text-gray-900">
           Order Review
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className="dark:text-gray-400 mt-1 text-sm text-gray-600">
           {cartCheckout.length} item
           {cartCheckout.length !== 1 ? "s" : ""} in your order
         </p>
@@ -44,58 +44,60 @@ const TableOverview = (props: Props) => {
       <div className={`overflow-x-auto p-2 transform min-h-40`}>
         <Table>
           <TableHeader>
-            <TableRow className="border-gray-200 dark:border-gray-700">
-              <TableHead className="text-gray-600 dark:text-gray-400">
+            <TableRow className="dark:border-gray-700 border-gray-200">
+              <TableHead className="dark:text-gray-400 text-gray-600">
                 Product
               </TableHead>
-              <TableHead className="text-gray-600 dark:text-gray-400">
+              <TableHead className="dark:text-gray-400 text-gray-600">
                 Price
               </TableHead>
-              <TableHead className="text-gray-600 dark:text-gray-400">
+              <TableHead className="dark:text-gray-400 text-gray-600">
                 Qty
               </TableHead>
-              <TableHead className="text-gray-600 dark:text-gray-400 text-right">
+              <TableHead className="dark:text-gray-400 text-right text-gray-600">
                 Total
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cartCheckout.map((item) => (
+            {cartCheckout.map((item, index) => (
               <TableRow
-                key={item.cartItem_id}
-                className="border-gray-200 dark:border-gray-700 my-1"
+                key={index}
+                className="dark:border-gray-700 my-1 border-gray-200"
               >
                 <TableCell>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="dark:bg-gray-700 flex-shrink-0 w-16 h-16 overflow-hidden bg-gray-100 rounded-lg">
                       <img
                         src={item.thumbnail || item.thumbnail_product}
                         alt={item.title}
-                        className="w-full h-full object-cover"
+                        className="object-cover w-full h-full"
                       />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="dark:text-white line-clamp-2 font-medium text-gray-900">
                         {item.title}
                       </h3>
                       {item.productType === "variations" &&
-                        item.options_info && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {item.options_info
-                              .map((opt) => opt.title)
-                              .join(", ")}
-                          </p>
-                        )}
+                      item?.options_info ? (
+                        <p className="dark:text-gray-400 mt-1 text-sm text-gray-500">
+                          {item.options_info.map((opt) => opt.title).join(", ")}
+                        </p>
+                      ) : item.options ? (
+                        <p className="dark:text-gray-400 mt-1 text-sm text-gray-500">
+                          {item.options.join(", ")}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-gray-900 dark:text-white font-medium">
+                <TableCell className="dark:text-white font-medium text-gray-900">
                   {VND.format(item.discountedPrice ?? item.price)}
                 </TableCell>
-                <TableCell className="text-gray-900 dark:text-white">
+                <TableCell className="dark:text-white text-gray-900">
                   {item.quantity}
                 </TableCell>
-                <TableCell className="text-right text-gray-900 dark:text-white font-medium">
+                <TableCell className="dark:text-white font-medium text-right text-gray-900">
                   {VND.format(
                     item.quantity * (item.discountedPrice ?? item.price)
                   )}

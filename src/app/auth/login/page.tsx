@@ -62,7 +62,7 @@ const LayoutLoginWithSuspense = () => {
     try {
       await post("/auth/login", values);
       window.location.href = next ?? "/";
-      localStorage.setItem("is_toast_login_success", "true");
+      sessionStorage.setItem("is_toast_login_success", "true");
     } catch (error: any) {
       toast.error(error.message, {
         description: "Login failed!",
@@ -73,11 +73,11 @@ const LayoutLoginWithSuspense = () => {
   };
 
   return (
-    <div className="w-full h-screen flex gap-2 dark:text-white/80">
+    <div className="dark:text-white/80 flex w-full h-screen gap-2">
       <div className="bg-[url(../assets/auth-login.jpg)] bg-no-repeat bg-cover h-full md:w-5/9 md:block hidden">
         <div
           onClick={() => (window.location.href = "/")}
-          className="cursor-pointer inline-block"
+          className="inline-block cursor-pointer"
         >
           {" "}
           <Image
@@ -90,7 +90,7 @@ const LayoutLoginWithSuspense = () => {
           />
         </div>
       </div>
-      <div className="flex-1 flex flex-col justify-center px-6">
+      <div className="flex flex-col justify-center flex-1 px-6">
         <div className="mb-8">
           <h3 className="text-3xl font-bold">Welcome 👋</h3>
           <p className="text-neutral-400 text-sm">Please login here</p>
@@ -146,14 +146,14 @@ const LayoutLoginWithSuspense = () => {
                 return (
                   <FormItem {...field}>
                     <FormControl>
-                      <div className="flex justify-between items-center my-3">
-                        <div className="flex gap-2 items-center">
+                      <div className="flex items-center justify-between my-3">
+                        <div className="flex items-center gap-2">
                           <Checkbox id="remember" />
                           <Label htmlFor="remember">Remember me</Label>
                         </div>
                         <Link
                           href={"/auth/forgot-password"}
-                          className="text-sm font-medium italic"
+                          className="text-sm italic font-medium"
                         >
                           Forgot password?
                         </Link>
@@ -167,10 +167,10 @@ const LayoutLoginWithSuspense = () => {
             <Button
               disabled={isLoading}
               type="submit"
-              className="py-6 transition-all duration-400 flex items-center justify-center relative"
+              className="duration-400 relative flex items-center justify-center py-6 transition-all"
             >
               <div
-                className="opacity-0 transition-all duration-300 invisible"
+                className="invisible transition-all duration-300 opacity-0"
                 style={{
                   opacity: isLoading ? "1" : undefined,
                   visibility: isLoading ? "visible" : undefined,
@@ -180,7 +180,7 @@ const LayoutLoginWithSuspense = () => {
               </div>
               {
                 <p
-                  className="transition-all duration-300 absolute flex items-center justify-center"
+                  className="absolute flex items-center justify-center transition-all duration-300"
                   style={{
                     marginLeft: isLoading ? "86px" : undefined,
                   }}
@@ -192,14 +192,14 @@ const LayoutLoginWithSuspense = () => {
 
             <GoogleLogin />
 
-            <div className="text-center mt-5">
+            <div className="mt-5 text-center">
               <p>
                 {"Don't have an account? "}{" "}
                 <a
                   href={`/auth/register${
                     next ? `?next=${encodeURIComponent(next)}` : ""
                   }`}
-                  className="text-blue-600 italic"
+                  className="italic text-blue-600"
                 >
                   register
                 </a>
