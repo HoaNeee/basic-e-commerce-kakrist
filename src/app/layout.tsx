@@ -29,6 +29,11 @@ const getSetting = async () => {
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const setting: SystemSettingModel = await getSetting();
+
+  const icon_url = setting?.siteFavicon
+    ? `${setting.siteFavicon.replace("http://", "https://")}`
+    : "/favicon.ico";
+
   return {
     title: "Home",
     description:
@@ -48,15 +53,19 @@ export const generateMetadata = async (): Promise<Metadata> => {
       ],
     },
     icons: {
-      icon: [{ url: setting?.siteFavicon || "/favicon.ico" }],
+      icon: [
+        {
+          url: icon_url,
+        },
+      ],
       apple: [
         {
-          url: setting?.siteFavicon || "/favicon.ico",
+          url: icon_url,
         },
       ],
       other: [
         {
-          url: setting?.siteFavicon || "/favicon.ico",
+          url: icon_url,
         },
       ],
     },

@@ -273,7 +273,7 @@ const ProductDetail = () => {
                       return (
                         <Badge
                           variant={isSelected ? "default" : "outline"}
-                          className={`cursor-pointer capitalize transition-all duration-200 hover:scale-105 ${
+                          className={`cursor-pointer capitalize transition-all duration-200 px-3 py-2 hover:scale-105 ${
                             isSelected
                               ? "bg-primary text-white border-primary shadow-sm"
                               : "border-gray-300 dark:border-gray-600 hover:border-primary hover:text-primary"
