@@ -82,7 +82,6 @@ const ProductDetail = () => {
       const hash = window.location.hash;
       if (hash && !isLoading) {
         const element = document.getElementById(hash.replace("#", ""));
-        console.log(element);
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
         }

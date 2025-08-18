@@ -208,7 +208,6 @@ const Cart = () => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="space-y-3">
                       <Button
                         onClick={handleCheckout}
@@ -228,7 +227,6 @@ const Cart = () => {
                       </Button>
                     </div>
 
-                    {/* Trust Indicators */}
                     <div className="dark:border-gray-700 pt-6 mt-6 border-t border-gray-200">
                       <div className="dark:text-gray-400 flex items-center gap-4 text-xs text-gray-500">
                         <div className="flex items-center gap-1">

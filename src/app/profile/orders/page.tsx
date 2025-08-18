@@ -70,7 +70,7 @@ const Order = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const order_no = searchParams.get("order_no");
-  const limit = 5;
+  const limit = 10;
 
   useEffect(() => {
     setLoaded(true);

@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { OrderModel } from "@/models/orderModel";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
+import Link from "next/link";
 
 interface Props {
   cartsCheckout?: CartModel[];
@@ -109,7 +110,16 @@ const ReviewOrder = (props: Props) => {
                     />
                   </div>
                   <div className="flex flex-col gap-1 text-sm">
-                    <p className="font-bold text-base">{item.title}</p>
+                    {item.slug ? (
+                      <Link
+                        href={`/shop/${item.slug}`}
+                        className="font-bold text-base hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
+                      >
+                        {item.title}
+                      </Link>
+                    ) : (
+                      <p className="font-bold text-base">{item.title}</p>
+                    )}
                     <p>
                       {item.quantity} x{" "}
                       {item.discountedPrice !== null &&
@@ -149,11 +159,20 @@ const ReviewOrder = (props: Props) => {
                     />
                   </div>
                   <div className="flex flex-col gap-1 text-sm">
-                    <p className="font-bold text-base">{item.title}</p>
+                    {item.slug ? (
+                      <Link
+                        href={`/shop/${item.slug}`}
+                        className="font-bold text-base hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
+                      >
+                        {item.title}
+                      </Link>
+                    ) : (
+                      <p className="font-bold text-base">{item.title}</p>
+                    )}
                     <p>
                       {item.quantity} x {VND.format(item.price)}
                     </p>
-                    {item.options ? (
+                    {item.options && item.options.length > 0 ? (
                       <p className="text-muted-foreground">
                         options:{" "}
                         <span className="">{item.options.join(", ")}</span>
@@ -181,11 +200,17 @@ const ReviewOrder = (props: Props) => {
                   {shippingAddress.district.title}, {shippingAddress.city.title}{" "}
                 </p>
               </div>
-              <div>
-                <Button variant={"outline"} size={"icon"} className="bg-muted">
-                  <FaRegEdit size={20} />
-                </Button>
-              </div>
+              {!order && (
+                <div>
+                  <Button
+                    variant={"outline"}
+                    size={"icon"}
+                    className="bg-muted"
+                  >
+                    <FaRegEdit size={20} />
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             order && (
@@ -195,15 +220,6 @@ const ReviewOrder = (props: Props) => {
                   <p className="mt-2 tracking-wider text-sm">
                     {order.shippingAddress.address}
                   </p>
-                </div>
-                <div>
-                  <Button
-                    variant={"outline"}
-                    size={"icon"}
-                    className="bg-muted"
-                  >
-                    <FaRegEdit size={20} />
-                  </Button>
                 </div>
               </div>
             )
@@ -218,7 +234,7 @@ const ReviewOrder = (props: Props) => {
                   {payment.method === "cod" ? (
                     <div className="font-semibold">Cash on Delivering</div>
                   ) : (
-                    // updateting
+                    // updating
                     <div>{payment?.method}</div>
                   )}
                 </div>
@@ -241,15 +257,6 @@ const ReviewOrder = (props: Props) => {
                     // updateting
                     <div>{order?.paymentMethod}</div>
                   )}
-                </div>
-                <div>
-                  <Button
-                    variant={"outline"}
-                    size={"icon"}
-                    className="bg-muted"
-                  >
-                    <FaRegEdit size={20} />
-                  </Button>
                 </div>
               </div>
             )}

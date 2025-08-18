@@ -214,7 +214,9 @@ const OrderDetail = (props: Props) => {
                 <div className="mt-2">
                   <span className="text-red-600">Reason:</span>
                   <p className="mt-1 text-red-900">
-                    {order.cancel.reasonCancel || "Canceled by system"}
+                    {order.cancel.canceledBy === "admin"
+                      ? order?.cancel?.reasonCancel || "Canceled by system"
+                      : order?.cancel?.reasonCancel || "No reason provided"}
                   </p>
                 </div>
               </div>

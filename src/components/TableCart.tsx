@@ -43,6 +43,7 @@ import lodash from "lodash";
 import { BiTransferAlt } from "react-icons/bi";
 import DialogChangeOption from "./dialog/DialogChangeOption";
 import Link from "next/link";
+import { ImageOff } from "lucide-react";
 
 interface Props {
   selection: any;
@@ -70,10 +71,9 @@ export function TableCart(props: Props) {
 
   const handleChangeQuantity = async (cartItem_id: string) => {
     try {
-      const response = await patch(`/cart/update-quantity/${cartItem_id}`, {
+      await patch(`/cart/update-quantity/${cartItem_id}`, {
         quantity: quantityRef.current,
       });
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +83,7 @@ export function TableCart(props: Props) {
   const debounceChangeQuantity = React.useRef(
     lodash.debounce(
       (cartItem_id: string) => handleChangeQuantity(cartItem_id),
-      1000
+      600
     )
   ).current;
 
@@ -124,20 +124,28 @@ export function TableCart(props: Props) {
         return (
           <div className="flex items-center gap-3 py-2">
             <div className="w-16 h-16 bg-[#f1f1f3] dark:bg-neutral-600">
-              <img
-                src={product.thumbnail}
-                alt={product.title}
-                className="w-full h-full object-cover rounded-xs"
-              />
+              {product.thumbnail || product.thumbnail_product ? (
+                <img
+                  src={product?.thumbnail || product?.thumbnail_product}
+                  alt={product?.title}
+                  className="w-full h-full object-cover rounded-xs"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <ImageOff />
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-2 flex-1">
               <Link
-                href={"/shop/" + product.slug}
+                href={"/shop/" + product?.slug}
                 className="font-bold text-ellipsis line-clamp-1 hover:text-blue-400 transition-all duration-300"
               >
-                {product.title}
+                {product?.title}
               </Link>
-              {product.productType === "variations" ? (
+              {product.productType === "variations" &&
+              product.options_info &&
+              product.options_info.length > 0 ? (
                 <p>
                   Options:{" "}
                   {product.options_info?.map((it) => it.title).join(", ")}

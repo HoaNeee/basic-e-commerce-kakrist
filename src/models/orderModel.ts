@@ -34,13 +34,15 @@ interface Address {
 }
 
 interface Product {
+  _id: string;
   title: string;
   price: number;
   thumbnail: string;
-  options: string[];
   quantity: number;
-  _id: string;
   product_id: string;
+  sub_product_id: string;
+  slug: string;
   SKU: string;
+  options: string[];
   reviewed: boolean;
 }

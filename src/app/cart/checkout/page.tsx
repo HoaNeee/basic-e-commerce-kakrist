@@ -159,6 +159,7 @@ const Checkout = () => {
           quantity: item.quantity,
           cost: item.cost,
           SKU: item.SKU,
+          slug: item.slug,
         };
       });
 

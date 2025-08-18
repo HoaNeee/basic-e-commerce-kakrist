@@ -17,6 +17,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { ImageOff } from "lucide-react";
 
 const MiniCart = () => {
   const [openPopoverCart, setOpenPopoverCart] = useState(false);
@@ -76,15 +77,21 @@ const MiniCart = () => {
                             className="border-muted relative flex items-center w-full h-full gap-4 pb-4 border-b-2"
                           >
                             <div className="w-17 h-17 object-cover bg-[#F1F1F3]">
-                              <img
-                                src={
-                                  item.thumbnail
-                                    ? item.thumbnail
-                                    : item.thumbnail_product
-                                }
-                                alt="image"
-                                className="rounded-xs object-cover w-full h-full"
-                              />
+                              {item.thumbnail || item.thumbnail_product ? (
+                                <img
+                                  src={
+                                    item.thumbnail
+                                      ? item.thumbnail
+                                      : item.thumbnail_product
+                                  }
+                                  alt="image"
+                                  className="rounded-xs object-cover w-full h-full"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <ImageOff />
+                                </div>
+                              )}
                             </div>
                             <div className="justify-self-start flex flex-col items-start gap-1">
                               <Link
