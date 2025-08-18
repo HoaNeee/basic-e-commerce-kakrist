@@ -25,12 +25,12 @@ const DialogEditAddress = (props: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="dark:text-white/80">
+      <DialogContent className="dark:text-white/80 md:h-auto h-9/10 p-0 py-6 pl-6 pr-1">
         <DialogHeader>
           <DialogTitle>Edit Address</DialogTitle>
         </DialogHeader>
         <DialogDescription />
-        <div className="md:gap-0 gap-4">
+        <div className="md:gap-0 gap-4 md:overflow-hidden overflow-y-auto md:h-9/10 h-auto pr-5">
           <AddShippingAddress
             onAddNew={(val) => {
               if (onOK) {

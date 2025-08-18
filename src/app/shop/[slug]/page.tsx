@@ -174,7 +174,10 @@ const ProductDetail = () => {
           return;
         }
 
-        if (!Number(subProductDetail.stock)) {
+        if (
+          !Number(subProductDetail.stock) ||
+          Number(subProductDetail.stock) < count
+        ) {
           toast.error("This product is out of stock", {
             description: "Plese choose other product",
             action: {
@@ -211,6 +214,19 @@ const ProductDetail = () => {
           })
         );
       } else {
+        if (
+          !Number(productDetail?.stock) ||
+          Number(productDetail?.stock) < count
+        ) {
+          toast.error("This product is out of stock", {
+            description: "Plese choose other product",
+            action: {
+              label: "close",
+              onClick: () => {},
+            },
+          });
+          return;
+        }
         const item: CartModel = {
           cart_id: cart.cart_id,
           options: [],
