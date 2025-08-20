@@ -1,26 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-
 import AddShippingAddress from "./AddShippingAddress";
 import { del } from "@/utils/requets";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Checkbox } from "./ui/checkbox";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { FaRegEdit } from "react-icons/fa";
-import { GoTrash } from "react-icons/go";
 import { AddressModel } from "@/models/addressModel";
-import DialogConfirm from "./dialog/DialogConfirm";
 import DialogEditAddress from "./dialog/DialogEditAddress";
 import { toast } from "sonner";
 import { MapPinPlus, Plus } from "lucide-react";
+import CardAddress from "./checkout/CardAddress";
 
 interface Props {
   onNext: (val: AddressModel) => void;
@@ -113,77 +100,17 @@ const ShippingAddress = (props: Props) => {
               {addressList &&
                 addressList?.length > 0 &&
                 addressList.map((item) => (
-                  <Label
+                  <CardAddress
+                    item={item}
+                    addressChecked={addressChecked}
+                    onChecked={setAddressChecked}
+                    onEdit={(item) => {
+                      setAddressSelected(item);
+                      setOpenDialogEditAddress(true);
+                    }}
+                    onDelete={handleDeleteAddress}
                     key={item._id}
-                    className="inline-block cursor-pointer w-full"
-                  >
-                    <Card className="gap-3 border-0 bg-[#FAFAFB] dark:bg-neutral-800">
-                      <CardHeader>
-                        <CardTitle className="text-lg">
-                          {item.name || "No Name"}
-                        </CardTitle>
-                        <CardAction>
-                          <Checkbox
-                            checked={
-                              item._id ===
-                              (addressChecked && addressChecked._id)
-                            }
-                            className="border-2 size-5 border-black"
-                            onCheckedChange={(e) => {
-                              if (e) {
-                                setAddressChecked(item);
-                              }
-                            }}
-                          />
-                        </CardAction>
-                      </CardHeader>
-                      <CardContent className="pb-2 tracking-wider leading-5">
-                        {item.houseNo}, {item?.ward?.title},{" "}
-                        {item?.district?.title}, {item?.city?.title}
-                      </CardContent>
-                      <CardFooter className="items-center gap-4 px-8 w-full grid grid-cols-2">
-                        <Button
-                          variant={"ghost"}
-                          className="bg-[#f1f1f3] flex items-center hover:bg-neutral-200 dark:bg-neutral-600/90 dark:hover:bg-neutral-700"
-                          onClick={() => {
-                            setAddressSelected(item);
-                            setOpenDialogEditAddress(true);
-                          }}
-                        >
-                          <FaRegEdit />
-                          <p className="text-xs">Edit</p>
-                        </Button>
-                        <DialogConfirm
-                          onConfirm={() => {
-                            handleDeleteAddress(item);
-                          }}
-                          description={
-                            item.isDefault ? (
-                              <span>
-                                This address is your default address, are you
-                                sure you still want to delete it? Choose other
-                                your address default or{" "}
-                                <span className="font-bold text-black dark:text-white">
-                                  {"'continue'"}
-                                </span>{" "}
-                                if you want system to resolve.
-                              </span>
-                            ) : (
-                              ""
-                            )
-                          }
-                        >
-                          <Button
-                            className="bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700 dark:hover:bg-red-200"
-                            variant={"ghost"}
-                          >
-                            <GoTrash />
-                            <p className="text-xs">Delete</p>
-                          </Button>
-                        </DialogConfirm>
-                      </CardFooter>
-                    </Card>
-                  </Label>
+                  />
                 ))}
             </div>
             <div className="w-1/3 mt-6 mb-4">
@@ -241,7 +168,6 @@ const ShippingAddress = (props: Props) => {
                 if (value.isDefault) {
                   setAddressChecked(value);
                 }
-                // setAddress([value, ...address]);
                 if (onAddNew) {
                   onAddNew(value);
                 }

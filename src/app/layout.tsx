@@ -5,6 +5,8 @@ import ReduxProvider from "./provider";
 import MainLayout from "@/layouts/MainLayout";
 import { get } from "@/utils/requets";
 import { SystemSettingModel } from "@/models/settingSystem";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -81,6 +83,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const system_settings = await getSetting();
+  const jwt_token = (await cookies()).get("jwt_token");
+
+  if (!system_settings) {
+    redirect("/error/500");
+  }
 
   return (
     <html lang="en">
@@ -102,7 +109,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
-          <MainLayout system_settings={system_settings}>{children}</MainLayout>
+          <MainLayout system_settings={system_settings} jwt_token={jwt_token}>
+            {children}
+          </MainLayout>
         </ReduxProvider>
       </body>
       <script src="https://accounts.google.com/gsi/client" async defer></script>

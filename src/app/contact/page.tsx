@@ -27,6 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -60,6 +62,16 @@ const Contact = () => {
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
+
+  const auth = useSelector((state: RootState) => state.auth.auth);
+
+  useEffect(() => {
+    if (auth.isLogin) {
+      formData.email = auth.email;
+      formData.name = `${auth.firstName} ${auth.lastName}`;
+      formData.phone = auth.phone;
+    }
+  }, [auth.isLogin]);
 
   const handleInputChange = (
     e: React.ChangeEvent<

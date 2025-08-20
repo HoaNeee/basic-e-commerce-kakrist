@@ -8,14 +8,14 @@ import { removeCart, syncCart } from "@/redux/reducer/cartReducer";
 import { removeList, syncList } from "@/redux/reducer/favoriteReducer";
 import { RootState } from "@/redux/store";
 import { socket } from "@/socket/socket";
-import { fetcher, get, post } from "@/utils/requets";
+import { get, post } from "@/utils/requets";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import useSWR from "swr";
+
 import {
   Sheet,
   SheetContent,
@@ -45,27 +45,25 @@ import LOGOAPP from "@/assets/logo.png";
 import { SystemSettingModel } from "@/models/settingSystem";
 import { Skeleton } from "../ui/skeleton";
 import { ButtonTransition } from "../ui/button";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 const routePrivate = ["/profile", "/cart"];
 
 const HeaderClient = ({
   system_settings,
+  jwt_token,
 }: {
   system_settings: SystemSettingModel;
+  jwt_token: RequestCookie | undefined;
 }) => {
   const [isLogouting, setIsLogouting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const auth = useSelector((state: RootState) => state.auth.auth);
   const pathName = usePathname();
   const dispatch = useDispatch();
   const router = useRouter();
   const setting = useSelector((state: RootState) => state.setting.setting);
-
-  const { data, isLoading, error } = useSWR("/auth/profile", fetcher, {
-    revalidateOnMount: true,
-    revalidateOnReconnect: false,
-    revalidateOnFocus: false,
-  });
 
   useEffect(() => {
     socket.connect();
@@ -76,28 +74,12 @@ const HeaderClient = ({
   }, []);
 
   useEffect(() => {
-    if (error) {
-      return () => {};
+    if (!jwt_token || !jwt_token.value) {
+      setIsLoading(false);
+      return;
     }
-
-    console.log("data", data);
-
-    if (data && data.code === 200) {
-      checkIsSessionLogin(data.data);
-      dispatch(
-        addAuth({
-          ...data.data,
-          isLogin: true,
-        })
-      );
-    } else {
-      if (auth.isLogin) {
-        dispatch(removeAuth());
-        dispatch(syncCart([]));
-        dispatch(syncList([]));
-      }
-    }
-  }, [data]);
+    getInfoUser();
+  }, [jwt_token]);
 
   useEffect(() => {
     if (auth.isLogin) {
@@ -118,28 +100,29 @@ const HeaderClient = ({
     };
   }, [auth.isLogin]);
 
-  const renderNotify = (data: any) => {
-    return (
-      <Link
-        href={`${data.ref_link}?order_no=${data.ref_id}`}
-        className="flex items-center gap-4 w-full h-full"
-      >
-        <div
-          className={`size-13 rounded-full overflow-hidden flex items-center justify-center bg-gray-100`}
-        >
-          <div className="w-6 h-6">
-            <img src={data.image} className="w-full h-full object-cover" />
-          </div>
-        </div>
-        <div className="flex flex-col gap-1">
-          <p className="font-semibold text-base">Notification</p>
-          <p className="text-sm text-neutral-600 tracking-wider">
-            {data.title}
-          </p>
-          <span className="text-xs text-neutral-400">Click to check!</span>
-        </div>
-      </Link>
-    );
+  const getInfoUser = async () => {
+    try {
+      setIsLoading(true);
+      const response = await get("/auth/profile");
+      console.log(response);
+      checkIsSessionLogin(response.data);
+      dispatch(
+        addAuth({
+          ...response.data,
+          isLogin: true,
+        })
+      );
+    } catch (error) {
+      if (auth.isLogin) {
+        dispatch(removeAuth());
+        dispatch(syncCart([]));
+        dispatch(syncList([]));
+      }
+      console.log(error);
+      toast.error("Failed to fetch user information");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getCart = async () => {
@@ -210,13 +193,37 @@ const HeaderClient = ({
     }
   };
 
+  const renderNotify = (data: any) => {
+    return (
+      <Link
+        href={`${data.ref_link}?order_no=${data.ref_id}`}
+        className="flex items-center gap-4 w-full h-full"
+      >
+        <div
+          className={`size-13 rounded-full overflow-hidden flex items-center justify-center bg-gray-100`}
+        >
+          <div className="w-6 h-6">
+            <img src={data.image} className="w-full h-full object-cover" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <p className="font-semibold text-base">Notification</p>
+          <p className="text-sm text-neutral-600 tracking-wider">
+            {data.title}
+          </p>
+          <span className="text-xs text-neutral-400">Click to check!</span>
+        </div>
+      </Link>
+    );
+  };
+
   if (isLoading) {
     if (pathName.startsWith("/auth") || pathName.startsWith("/error")) {
       return <></>;
     }
     return (
       <div className="flex items-center justify-center w-full z-40 sticky top-0 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 h-20">
-        <div className="container w-full py-5 flex justify-between items-center bg-white xl:px-4 md:px-0 px-2 dark:bg-black">
+        <div className="container w-full  flex justify-between items-center bg-white xl:px-4 md:px-0 px-2 dark:bg-black">
           <div className="items-center gap-4 md:block flex">
             <Link className="w-30 h-12 md:block hidden" href="/">
               <Image

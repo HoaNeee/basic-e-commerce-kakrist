@@ -28,6 +28,21 @@ const MiniCart = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const btnCartMini = () => {
+    return (
+      <button
+        className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+          auth.isLogin ? "" : "lg:block hidden"
+        }`}
+      >
+        <PiShoppingBag
+          className="dark:text-gray-300 lg:text-2xl text-xl text-gray-600 transition-colors duration-200 cursor-pointer"
+          title="open mini cart"
+        />
+      </button>
+    );
+  };
+
   return (
     <>
       <div className="relative">
@@ -37,18 +52,7 @@ const MiniCart = () => {
             onOpenChange={setOpenPopoverCart}
             modal
           >
-            <PopoverTrigger asChild>
-              <button
-                className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${
-                  auth.isLogin ? "" : "lg:block hidden"
-                }`}
-              >
-                <PiShoppingBag
-                  className="dark:text-gray-300 lg:text-2xl text-xl text-gray-600 transition-colors duration-200 cursor-pointer"
-                  title="open mini cart"
-                />
-              </button>
-            </PopoverTrigger>
+            <PopoverTrigger asChild>{btnCartMini()}</PopoverTrigger>
 
             <PopoverContent
               sideOffset={10}
@@ -239,10 +243,7 @@ const MiniCart = () => {
             </PopoverContent>
           </Popover>
         ) : (
-          <PiShoppingBag
-            className="lg:text-2xl dark:text-gray-300 text-xl text-gray-600 transition-colors duration-200 cursor-pointer"
-            title="open mini cart"
-          />
+          btnCartMini()
         )}
         {cart && cart?.carts?.length > 0 && (
           <div className="absolute h-3.5 w-3.5 md:h-4 md:w-4.5 lg:-top-1.5 lg:-right-1 text-[10px] p-0 px-1 -right-0 -top-0 flex items-center justify-center bg-red-500 text-white rounded-full font-bold">

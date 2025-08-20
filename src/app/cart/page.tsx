@@ -118,7 +118,7 @@ const Cart = () => {
     <>
       <section className="bg-gray-50 dark:bg-black/90 min-h-screen py-8">
         <div className="xl:px-4 container px-0 mx-auto">
-          <div className="mb-8">
+          <div className="mb-8 md:px-0 px-4">
             <h1 className="dark:text-white mb-2 text-3xl font-bold text-gray-900">
               Shopping Cart
             </h1>

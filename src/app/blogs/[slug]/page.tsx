@@ -65,7 +65,10 @@ const BlogDetail = () => {
   const getBlogDetail = async () => {
     if (!slug) return;
     const response = await get(`/blogs/detail/${slug}`);
-    setBlog(response.data);
+    setBlog({
+      ...response.data,
+      likedLength: response.data.liked.length,
+    });
   };
 
   const getRelatedBlogs = async () => {
@@ -139,7 +142,7 @@ const BlogDetail = () => {
 
     if (!auth.isLogin) {
       const next = `/blogs/${slug}`;
-      window.location.href = `/auth/login?next=${next}`;
+      window.location.href = `/auth/login?next=${encodeURIComponent(next)}`;
       return;
     }
 
@@ -147,19 +150,33 @@ const BlogDetail = () => {
       const api = `/blogs/like/${slug}`;
       const user_id = auth.user_id;
 
-      const liked = blog.liked || [];
+      let liked = blog.liked || [];
+      let likedLength = blog.likedLength || 0;
       if (liked.includes(user_id)) {
+        likedLength -= 1;
+        liked = liked.filter((id) => id !== user_id);
         setBlog({
           ...blog,
-          liked: liked.filter((id) => id !== user_id),
+          liked: liked,
+          likedLength,
         });
       } else {
+        likedLength += 1;
+        liked = [...liked, user_id];
         setBlog({
           ...blog,
-          liked: [...liked, user_id],
+          liked: liked,
+          likedLength,
         });
       }
-      await patch(api, { user_id: user_id });
+      const response = await patch(api, { user_id: user_id });
+      if (response.data.likedLength !== likedLength) {
+        setBlog({
+          ...blog,
+          liked: liked,
+          likedLength: response.data.likedLength,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -167,7 +184,6 @@ const BlogDetail = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-black">
-        {/* Navigation */}
         <div className="bg-white border-b dark:border-neutral-700 dark:bg-neutral-800">
           <div className="container mx-auto px-4 py-4">
             <div
@@ -243,7 +259,7 @@ const BlogDetail = () => {
                     : blog.liked.includes(auth.user_id)
                     ? "Đã thích"
                     : "Thích"}{" "}
-                  ({blog?.liked?.length || 0})
+                  ({blog?.likedLength || 0})
                 </button>
                 <button
                   onClick={() => {
@@ -270,7 +286,6 @@ const BlogDetail = () => {
               </div>
             </header>
 
-            {/* Featured Image */}
             <div className="relative h-96 mb-8 rounded-xl overflow-hidden">
               <Image
                 src={blog.image || IMAGEDEFAULT}
@@ -281,14 +296,12 @@ const BlogDetail = () => {
               />
             </div>
 
-            {/* Content */}
             <div className="bg-white rounded-xl p-8 shadow-sm mb-8 dark:bg-neutral-800 dark:text-white/80">
               <div
                 className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed dark"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
 
-              {/* Tags */}
               <div className="flex flex-wrap gap-2 mt-8 pt-8 border-t">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">
                   Tags:
@@ -305,7 +318,6 @@ const BlogDetail = () => {
               </div>
             </div>
 
-            {/* Author Bio */}
             <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm mb-8">
               <div className="flex items-center">
                 <div>

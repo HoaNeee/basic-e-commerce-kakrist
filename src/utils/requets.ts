@@ -29,10 +29,11 @@ export const get = async (path: string, token?: string, config?: any) => {
     });
 
     if (
-      response.status === 429 ||
-      response.status === 404 ||
-      response.status === 500 ||
-      response.status === 403
+      (response.status === 429 ||
+        response.status === 404 ||
+        response.status === 500 ||
+        response.status === 403) &&
+      typeof window !== "undefined"
     ) {
       window.location.href = `/error/${response.status}`;
       return;

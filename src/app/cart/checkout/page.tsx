@@ -1,5 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import ButtonLoading from "@/components/ButtonLoading";
 import DialogCheckoutSuccess from "@/components/dialog/DialogCheckoutSuccess";
 import DialogConfirm from "@/components/dialog/DialogConfirm";
@@ -275,7 +276,7 @@ const Checkout = () => {
   };
 
   const handleCheckExistTransaction = () => {
-    const transaction = sessionStorage.getItem("transaction");
+    const transaction = localStorage.getItem("transaction");
     const toast_transaction_exists = sessionStorage.getItem(
       "toast_transaction_exists"
     );
@@ -350,7 +351,7 @@ const Checkout = () => {
                   isProceed ? "-translate-x-full" : "translate-x-full"
                 }`}
                 style={{
-                  maxHeight: isProceed ? "1600px" : "0px",
+                  maxHeight: isProceed ? "auto" : "0px",
                   pointerEvents: isProceed ? "auto" : "none",
                   opacity: isProceed ? 1 : 0,
                 }}
@@ -364,7 +365,9 @@ const Checkout = () => {
                   <TransactionSteps
                     transactionExists={transactionExist || undefined}
                     onNextStep={async (step, val) => {
-                      setCurrentStep(step);
+                      if (step) {
+                        setCurrentStep(step);
+                      }
                       setInformationOrder({ ...informationOrder, ...val });
                     }}
                     cartsCheckout={cartCheckout}

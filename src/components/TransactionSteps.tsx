@@ -49,7 +49,7 @@ const {
 );
 
 interface Props {
-  onNextStep?: (step: string, val?: any) => void;
+  onNextStep?: (step?: string, val?: any) => void;
   cartsCheckout?: CartModel[];
   isProceed?: boolean;
   setIsLoading?: (val: boolean) => void;
@@ -87,6 +87,12 @@ export function TransactionSteps(props: Props) {
       setTransaction_info(transactionExists.transaction_info);
     }
   }, [transactionExists]);
+
+  useEffect(() => {
+    if (transaction_info) {
+      onNextStep?.(undefined, transaction_info);
+    }
+  }, [transaction_info]);
 
   const onWidthChange = () => {
     setClientWidth(window.innerWidth);
@@ -171,26 +177,6 @@ export function TransactionSteps(props: Props) {
     }
   };
 
-  const handleSetToLocalStorage = (step: string, value: any) => {
-    const transaction = localStorage.getItem("transaction");
-    if (transaction) {
-      const parsedTransaction = JSON.parse(transaction);
-      if (parsedTransaction && parsedTransaction._id) {
-        localStorage.setItem(
-          "transaction",
-          JSON.stringify({
-            ...parsedTransaction,
-            current_step: step,
-            transaction_info: {
-              ...parsedTransaction.transaction_info,
-              ...value,
-            },
-          })
-        );
-      }
-    }
-  };
-
   return (
     isProceed && (
       <>
@@ -254,6 +240,8 @@ export function TransactionSteps(props: Props) {
                     }}
                     cartsCheckout={cartsCheckout}
                     transactionExist={transactionExists}
+                    setTransaction_info={setTransaction_info}
+                    transaction_info={transaction_info}
                   />
                 ),
               })}
@@ -277,10 +265,19 @@ interface StepProps {
   onNextStep: (step: "1" | "2" | "3", val?: any) => void;
   cartsCheckout?: CartModel[];
   transactionExist?: any;
+  setTransaction_info?: (info: any) => void;
+  transaction_info?: any;
 }
 
 const Content = (props: StepProps) => {
-  const { step, onNextStep, cartsCheckout, transactionExist } = props;
+  const {
+    step,
+    onNextStep,
+    cartsCheckout,
+    transactionExist,
+    setTransaction_info,
+    transaction_info,
+  } = props;
   const [address, setAddress] = useState<AddressModel[]>([]);
   const [addressChecked, setAddressChecked] = useState<AddressModel>();
   const [payment, setPayment] = useState<{
@@ -391,6 +388,17 @@ const Content = (props: StepProps) => {
               cartsCheckout={cartsCheckout}
               shippingAddress={addressChecked}
               payment={payment}
+              addressList={address}
+              onChangeAddress={(address) => {
+                setAddressChecked(address);
+                handleSetToLocalStorage("3", { address: address });
+                if (setTransaction_info) {
+                  setTransaction_info({
+                    ...transaction_info,
+                    address: address,
+                  });
+                }
+              }}
             />
           </div>
         </div>
@@ -428,4 +436,24 @@ const Dialog = ({
       </AlertDialogContent>
     </AlertDialog>
   );
+};
+
+const handleSetToLocalStorage = (step: string, value: any) => {
+  const transaction = localStorage.getItem("transaction");
+  if (transaction) {
+    const parsedTransaction = JSON.parse(transaction);
+    if (parsedTransaction && parsedTransaction._id) {
+      localStorage.setItem(
+        "transaction",
+        JSON.stringify({
+          ...parsedTransaction,
+          current_step: step,
+          transaction_info: {
+            ...parsedTransaction.transaction_info,
+            ...value,
+          },
+        })
+      );
+    }
+  }
 };

@@ -10,13 +10,16 @@ import { AnimatePresence, motion } from "motion/react";
 import Header from "@/components/header/Header";
 import FooterComponent from "@/components/footer/FooterComponent";
 import { SystemSettingModel } from "@/models/settingSystem";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 const MainLayout = ({
   children,
   system_settings,
+  jwt_token,
 }: {
   children: ReactNode;
   system_settings: SystemSettingModel;
+  jwt_token: RequestCookie | undefined;
 }) => {
   const setting = useSelector((state: RootState) => state.setting.setting);
   const pathName = usePathname();
@@ -37,7 +40,7 @@ const MainLayout = ({
         theme={setting.theme === "dark" ? "dark" : "light"}
       />
       {!pathName.startsWith("/auth") && !pathName.startsWith("/error") && (
-        <Header system_settings={system_settings} />
+        <Header system_settings={system_settings} jwt_token={jwt_token} />
       )}
       {pathName.startsWith("/profile") || pathName === "/" ? (
         children

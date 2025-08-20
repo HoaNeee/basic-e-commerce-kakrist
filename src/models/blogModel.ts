@@ -15,6 +15,7 @@ export interface BlogModel {
   };
   view: number;
   liked: string[];
+  likedLength: number;
   createdAt: string;
   updatedAt: string;
   slug: string;

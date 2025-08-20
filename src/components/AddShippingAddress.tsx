@@ -167,6 +167,7 @@ const AddShippingAddress = ({
       return result;
     } catch (error) {
       console.log(error);
+      toast.error("Error fetching address data");
     }
   };
 

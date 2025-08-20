@@ -64,7 +64,7 @@ const DialogCheckoutSuccess = (props: Props) => {
                 onAction
                   ? onAction
                   : () => {
-                      router.replace("/profile/orders");
+                      router.replace("/profile/orders", { scroll: true });
                     }
               }
             >

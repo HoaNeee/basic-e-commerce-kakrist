@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { AddressModel } from "@/models/addressModel";
 import { CartModel } from "@/models/cartModel";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { FaRegEdit } from "react-icons/fa";
 import { VND } from "@/utils/formatCurrency";
@@ -10,6 +10,18 @@ import { OrderModel } from "@/models/orderModel";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
 import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import CardAddress from "./checkout/CardAddress";
+import { toast } from "sonner";
+import { patch } from "@/utils/requets";
+import ButtonLoading from "./ButtonLoading";
 
 interface Props {
   cartsCheckout?: CartModel[];
@@ -19,10 +31,21 @@ interface Props {
     status?: string;
   };
   order?: OrderModel;
+  addressList?: AddressModel[];
+  onChangeAddress?: (address: AddressModel) => void;
 }
 
 const ReviewOrder = (props: Props) => {
-  const { cartsCheckout, shippingAddress, payment, order } = props;
+  const {
+    cartsCheckout,
+    shippingAddress,
+    payment,
+    order,
+    addressList,
+    onChangeAddress,
+  } = props;
+  const [openDialogChangeAddress, setOpenDialogChangeAddress] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const estimatedDelivery = new Date().getTime() + 1000 * 60 * 60 * 24 * 3;
 
@@ -71,6 +94,35 @@ const ReviewOrder = (props: Props) => {
         </CardFooter>
       </Card>
     );
+  };
+
+  const handleChangeAddress = async (address: AddressModel) => {
+    try {
+      const transaction = localStorage.getItem("transaction");
+      if (!transaction) {
+        return;
+      }
+
+      setIsUpdating(true);
+      const transactionParsed = JSON.parse(transaction);
+      const transaction_info = transactionParsed.transaction_info || {};
+
+      await patch("/transaction/change", {
+        step: "3",
+        payload: {
+          ...transaction_info,
+          address: address,
+        },
+      });
+      onChangeAddress?.(address);
+      setOpenDialogChangeAddress(false);
+      toast.success("Address changed successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to change address.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -206,6 +258,7 @@ const ReviewOrder = (props: Props) => {
                     variant={"outline"}
                     size={"icon"}
                     className="bg-muted"
+                    onClick={() => setOpenDialogChangeAddress(true)}
                   >
                     <FaRegEdit size={20} />
                   </Button>
@@ -264,8 +317,105 @@ const ReviewOrder = (props: Props) => {
         </li>
         {order && <li className="mb-6 order-6">{renderOrderSummary(order)}</li>}
       </ol>
+
+      <DialogChangeAddress
+        open={openDialogChangeAddress}
+        setOpen={setOpenDialogChangeAddress}
+        addressList={addressList}
+        adddressChecked={shippingAddress}
+        onSave={(address) => {
+          handleChangeAddress(address);
+        }}
+        isUpdating={isUpdating}
+      />
     </div>
   );
 };
 
 export default ReviewOrder;
+
+const DialogChangeAddress = ({
+  open,
+  setOpen,
+  addressList = [],
+  adddressChecked,
+  onSave,
+  isUpdating,
+}: {
+  open: boolean;
+  setOpen: (val: boolean) => void;
+  addressList?: AddressModel[];
+  adddressChecked?: AddressModel;
+  onSave: (address: AddressModel) => void;
+  isUpdating?: boolean;
+}) => {
+  const [addressCheckedInDialog, setAddressCheckedInDialog] = useState<
+    AddressModel | undefined
+  >(undefined);
+
+  useEffect(() => {
+    return () => setOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (adddressChecked && open) {
+      setAddressCheckedInDialog(adddressChecked);
+    } else {
+      setAddressCheckedInDialog(undefined);
+    }
+  }, [open, adddressChecked]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="p-0 h-19/20 overflow-hidden pb-2">
+        <DialogHeader className="md:p-6 p-4">
+          <DialogTitle>Change Shipping Address</DialogTitle>
+          <DialogDescription>
+            Make change to your shipping address for this order
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3 max-h-fit overflow-hidden overflow-y-auto custom-scrollbar">
+          {addressList.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 pl-6 pr-4">
+              {addressList.map((item) => (
+                <CardAddress
+                  item={item}
+                  key={item._id}
+                  addressChecked={addressCheckedInDialog}
+                  onChecked={(val) => {
+                    setAddressCheckedInDialog(val);
+                  }}
+                  isModal
+                />
+              ))}
+            </div>
+          ) : (
+            <div>No address found</div>
+          )}
+        </div>
+        <DialogFooter className="pb-2 px-4 flex items-center gap-2 justify-end flex-row">
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={isUpdating}
+          >
+            Cancel
+          </Button>
+          <ButtonLoading
+            onClick={() => onSave(addressCheckedInDialog as AddressModel)}
+            typeLoading={1}
+            loading={isUpdating}
+            disabled={
+              !addressCheckedInDialog ||
+              isUpdating ||
+              adddressChecked?._id === addressCheckedInDialog?._id
+            }
+            className="p-0 px-3"
+          >
+            Save Changes
+          </ButtonLoading>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
