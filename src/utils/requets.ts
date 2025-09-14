@@ -3,7 +3,7 @@
 import FileResizer from "react-image-file-resizer";
 
 export const BASE_URL =
-	process.env.NEXT_PUBLIC_ENV === "dev"
+	process.env.NODE_ENV === "development"
 		? `http://localhost:3001`
 		: `https://api4.kakrist.site`;
 
