@@ -5,7 +5,7 @@ import FileResizer from "react-image-file-resizer";
 export const BASE_URL =
 	process.env.NODE_ENV === "development"
 		? `http://localhost:3001`
-		: `https://api.kakrist.site`;
+		: `https://api4.kakrist.site`;
 
 const API_URL = `${BASE_URL}`;
 
