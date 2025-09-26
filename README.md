@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Basic E-Commerce Kakrist
 
-## Getting Started
+Basic E-Commerce Kakrist là một dự án web thương mại điện tử cơ bản được xây dựng với Next.js. Dự án này nhằm mục đích cung cấp một nền tảng mẫu cho các cửa hàng online với các tính năng như:
 
-First, run the development server:
+- Xem danh sách sản phẩm
+- Thêm sản phẩm vào giỏ hàng
+- Đặt hàng trực tuyến
+- Quản lý tài khoản người dùng (đăng ký, đăng nhập)
+
+Dự án phù hợp cho mục đích học tập, thử nghiệm hoặc làm nền tảng phát triển các hệ thống e-commerce phức tạp hơn.
+
+## Cài đặt & Chạy dự án
+
+1. Cài đặt dependencies:
+
+```bash
+npm install
+# hoặc
+yarn install
+# hoặc
+pnpm install
+# hoặc
+bun install
+```
+
+2. Chạy server phát triển:
 
 ```bash
 npm run dev
-# or
+# hoặc
 yarn dev
-# or
+# hoặc
 pnpm dev
-# or
+# hoặc
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Truy cập [http://localhost:3000](http://localhost:3000) để xem kết quả.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cấu trúc cơ bản
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Sửa trang chính tại `app/page.tsx`.
+- Các thay đổi sẽ tự động cập nhật khi lưu file.
 
-## Learn More
+## Liên hệ
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Tác giả: [hoanek16]
+- Email: [nhhoa03@gmail.com]
